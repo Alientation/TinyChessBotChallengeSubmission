@@ -19,11 +19,11 @@ namespace ChessChallenge.Application
             }
 
             if (NextButtonInRow(ChallengeController.botToTest1 + " vs " + ChallengeController.botToTest2, ref buttonPos, spacing, buttonSize)) {
-                controller.StartNewGame(ChallengeController.botToTest1, ChallengeController.botToTest2);
+                controller.StartNewBotMatch(ChallengeController.botToTest1, ChallengeController.botToTest2);
             }
 
             if (NextButtonInRow(ChallengeController.botToTest1 + " vs EvilBot", ref buttonPos, spacing, buttonSize)) {
-                controller.StartNewGame(ChallengeController.PlayerType.EvilBot, ChallengeController.botToTest1);
+                controller.StartNewBotMatch(ChallengeController.PlayerType.EvilBot, ChallengeController.botToTest1);
             }
 
             if (NextButtonInRow("Tournament", ref buttonPos, spacing, buttonSize)) {
