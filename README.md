@@ -6,4 +6,4 @@ Features Multiple Different Bots
 
 ### V1
 - Rudimentary minimax algorithm with AB pruning with some simple board/move eval
-- Brain Bot Power - todo NEED TO GET LOWER
+- Brain Bot Power - ~625
