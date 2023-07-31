@@ -280,8 +280,8 @@ namespace ChessChallenge.Application
             int bottom = getPiecesValue(whitePerspective);
             int max = Math.Max(top, bottom);
 
-            UIHelper.DrawText(format(top, bottom), new Vector2(boardStartX, boardStartY + squareSize * 8 + spaceY + 30), 36, 1, activeTextCol, UIHelper.AlignH.Left);
-            UIHelper.DrawText(format(bottom, top), new Vector2(boardStartX, boardStartY - spaceY - 30), 36, 1, activeTextCol, UIHelper.AlignH.Left);
+            UIHelper.DrawText(format(bottom, top), new Vector2(boardStartX, boardStartY + squareSize * 8 + spaceY + 30), 36, 1, activeTextCol, UIHelper.AlignH.Left);
+            UIHelper.DrawText(format(top, bottom), new Vector2(boardStartX, boardStartY - spaceY - 30), 36, 1, activeTextCol, UIHelper.AlignH.Left);
 
             String format(int val1, int val2) {
                 if (val1 < val2) return "" + (val1 - val2);

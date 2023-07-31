@@ -77,7 +77,13 @@ using System.Collections.Generic;
     Late Move Reductions, History Reductions
     Use NegaMax??
     Store minimax traversals (edges that haven't been searched from a particular board state)
-    
+    Dont use dictionary, use hash + bit mask and an array (much faster)
+
+
+    Make tournament system
+    Make elo system
+    file system for bots (bot training)
+    add dropdown menu for bot matches
 */
 public class MyBotV1_1 : IChessBot
 {

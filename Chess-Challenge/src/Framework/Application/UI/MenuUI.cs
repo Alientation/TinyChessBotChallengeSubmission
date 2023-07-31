@@ -26,6 +26,11 @@ namespace ChessChallenge.Application
                 controller.StartNewBotMatch(ChallengeController.PlayerType.EvilBot, ChallengeController.botToTest1);
             }
 
+            if (NextButtonInRow(ChallengeController.botToTest2 + " vs EvilBot", ref buttonPos, spacing, buttonSize)) {
+                controller.StartNewBotMatch(ChallengeController.PlayerType.EvilBot, ChallengeController.botToTest2);
+            }
+
+
             if (NextButtonInRow("Tournament", ref buttonPos, spacing, buttonSize)) {
                 controller.StartTournament();
             }
