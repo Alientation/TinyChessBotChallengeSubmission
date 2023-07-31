@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic; 
 
 /*
-    MyBot V1.0  ~(750 Brain Power SMH)
+    MyBot V1.0  ~(637 Brain Power SMH)
 
     Features
     Min Max Algorithm
@@ -79,7 +79,7 @@ using System.Collections.Generic;
     Store minimax traversals (edges that haven't been searched from a particular board state)
     
 */
-public class MyBot : IChessBot
+public class MyBotV1 : IChessBot
 {
     /*
 
@@ -289,7 +289,7 @@ public class MyBot : IChessBot
     int autoMoveThreshold = 16;
 
     ///parses compressed piece values
-    public MyBot() {
+    public MyBotV1() {
         timeLog = new List<int>[] {
             new List<int>(),
             new List<int>(),
@@ -550,7 +550,7 @@ public class MyBot : IChessBot
             Console.WriteLine("Total count for " + (LogCountType) i + ": " + countLogs[i]);
         }
     }
-    public void GameOver(ChessChallenge.Chess.GameResult result) {
+    public void GameOver() {
         Console.WriteLine("Game over\n--------------------\n\n");
         for (int i = 0; i < timeLog.Length; i++) {
             int sum = 0;
