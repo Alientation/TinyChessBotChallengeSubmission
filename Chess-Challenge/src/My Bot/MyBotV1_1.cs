@@ -538,6 +538,7 @@ public class MyBotV1_1 : IChessBot
     }
 
     public void compileLogs() {
+        if (cTimer.MillisecondsRemaining < 6000) return;
         for (int i = 0; i < timeLog.Length; i++) {
             int sum = 0;
             foreach (int time in timeLog[i]) {
