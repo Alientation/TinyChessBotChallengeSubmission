@@ -285,8 +285,8 @@ public class MyBotV1_1 : IChessBot
     Dictionary<ulong,int> minimaxCache = new Dictionary<ulong, int>();
 
 
-    int defaultSearchDepth = 3;
-    int autoMoveThreshold = 16;
+    int defaultSearchDepth = 2;
+    int autoMoveThreshold = 10;
 
     ///parses compressed piece values
     public MyBotV1_1() {
