@@ -275,6 +275,33 @@ namespace ChessChallenge.Application
             Draw(boardStartY + squareSize * 8 + spaceY, colNameBottom, nameBottom, timeBottom, bottomTextCol);
             Draw(boardStartY - spaceY, colNameTop, nameTop, timeTop, topTextCol);
 
+            // Draw pieces value
+            int top = getPiecesValue(!whitePerspective);
+            int bottom = getPiecesValue(whitePerspective);
+            int max = Math.Max(top, bottom);
+
+            UIHelper.DrawText(format(top), new Vector2(boardStartX, boardStartY + squareSize * 8 + spaceY + 30), 36, 1, activeTextCol, UIHelper.AlignH.Left);
+            UIHelper.DrawText(format(bottom), new Vector2(boardStartX, boardStartY - spaceY - 30), 36, 1, activeTextCol, UIHelper.AlignH.Left);
+
+            String format(int val) {
+                if (val < max) return "" + (val - max);
+                else if (val > max) return "+ " + (val - max);
+                else return "0";
+            }
+
+            int[] pieceValue = {
+                0,1,3,3,5,9,0
+            };
+            int getPiecesValue(bool isWhite) {
+                int value = 0;
+                value += board.pawns[isWhite ? 0 : 1].Count * 1;
+                value += board.bishops[isWhite ? 0 : 1].Count * 3;
+                value += board.knights[isWhite ? 0 : 1].Count * 3;
+                value += board.rooks[isWhite ? 0 : 1].Count * 5;
+                value += board.queens[isWhite ? 0 : 1].Count * 9;
+                return value;
+            }
+
             void Draw(float y, string colName, string name, int timeMs, Color textCol)
             {
                 const int fontSize = 36;
