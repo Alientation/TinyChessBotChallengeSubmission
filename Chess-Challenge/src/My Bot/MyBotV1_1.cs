@@ -291,7 +291,7 @@ public class MyBotV1_1 : IChessBot
     Dictionary<ulong,int> minimaxCache = new Dictionary<ulong, int>();
 
 
-    int defaultSearchDepth = 2;
+    int defaultSearchDepth = 3;
     int autoMoveThreshold = 10;
 
     int moveCount = 0;
@@ -488,7 +488,7 @@ public class MyBotV1_1 : IChessBot
     /// Gets the value of a move  based on what it achieves
     public int scoreMove(Move move) {
         if (move.IsCapture)
-            return Math.Max(pieceValue[(int) move.MovePieceType] - pieceValue[(int) move.CapturePieceType], 0);
+            return Math.Max(pieceValue[(int) move.CapturePieceType] - pieceValue[(int) move.MovePieceType], 0);
         if (move.IsEnPassant)
             return 1;
         if (move.IsPromotion)
