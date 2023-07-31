@@ -504,6 +504,7 @@ public class MyBot : IChessBot
         }
     }
     public void GameOver(ChessChallenge.Chess.GameResult result) {
+        Console.WriteLine("Game over\n--------------------\n\n");
         for (int i = 0; i < timeLog.Length; i++) {
             int sum = 0;
             foreach (int time in timeLog[i]) {
@@ -517,5 +518,6 @@ public class MyBot : IChessBot
         for (int i = 0; i < countLogs.Length; i++) {
             Console.WriteLine("Total count for " + (LogCountType) i + ": " + countLogs[i]);
         }
+        Console.WriteLine("--------------------\n");
     }
 }
