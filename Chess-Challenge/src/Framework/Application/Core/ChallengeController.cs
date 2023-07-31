@@ -77,8 +77,8 @@ namespace ChessChallenge.Application
             board = new Board();
             pgns = new();
 
-            BotStatsA = new BotMatchStats("IBot");
-            BotStatsB = new BotMatchStats("IBot");
+            BotStatsA = new BotMatchStats(botToTest1.ToString());
+            BotStatsB = new BotMatchStats(botToTest2.ToString());
             botMatchStartFens = FileHelper.ReadResourceFile("Fens.txt").Split('\n').Where(fen => fen.Length > 0).ToArray();
             botTaskWaitHandle = new AutoResetEvent(false);
 

@@ -552,10 +552,10 @@ public class MyBotV1_1 : IChessBot
         Console.WriteLine("\nMoves: " + moveLog.Count);
         
         Console.WriteLine((LogCountType) 0 + ": " + countLogs[0]);
-        Console.WriteLine((LogCountType) 0 + ": " + countLogs[1] + " |  cache (" + (countLogs[2] / countLogs[1]) + ") | depthCache (" + (countLogs[3] / countLogs[1]) + ")");
-        Console.WriteLine((LogCountType) 0 + ": " + countLogs[4] + " | cache (" + (countLogs[5] / countLogs[4]) + ")");
-        Console.WriteLine((LogCountType) 0 + ": " + countLogs[6] + " | cache (" + (countLogs[7] / countLogs[6]) + ")");
-        Console.WriteLine((LogCountType) 0 + ": " + countLogs[8] + " | cache (" + (countLogs[9] / countLogs[8]) + ")");
+        Console.WriteLine((LogCountType) 0 + ": " + countLogs[1] + " |  cache (" + (countLogs[2] / (float) countLogs[1]) + ") | depthCache (" + (countLogs[3] / (float) countLogs[1]) + ")");
+        Console.WriteLine((LogCountType) 0 + ": " + countLogs[4] + " | cache (" + (countLogs[5] / (float) countLogs[4]) + ")");
+        Console.WriteLine((LogCountType) 0 + ": " + countLogs[6] + " | cache (" + (countLogs[7] / (float) countLogs[6]) + ")");
+        Console.WriteLine((LogCountType) 0 + ": " + countLogs[8] + " | cache (" + (countLogs[9] / (float)countLogs[8]) + ")");
     }
     public void GameOver() {
         Console.WriteLine("Game over\n--------------------\n\n");
