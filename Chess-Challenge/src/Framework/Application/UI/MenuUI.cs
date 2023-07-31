@@ -18,6 +18,10 @@ namespace ChessChallenge.Application
                 controller.StartNewGame(ChallengeController.PlayerType.Human, ChallengeController.botToTest1);
             }
 
+            if (NextButtonInRow("Human vs " + ChallengeController.botToTest2, ref buttonPos, spacing, buttonSize)) {
+                controller.StartNewGame(ChallengeController.PlayerType.Human, ChallengeController.botToTest2);
+            }
+
             if (NextButtonInRow(ChallengeController.botToTest1 + " vs " + ChallengeController.botToTest2, ref buttonPos, spacing, buttonSize)) {
                 controller.StartNewBotMatch(ChallengeController.botToTest1, ChallengeController.botToTest2);
             }

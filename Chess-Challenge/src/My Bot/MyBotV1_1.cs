@@ -467,21 +467,19 @@ public class MyBotV1_1 : IChessBot
         0,1,3,3,5,9,10000
     };
 
-    Dictionary<Piece,int> pieceEvalCache = new Dictionary<Piece, int>();
-
     /// Gets the value of a piece based on its position on the board and other characteristics
     public int getPieceValue(Board board, Piece piece) {
         logCount(LogCountType.evalPieceCount, 1);
         int timeEvalPieceValueStart = cTimer.MillisecondsElapsedThisTurn;
-        int val;
-        if (pieceEvalCache.ContainsKey(piece)) {
+        int val = pieceValue[(int) piece.PieceType];
+        /*if (pieceEvalCache.ContainsKey(piece)) {
             logCount(LogCountType.evalPieceCacheCount, 1);
             val = pieceEvalCache[piece];
         } else {
             val = pieceValue[(int) piece.PieceType];
             pieceEvalCache[piece] = val;
-        }
-
+        }*/
+        
         logTime(LogTimeType.evalPieceTime, cTimer.MillisecondsElapsedThisTurn-timeEvalPieceValueStart);
         return val;
     }
