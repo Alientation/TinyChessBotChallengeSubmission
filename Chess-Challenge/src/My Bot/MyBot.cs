@@ -13,24 +13,27 @@ using System.Collections.Generic;
 
     }
 
+    
+    TODO
 
-    TODO Score board based off piece locations
-    TODO sort moves when getting possible moves
-    TODO add more features to board evaluation
+    Score board based off piece locations
+    sort moves when getting possible moves
+    add more features to board evaluation
         - pawn advancement
         - piece mobility
         - piece threats
         - piece protection
 
-    TODO add more features to move scoring
-    TODO add game stage
-    TODO Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
-    TODO Quiesence Searching (only applies to moves that result in a capture)
-    TODO Optimized Searching (go down only promising paths)
-    TODO OPTIMIZE CODE
-    TODO Move Pruning
-    TODO Late Move Reductions, History Reductions
-    TODO Use NegaMax??
+    add more features to move scoring
+    add game stage
+    Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
+    Quiesence Searching (only applies to moves that result in a capture)
+    Optimized Searching (go down only promising paths)
+    OPTIMIZE CODE
+    Move Pruning
+    Late Move Reductions, History Reductions
+    Use NegaMax??
+    Store minimax traversals (edges that haven't been searched from a particular board state)
     
 */
 public class MyBot : IChessBot
@@ -301,10 +304,10 @@ public class MyBot : IChessBot
 
     /// algorithm to find best move
     public int minimax(Board board, int depth, float alpha, float beta, bool isMax, int maxDepth, int bestPrevEval) {
-        if (minimaxCache.ContainsKey(board.ZobristKey)) {
+        /*if (minimaxCache.ContainsKey(board.ZobristKey)) {
             logCount(LogCountType.minimaxSavedDepthCount, maxDepth - depth);
             return minimaxCache[board.ZobristKey];
-        } 
+        } */
         logCount(LogCountType.minimaxCount, 1);
 
         if (depth >= maxDepth) return evaluateBoard(board, onWhiteSide);
@@ -314,10 +317,10 @@ public class MyBot : IChessBot
             foreach (Move move in getPossibleMoves(board)) {
                 board.MakeMove(move);
                 int eval;
-                if (minimaxCache.ContainsKey(board.ZobristKey)) {
+                /*if (minimaxCache.ContainsKey(board.ZobristKey)) {
                     logCount(LogCountType.minimaxSavedCount, 1);
                     eval = minimaxCache[board.ZobristKey];
-                } else 
+                } else*/ 
                     eval = minimax(board, depth+1, alpha, beta, false, maxDepth, bestPrevEval);
                 board.UndoMove(move);
 
@@ -335,10 +338,10 @@ public class MyBot : IChessBot
             foreach (Move move in getPossibleMoves(board)) {
                 board.MakeMove(move);
                 int eval;
-                if (minimaxCache.ContainsKey(board.ZobristKey)) {
+                /*if (minimaxCache.ContainsKey(board.ZobristKey)) {
                     logCount(LogCountType.minimaxSavedCount, 1);
                     eval = minimaxCache[board.ZobristKey];
-                } else
+                } else*/
                     eval = minimax(board, depth+1, alpha, beta, true, maxDepth, bestPrevEval);
                 
                 board.UndoMove(move);
@@ -492,6 +495,21 @@ public class MyBot : IChessBot
                 Console.WriteLine("Average time for " + (LogTimeType) i + ": " + (sum/timeLog[i].Count));
             else
                 Console.WriteLine("Average time for " + (LogTimeType) i + ": 0");
+        }
+
+        Console.WriteLine("Total moves: " + moveLog.Count);
+        
+        for (int i = 0; i < countLogs.Length; i++) {
+            Console.WriteLine("Total count for " + (LogCountType) i + ": " + countLogs[i]);
+        }
+    }
+    public void GameOver(ChessChallenge.Chess.GameResult result) {
+        for (int i = 0; i < timeLog.Length; i++) {
+            int sum = 0;
+            foreach (int time in timeLog[i]) {
+                sum += time;
+            }
+            Console.WriteLine("Total time for " + (LogTimeType) i + ": " + (sum));
         }
 
         Console.WriteLine("Total moves: " + moveLog.Count);
