@@ -311,6 +311,7 @@ public class MyBotV1_1 : IChessBot
     }
 
     /// Make move
+    HashSet<Move> moveCache = new HashSet<Move>();
     public Move Think(Board board, Timer timer)
     {
         moveCount++;
@@ -330,6 +331,7 @@ public class MyBotV1_1 : IChessBot
 
             board.MakeMove(move);
             int eval = scoreMove(move);
+            if (moveCache.Contains(move)) eval -= 1;
             eval = minimax(board, 0, float.NegativeInfinity, float.PositiveInfinity, false, defaultSearchDepth, maxEval);
             if (maxEval < eval) {
                 maxEval = eval;
@@ -354,6 +356,7 @@ public class MyBotV1_1 : IChessBot
             compileLogs();
             Console.WriteLine("--------------------");
         }
+        moveCache.Add(bestMove);
         return bestMove;
     }
 
@@ -495,7 +498,6 @@ public class MyBotV1_1 : IChessBot
             return Math.Max(pieceValue[(int) move.MovePieceType] - pieceValue[(int) move.PromotionPieceType], 0);
         if (move.IsCastles)
             return 1;
-        
         return 0;
     }
 
