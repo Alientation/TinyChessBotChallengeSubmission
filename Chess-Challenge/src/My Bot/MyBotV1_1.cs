@@ -285,7 +285,7 @@ public class MyBotV1_1 : IChessBot
     Dictionary<ulong,int> minimaxCache = new Dictionary<ulong, int>();
 
 
-    int defaultSearchDepth = 3;
+    int defaultSearchDepth = 2;
     int autoMoveThreshold = 10;
 
     int moveCount = 0;

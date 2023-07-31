@@ -14,15 +14,15 @@ namespace ChessChallenge.Application
             float spacing = buttonSize.Y * 1.2f;
             float breakSpacing = spacing * 0.6f;
 
-            if (NextButtonInRow("Human vs MyBot", ref buttonPos, spacing, buttonSize)) {
+            if (NextButtonInRow("Human vs " + ChallengeController.botToTest1, ref buttonPos, spacing, buttonSize)) {
                 controller.StartNewGame(ChallengeController.PlayerType.Human, ChallengeController.botToTest1);
             }
 
-            if (NextButtonInRow("MyBot vs MyBot", ref buttonPos, spacing, buttonSize)) {
+            if (NextButtonInRow(ChallengeController.botToTest1 + " vs " + ChallengeController.botToTest2, ref buttonPos, spacing, buttonSize)) {
                 controller.StartNewGame(ChallengeController.botToTest1, ChallengeController.botToTest2);
             }
 
-            if (NextButtonInRow("MyBot vs EvilBot", ref buttonPos, spacing, buttonSize)) {
+            if (NextButtonInRow(ChallengeController.botToTest1 + " vs EvilBot", ref buttonPos, spacing, buttonSize)) {
                 controller.StartNewGame(ChallengeController.PlayerType.EvilBot, ChallengeController.botToTest1);
             }
 
