@@ -15,41 +15,22 @@ namespace ChessChallenge.Application
             float breakSpacing = spacing * 0.6f;
 
             if (NextButtonInRow("Human vs MyBot", ref buttonPos, spacing, buttonSize)) {
-                int humanCount = 0;
-                if (ChallengeController.player1Type == ChallengeController.PlayerType.Human) humanCount++;
-                if (ChallengeController.player2Type == ChallengeController.PlayerType.Human) humanCount++;
-
-                if (humanCount != 1) {
-                    controller.StartNewGame(ChallengeController.PlayerType.Human, ChallengeController.botToTest1);
-                } else {
-                    controller.StartNewGame(ChallengeController.player2Type, ChallengeController.player1Type);
-                }
+                controller.StartNewGame(ChallengeController.PlayerType.Human, ChallengeController.botToTest1);
             }
 
             if (NextButtonInRow("MyBot vs MyBot", ref buttonPos, spacing, buttonSize)) {
-                int nonEvilBotOrHumanCount = 0;
-                if (ChallengeController.player1Type == ChallengeController.PlayerType.Human
-                || ChallengeController.player1Type == ChallengeController.PlayerType.EvilBot) nonEvilBotOrHumanCount++;
-                if (ChallengeController.player2Type == ChallengeController.PlayerType.Human
-                || ChallengeController.player2Type == ChallengeController.PlayerType.EvilBot) nonEvilBotOrHumanCount++;
-
-                if (nonEvilBotOrHumanCount != 2) {
-                    controller.StartNewGame(ChallengeController.botToTest1, ChallengeController.botToTest2);
-                } else {
-                    controller.StartNewGame(ChallengeController.player2Type, ChallengeController.player1Type);
-                }
+                controller.StartNewGame(ChallengeController.botToTest1, ChallengeController.botToTest2);
             }
 
             if (NextButtonInRow("MyBot vs EvilBot", ref buttonPos, spacing, buttonSize)) {
-                if ((ChallengeController.player1Type == ChallengeController.PlayerType.EvilBot && ChallengeController.player2Type != ChallengeController.PlayerType.Human
-                && ChallengeController.player2Type != ChallengeController.PlayerType.EvilBot) || 
-                (ChallengeController.player2Type == ChallengeController.PlayerType.EvilBot && ChallengeController.player1Type != ChallengeController.PlayerType.Human
-                && ChallengeController.player1Type != ChallengeController.PlayerType.EvilBot)) {
-                    controller.StartNewGame(ChallengeController.player2Type, ChallengeController.player1Type);
-                } else {
-                    controller.StartNewGame(ChallengeController.player2Type, ChallengeController.player1Type);
-                }
+                controller.StartNewGame(ChallengeController.PlayerType.EvilBot, ChallengeController.botToTest1);
             }
+
+            if (NextButtonInRow("Tournament", ref buttonPos, spacing, buttonSize)) {
+                controller.StartTournament();
+            }
+
+
 
             // Page buttons
             buttonPos.Y += breakSpacing;

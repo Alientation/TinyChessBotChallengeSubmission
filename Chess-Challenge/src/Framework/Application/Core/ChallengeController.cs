@@ -21,13 +21,14 @@ namespace ChessChallenge.Application
             Human,
             MyBotV1,
             MyBotV1NoDebug,
+            MyBotV1_1,
             EvilBot
         }
 
         public static PlayerType player1Type = PlayerType.Human;
         public static PlayerType player2Type = PlayerType.Human;
-        public static PlayerType botToTest1 = PlayerType.MyBotV1NoDebug;
-        public static PlayerType botToTest2 = PlayerType.MyBotV1NoDebug;
+        public static PlayerType botToTest1 = PlayerType.MyBotV1_1;
+        public static PlayerType botToTest2 = PlayerType.MyBotV1_1;
 
         // Game state
         readonly Random rng;
@@ -81,6 +82,27 @@ namespace ChessChallenge.Application
             botTaskWaitHandle = new AutoResetEvent(false);
 
             StartNewGame(PlayerType.Human, botToTest1);
+        }
+
+
+        public static PlayerType[] tournament =  new PlayerType[] {
+
+        };
+        /*
+        0 = winCount
+        1 = drawCount
+        2 = loseCount
+        3 = illegalMoveCount
+        4 = timeoutCount
+        5 = 
+        6 = gamesPlayed
+        */
+        public static int[,] tournamentScores = new int[tournament.Length,5];
+        public int tournamentMatchesPerMatchUp = 1;
+        
+        //TODO
+        public void StartTournament() {
+            tournamentScores = new int[tournament.Length,5];
         }
 
         public void StartNewGame(PlayerType whiteType, PlayerType blackType)
