@@ -22,7 +22,8 @@ namespace ChessChallenge.Application
             MyBotV1,
             MyBotV1NoDebug,
             MyBotV1_1,
-            EvilBot
+            EvilBot,
+            CompetitorBot,
         }
 
         public static PlayerType player1Type = PlayerType.Human;
@@ -67,7 +68,7 @@ namespace ChessChallenge.Application
         public ChallengeController()
         {
             Log($"Launching Chess-Challenge version {Settings.Version}");
-            (tokenCount, debugTokenCount) = GetTokenCount(PlayerType.MyBotV1NoDebug);
+            (tokenCount, debugTokenCount) = GetTokenCount(botToTest1);
             Warmer.Warm();
 
             rng = new Random();
@@ -244,6 +245,7 @@ namespace ChessChallenge.Application
                 PlayerType.MyBotV1NoDebug => new ChessPlayer(new MyBotV1NoDebug(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV1_1 => new ChessPlayer(new MyBotV1_1(), type, GameDurationMilliseconds),
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
+                PlayerType.CompetitorBot => new ChessPlayer(new CompetitorBot(), type, GameDurationMilliseconds),
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
             };
         }

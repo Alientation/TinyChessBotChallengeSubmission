@@ -285,11 +285,14 @@ public class MyBotV1_1 : IChessBot
     Dictionary<ulong,int> minimaxCache = new Dictionary<ulong, int>();
 
 
-    int defaultSearchDepth = 2;
+    int defaultSearchDepth = 3;
     int autoMoveThreshold = 10;
+
+    int moveCount = 0;
 
     ///parses compressed piece values
     public MyBotV1_1() {
+        moveCount = 0;
         timeLog = new List<int>[] {
             new List<int>(),
             new List<int>(),
@@ -304,6 +307,7 @@ public class MyBotV1_1 : IChessBot
     /// Make move
     public Move Think(Board board, Timer timer)
     {
+        moveCount++;
         cTimer = timer;
         onWhiteSide = board.IsWhiteToMove;
         logCount(LogCountType.ThinkCount, 1);
@@ -328,7 +332,7 @@ public class MyBotV1_1 : IChessBot
             board.UndoMove(move);
 
             int endMinimaxTime = timer.MillisecondsElapsedThisTurn;
-            Console.WriteLine("Minimax time: " + (endMinimaxTime-startMinimaxTime) + " resulting in a board eval of " + eval + " dif from max (" + (eval-maxEval) + ")");
+            //Console.WriteLine(move + " -> " + eval + " + (" + (eval-maxEval) + ")");
             logTime(LogTimeType.MinimaxTime, endMinimaxTime-startMinimaxTime);
 
             if (maxEval > autoMoveThreshold)
@@ -336,11 +340,14 @@ public class MyBotV1_1 : IChessBot
         }
 
         int endThinkingTime = timer.MillisecondsElapsedThisTurn;
-        Console.WriteLine("Thinking time: " + (endThinkingTime-startThinkingTime) + " resulting in a board eval of " + maxEval + " + (" + (maxEval-boardEvalInitial) + ")");
+        Console.WriteLine("[" + bestMove + "] -> " + maxEval + " + (" + (maxEval-boardEvalInitial) + ")");
         logTime(LogTimeType.ThinkTime, endThinkingTime-startThinkingTime);
 
-        compileLogs();
-        Console.WriteLine("\n--------------------\n\n");
+        if (moveCount == 1 || moveCount == 2 || moveCount == 5 || moveCount == 10 || moveCount == 20 || moveCount == 30 || moveCount == 40 || moveCount == 50) {
+            Console.WriteLine("\nMove " + moveCount + " Metric");
+            compileLogs();
+            Console.WriteLine("--------------------");
+        }
         return bestMove;
     }
 
@@ -436,7 +443,7 @@ public class MyBotV1_1 : IChessBot
             if (board.IsInCheck()) eval += 3;
             if (board.IsInCheckmate()) eval += 1000000;
             if (board.IsInStalemate() || board.IsInsufficientMaterial() || board.IsRepeatedPosition()) eval -= 100000;
-            if (board.IsDraw() || board.IsFiftyMoveDraw()) eval -= 10;
+            if (board.IsDraw() || board.IsFiftyMoveDraw()) eval -= 500;
 
             foreach (PieceList pieces in board.GetAllPieceLists()) {
                 foreach (Piece piece in pieces) {
@@ -450,9 +457,8 @@ public class MyBotV1_1 : IChessBot
         return eval;
     }
 
-
     int[] pieceValue = new int[] {
-        0,1,3,3,5,9,-100000
+        0,1,3,3,5,9,10000
     };
 
     Dictionary<Piece,int> pieceEvalCache = new Dictionary<Piece, int>();
@@ -478,11 +484,11 @@ public class MyBotV1_1 : IChessBot
     /// Gets the value of a move  based on what it achieves
     public int scoreMove(Move move) {
         if (move.IsCapture)
-            return pieceValue[(int) move.CapturePieceType];
+            return Math.Max(pieceValue[(int) move.MovePieceType] - pieceValue[(int) move.CapturePieceType], 0);
         if (move.IsEnPassant)
-            return -1;
+            return 1;
         if (move.IsPromotion)
-            return pieceValue[(int) move.PromotionPieceType];
+            return Math.Max(pieceValue[(int) move.MovePieceType] - pieceValue[(int) move.PromotionPieceType], 0);
         if (move.IsCastles)
             return 1;
         
@@ -512,12 +518,12 @@ public class MyBotV1_1 : IChessBot
     }
 
 
-    public Timer cTimer;
-    List<int>[] timeLog;
+    private Timer cTimer;
+    private List<int>[] timeLog;
 
-    int[] countLogs;
+    private int[] countLogs;
 
-    List<Move> moveLog;
+    private List<Move> moveLog;
 
     public void logTime(LogTimeType type, int time) {
         timeLog[(int) type].Add(time);
@@ -531,7 +537,6 @@ public class MyBotV1_1 : IChessBot
         moveLog.Add(move);
     }
 
-
     public void compileLogs() {
         for (int i = 0; i < timeLog.Length; i++) {
             int sum = 0;
@@ -539,16 +544,18 @@ public class MyBotV1_1 : IChessBot
                 sum += time;
             }
             if (timeLog[i].Count > 0)
-                Console.WriteLine("Time for " + (LogTimeType) i + ": " + (sum) + " (" + Math.Round(sum/ (float)timeLog[i].Count,2) + ")");
+                Console.WriteLine((LogTimeType) i + ": " + (sum) + " (" + Math.Round(sum/ (float)timeLog[i].Count,2) + ")");
             else
-                Console.WriteLine("Time for " + (LogTimeType) i + ": 0");
+                Console.WriteLine((LogTimeType) i + ": 0");
         }
-
-        Console.WriteLine("Total moves: " + moveLog.Count);
         
-        for (int i = 0; i < countLogs.Length; i++) {
-            Console.WriteLine("Total count for " + (LogCountType) i + ": " + countLogs[i]);
-        }
+        Console.WriteLine("\nMoves: " + moveLog.Count);
+        
+        Console.WriteLine((LogCountType) 0 + ": " + countLogs[0]);
+        Console.WriteLine((LogCountType) 0 + ": " + countLogs[1] + " |  cache (" + (countLogs[2] / countLogs[1]) + ") | depthCache (" + (countLogs[3] / countLogs[1]) + ")");
+        Console.WriteLine((LogCountType) 0 + ": " + countLogs[4] + " | cache (" + (countLogs[5] / countLogs[4]) + ")");
+        Console.WriteLine((LogCountType) 0 + ": " + countLogs[6] + " | cache (" + (countLogs[7] / countLogs[6]) + ")");
+        Console.WriteLine((LogCountType) 0 + ": " + countLogs[8] + " | cache (" + (countLogs[9] / countLogs[8]) + ")");
     }
     public void GameOver() {
         Console.WriteLine("Game over\n--------------------\n\n");
