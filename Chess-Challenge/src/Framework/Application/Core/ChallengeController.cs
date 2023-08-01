@@ -265,7 +265,7 @@ namespace ChessChallenge.Application
             string path = Path.Combine(Directory.GetCurrentDirectory(), "src", "My Bot");
             foreach (string t in (botType + "").Split("__"))
                 path = Path.Combine(path, t);
-            path = Path.Combine(path,".cs");
+            path = path + ".cs";
 
             using StreamReader reader = new(path);
             string txt = reader.ReadToEnd();
