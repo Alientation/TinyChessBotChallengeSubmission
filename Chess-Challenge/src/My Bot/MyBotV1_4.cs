@@ -34,10 +34,13 @@ using System.Numerics;
     Store minimax traversals (edges that haven't been searched from a particular board state)
     
 */
-public class MyBotV1_3 : IChessBot {
+public class MyBotV1_4 : IChessBot {
     bool isBotWhite;
     int timePerMove = 500;
+    int gameStage = 0;
     Timer cTimer;
+    Board cBoard;
+    (Move, int) bestMove = (Move.NullMove, 0);
 
     public Move Think(Board board, Timer timer) {
         if (cTimer == null) {
@@ -48,47 +51,70 @@ public class MyBotV1_3 : IChessBot {
                 }
             }
         }
+        cBoard = board;
         cTimer = timer;
-        var bestMove = (Move.NullMove,0);
+
+        //Game stage
+        int pieceCount = BitOperations.PopCount(board.AllPiecesBitboard);
+        int score = 32 - pieceCount + (board.PlyCount);
+        if (score < 10) gameStage = 0;
+        else if (score < 20) gameStage = 1;
+        else gameStage = 2;
 
         #if DEBUG
-        Console.WriteLine("eval " + evaluate(board, 0));
+        Console.WriteLine("eval " + evaluate(board) + " stage=" + gameStage);
         #endif
         
-        for (int depth = 1; depth <= 50 && timer.MillisecondsElapsedThisTurn < timePerMove; depth++) {
-            var move = negamax(board, depth, 0, -300000, 300000, 1);
-            if (move.Item1 != Move.NullMove) bestMove = move;
+        for (int depth = 1; depth <= 3 * gameStage + 5 && timer.MillisecondsElapsedThisTurn < timePerMove; depth++) {
+            negamax(board, depth, 0, -300000000, 300000000);
             #if DEBUG
-            Console.WriteLine(move.Item1 + " " + move.Item2);
-            Console.WriteLine("d" + depth + " -> " + move.Item1 + " " + move.Item2 + "  (" + timer.MillisecondsElapsedThisTurn + " ms)");
+            Console.WriteLine("depth " + depth + " " + bestMove.Item1 + " (" + bestMove.Item2 +") | " + "(" + timer.MillisecondsElapsedThisTurn + "ms)");
             #endif
         }
 
+        if (timer.MillisecondsRemaining < 30000) timePerMove = 300;
+        if (timer.MillisecondsRemaining < 15000) timePerMove = 150;
+
         #if DEBUG
-        Console.WriteLine("Chosen Move " + bestMove.Item1 + " (" + bestMove.Item2 + ")"); 
+        Console.WriteLine("Chosen Move " + bestMove.Item1 + " (" + bestMove.Item2 + ") -> [" + "nodes=" + negamaxNodesCount + ", eval=" + boardEvalCount + " (" + 
+        (boardEvalCacheCount / (float) boardEvalCount) + "), moveEval=" + moveEvalCount + ", findMove=" + possibleMoveCount + " (" + (possibleMoveCacheCount / (float) possibleMoveCount) + ")"); 
         #endif
         return bestMove.Item1;
     }
 
-    public (Move, int) negamax(Board board, int depthLeft, int depth, int alpha, int beta, int color) {
-        if (depthLeft == 0 || board.IsInCheckmate() || board.IsInStalemate() || board.IsFiftyMoveDraw() || board.IsInsufficientMaterial() || cTimer.MillisecondsElapsedThisTurn > timePerMove) {
-            return (Move.NullMove, evaluate(board, depth));
+    #if DEBUG
+    int negamaxNodesCount = 0;
+    int boardEvalCount = 0;
+    int boardEvalCacheCount = 0;
+    int moveEvalCount = 0;
+    int possibleMoveCount = 0;
+    int possibleMoveCacheCount = 0;
+    #endif
+
+    public (Move, int) negamax(Board board, int depthLeft, int depth, int alpha, int beta) {
+        #if DEBUG
+        negamaxNodesCount++;
+        #endif
+        if (board.IsDraw()) return (Move.NullMove, -100);
+        if (board.IsInCheckmate()) return (Move.NullMove, board.PlyCount - 100000000);
+
+        if (depthLeft == 0 || board.IsInCheckmate() || board.IsInStalemate() || board.IsFiftyMoveDraw() || board.IsInsufficientMaterial()) {
+            return (Move.NullMove, evaluate(board));
         }
 
-        Move bestMove = Move.NullMove;
         Move[] moves = getOrderedMoves(board);
 
-        int bestEval = -200000;
+        var best = (Move.NullMove, -200000);
         foreach (Move move in moves) {
             board.MakeMove(move);
             int eval = evaluateMove(move);
 
-            eval -= negamax(board, depthLeft - 1, depth+1, -beta, -alpha, -color).Item2;
+            eval -= negamax(board, depthLeft - 1, depth+1, -beta, -alpha).Item2;
             board.UndoMove(move);
 
-            if (eval > bestEval) {
-                bestEval = eval;
-                bestMove = move;
+            if (eval > best.Item2) {
+                best = (move, eval);
+                if (depth == 0) bestMove = best;
             }
 
             alpha = Math.Max(alpha, eval);
@@ -96,51 +122,71 @@ public class MyBotV1_3 : IChessBot {
                 break;
             }
         }
-        return (bestMove, bestEval);
+        return (best);
     }
 
-    int[] pieceValue = new int[] {
-        0,100,300,300,500,900,0
-    };
+    int[] pieceValue = { 0, 100, 300, 320, 500, 900, 10000 };
 
-    public int evaluate(Board board, int depth) {
+    Dictionary<ulong,int> boardEvalCache = new Dictionary<ulong,int>(1000000);
+    public int evaluate(Board board) {
+        #if DEBUG
+        boardEvalCount++;
+        #endif
+        if (boardEvalCache.ContainsKey(board.ZobristKey)) {
+            #if DEBUG
+            boardEvalCacheCount++;
+            #endif
+            return boardEvalCache[board.ZobristKey];
+        }
+
         if (board.IsDraw()) return -100;
         if (board.IsInCheckmate()) return  board.IsWhiteToMove == isBotWhite ? -100000 : 100000;
 
-        int eval = 20 - ((depth >> 1) << 4);
-        if (board.IsInCheck()) eval -= 5;
-        bool flag = true;
-        for (int i = 2; i < 13; i++) {
+        int eval = 40 - board.PlyCount;
+        if (board.IsInCheck()) eval -= 50;
+
+        foreach (bool flag in new[] {true, false}) {
             int piecesEval = 0;
-            ulong piecesBitboard = board.GetPieceBitboard((PieceType) (i >> 1), flag);
-            while (piecesBitboard != 0) {
-                int index = BitboardHelper.ClearAndGetIndexOfLSB(ref piecesBitboard);
-                piecesEval += pieceValue[(i >> 1)] + pieceValueLocation[((i >> 1) - 1) * 3 + getGameStage(board)][index];
+            for (var p = PieceType.Pawn; p <= PieceType.King; p++) {
+                ulong mask = board.GetPieceBitboard(p, flag);
+                while (mask != 0) {
+                    int index = BitboardHelper.ClearAndGetIndexOfLSB(ref mask);
+                    piecesEval += pieceValue[(int)p] + pieceValueLocation[((int)p - 1) * 3 + gameStage][index];
+                }
+                eval += piecesEval * (flag == board.IsWhiteToMove ? 1 : -1);
             }
-            eval += piecesEval * (flag == board.IsWhiteToMove ? 1 : -1);
-            flag = !flag;
         }
+        boardEvalCache[board.ZobristKey] = eval;
         return eval;
     }
 
     public int evaluateMove(Move move) {
-        if (move.IsCapture) return ((int)move.CapturePieceType - (int)move.MovePieceType) * 10;
-        if (move.IsCastles) return 40;
-        if (move.IsEnPassant) return 20;
-        if (move.IsPromotion) return 20;
+        #if DEBUG
+        moveEvalCount++;
+        #endif
+        if (move.IsCapture) return ((int)move.CapturePieceType - (int)move.MovePieceType) * 20;
+        if (move.IsCastles) return 80;
+        if (move.IsEnPassant) return 60;
+        if (move.IsPromotion) return 140;
         return 0;
     }
 
+    Dictionary<ulong,Move[]> orderMovesCache = new Dictionary<ulong,Move[]>(100000);
     public Move[] getOrderedMoves(Board board) {
-        return board.GetLegalMoves();
-    }
+        #if DEBUG
+        possibleMoveCount++;
+        #endif
+        if (orderMovesCache.ContainsKey(board.ZobristKey)) {
+            #if DEBUG
+            possibleMoveCacheCount++;
+            #endif
+            return orderMovesCache[board.ZobristKey];
+        }
 
-    public int getGameStage(Board board) {
-        int pieceCount = BitOperations.PopCount(board.AllPiecesBitboard);
-        int score = pieceCount + board.PlyCount >> 2;
-        if (score < 20) return 2;
-        if (score < 40) return 1;
-        return 0;
+        Move[] moves = board.GetLegalMoves();
+        orderMovesCache[board.ZobristKey] = moves;
+
+        return moves;
     }
 
     int[][] pieceValueLocation = new int[][] {
