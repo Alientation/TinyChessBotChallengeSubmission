@@ -376,6 +376,7 @@ public class MyBotV1_1 : IChessBot
     int minEvalCutoff = -500;
 
     int moveCount = 0;
+    bool botIsWhite = true;
 
     ///parses compressed piece values
     public MyBotV1_1() {
@@ -395,6 +396,7 @@ public class MyBotV1_1 : IChessBot
     HashSet<Move> moveCache = new HashSet<Move>();
     public Move Think(Board board, Timer timer)
     {
+        botIsWhite = board.IsWhiteToMove;
         if (timer.MillisecondsRemaining < 30000) defaultSearchDepth = 3;
         if (timer.MillisecondsRemaining < 15000) defaultSearchDepth = 2;
         if (timer.MillisecondsRemaining < 3000) defaultSearchDepth = 1;
@@ -550,7 +552,7 @@ public class MyBotV1_1 : IChessBot
 
             foreach (PieceList pieces in board.GetAllPieceLists()) {
                 foreach (Piece piece in pieces) {
-                    eval += getPieceValue(board, piece) * (piece.IsWhite == board.IsWhiteToMove ? 1 : -1);
+                    eval += getPieceValue(board, piece) * (piece.IsWhite == botIsWhite ? 1 : -1);
                 }
             }
 
