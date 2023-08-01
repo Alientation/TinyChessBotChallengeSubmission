@@ -460,7 +460,8 @@ public class MyBotV1_1 : IChessBot
             int maxEval = -30000;
             foreach (Move move in getPossibleMoves(board)) {
                 board.MakeMove(move);
-                int eval = evaluateBoard(board);
+                //int eval = evaluateBoard(board);
+                int eval = 0;
                 /*if (minimaxCache.ContainsKey(board.ZobristKey)) {
                     logCount(LogCountType.minimaxCacheCount, 1);
                     eval = minimaxCache[board.ZobristKey];
@@ -487,7 +488,8 @@ public class MyBotV1_1 : IChessBot
             int minEval = 30000;
             foreach (Move move in getPossibleMoves(board)) {
                 board.MakeMove(move);
-                int eval = evaluateBoard(board);
+                //int eval = evaluateBoard(board);
+                int eval = 0;
                 /*if (minimaxCache.ContainsKey(board.ZobristKey)) {
                     logCount(LogCountType.minimaxCacheCount, 1);
                     eval = minimaxCache[board.ZobristKey];
@@ -546,7 +548,7 @@ public class MyBotV1_1 : IChessBot
             logCount(LogCountType.evalBoardCacheCount, 1);
             eval = boardEvalCache[board.ZobristKey];
         } else {
-            evaluateBoard(board);
+            //eval = evaluateBoard(board);
 
             foreach (PieceList pieces in board.GetAllPieceLists()) {
                 foreach (Piece piece in pieces) {
@@ -559,7 +561,7 @@ public class MyBotV1_1 : IChessBot
         logTime(LogTimeType.evalBoardTime, cTimer.MillisecondsElapsedThisTurn-timeEvalBoardStart);
         return eval;
     }
-
+    /*
     public int evaluateBoard(Board board) {
         int eval =0;
         if (board.IsInCheck()) eval += 1;
@@ -567,7 +569,7 @@ public class MyBotV1_1 : IChessBot
         if (board.IsInStalemate() || board.IsInsufficientMaterial() || board.IsRepeatedPosition()) eval -= 100000;
         if (board.IsDraw() || board.IsFiftyMoveDraw()) eval -= 500;
         return eval;
-    }
+    }*/
 
     int[] pieceValue = new int[] {
         0,10,30,30,50,90,0
