@@ -180,7 +180,7 @@ public class MyBotV2 : IChessBot {
         #if DEBUG
         moveEvalCount++;
         #endif
-        if (move.IsCapture) return 10;
+        if (move.IsCapture) return move.CapturePieceType - move.MovePieceType;
         if (move.IsCastles) return 160;
         if (move.IsEnPassant) return 60;
         if (move.IsPromotion) return 140;
