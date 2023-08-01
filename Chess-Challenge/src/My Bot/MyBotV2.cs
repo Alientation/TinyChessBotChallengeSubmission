@@ -14,7 +14,11 @@ using System.Numerics;
 
 
     Against NNBot, it makes unintelligent trades that result in large eval drops. why does the search do this?
+    
+
     Against the EloBot1, it fails at early game and late game but it is descent at random game positions
+    - 202 +/- 58 Elo difference
+    - 119 / 17 / 31 (win rate 71.25%)
 
 Ggame stage
 */
