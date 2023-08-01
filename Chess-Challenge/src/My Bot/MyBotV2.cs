@@ -187,7 +187,7 @@ public class MyBotV2 : IChessBot {
         if (move.IsCapture) return move.CapturePieceType - move.MovePieceType;
         if (move.IsCastles) return 160;
         if (move.IsEnPassant) return 60;
-        if (move.IsPromotion) return 140;
+        if (move.IsPromotion) return pieceValue[(int)move.PromotionPieceType];
         return 0;
     }
 
