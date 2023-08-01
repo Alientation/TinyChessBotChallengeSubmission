@@ -25,6 +25,7 @@ namespace ChessChallenge.Application
             EvilBot, 
             Enemy__NNBot, Enemy__EloBot0,
             Enemy__EloBot1, Enemy__EloBot2,
+            Enemy__HumanBot,
         }
 
         ChessPlayer CreatePlayer(PlayerType type)
@@ -43,6 +44,7 @@ namespace ChessChallenge.Application
                 PlayerType.Enemy__EloBot0 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__EloBot1 => new ChessPlayer(new EnemyEloBot1(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__EloBot2 => new ChessPlayer(new EnemyEloBot2(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__HumanBot => new ChessPlayer(new HumanBot(), type, GameDurationMilliseconds),
                 
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
             };

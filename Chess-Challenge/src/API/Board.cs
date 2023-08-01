@@ -173,8 +173,11 @@ namespace ChessChallenge.API
 		{
 			bool includeQuietMoves = !capturesOnly;
 			moveGen.GenerateMoves(ref moveList, board, includeQuietMoves);
-            hasCachedMoveCount = true;
-            cachedMoveCount = moveList.Length;
+            if (!capturesOnly)
+			{
+				hasCachedMoveCount = true;
+				cachedMoveCount = moveList.Length;
+			}
         }
 
 
