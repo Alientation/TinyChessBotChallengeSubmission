@@ -9,7 +9,7 @@ namespace ChessChallenge.Application
     {
         public static void DrawButtons(ChallengeController controller)
         {
-            Vector2 buttonPos = UIHelper.Scale(new Vector2(220, 210));
+            Vector2 buttonPos = UIHelper.Scale(new Vector2(220, 150));
             Vector2 buttonSize = UIHelper.Scale(new Vector2(400, 55));
             float spacing = buttonSize.Y * 1.2f;
             float breakSpacing = spacing * 0.6f;

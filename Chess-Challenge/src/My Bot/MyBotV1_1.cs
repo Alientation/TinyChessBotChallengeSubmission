@@ -403,7 +403,7 @@ public class MyBotV1_1 : IChessBot
         logCount(LogCountType.ThinkCount, 1);
         
         int startThinkingTime = timer.MillisecondsElapsedThisTurn;
-        int boardEvalInitial = evaluateBoard(board, onWhiteSide);
+        int boardEvalInitial = evaluate(board, onWhiteSide);
 
         Move[] moves = getPossibleMoves(board);
         
@@ -452,18 +452,19 @@ public class MyBotV1_1 : IChessBot
         } */
         logCount(LogCountType.minimaxCount, 1);
 
-        if (depth >= maxDepth) return evaluateBoard(board, onWhiteSide);
+        if (depth >= maxDepth) return evaluate(board, onWhiteSide);
 
         if (isMax) {
             int maxEval = int.MinValue;
             foreach (Move move in getPossibleMoves(board)) {
                 board.MakeMove(move);
-                int eval;
+                int eval = evaluateBoard(board);
                 /*if (minimaxCache.ContainsKey(board.ZobristKey)) {
                     logCount(LogCountType.minimaxCacheCount, 1);
                     eval = minimaxCache[board.ZobristKey];
                 } else*/ 
-                    eval = minimax(board, depth+1, alpha, beta, false, maxDepth, bestPrevEval);
+                eval += minimax(board, depth+1, alpha, beta, false, maxDepth, bestPrevEval);
+                
                 board.UndoMove(move);
 
                 logMove(move);
@@ -523,7 +524,7 @@ public class MyBotV1_1 : IChessBot
 
 
     /// Checks for existing calculations and computes if not found
-    public int evaluateBoard(Board board, Boolean evaluatingForWhite) {
+    public int evaluate(Board board, Boolean evaluatingForWhite) {
         logCount(LogCountType.evalBoardCount, 1);
         int timeEvalBoardStart = cTimer.MillisecondsElapsedThisTurn;
 
@@ -532,10 +533,7 @@ public class MyBotV1_1 : IChessBot
             logCount(LogCountType.evalBoardCacheCount, 1);
             eval = boardEvalCache[board.ZobristKey];
         } else {
-            if (board.IsInCheck()) eval += 3;
-            if (board.IsInCheckmate()) eval += 1000000;
-            if (board.IsInStalemate() || board.IsInsufficientMaterial() || board.IsRepeatedPosition()) eval -= 100000;
-            if (board.IsDraw() || board.IsFiftyMoveDraw()) eval -= 500;
+            evaluateBoard(board);
 
             foreach (PieceList pieces in board.GetAllPieceLists()) {
                 foreach (Piece piece in pieces) {
@@ -546,6 +544,15 @@ public class MyBotV1_1 : IChessBot
             boardEvalCache[board.ZobristKey] = eval;
         }
         logTime(LogTimeType.evalBoardTime, cTimer.MillisecondsElapsedThisTurn-timeEvalBoardStart);
+        return eval;
+    }
+
+    public int evaluateBoard(Board board) {
+        int eval =0;
+        if (board.IsInCheck()) eval += 3;
+        if (board.IsInCheckmate()) eval += 1000000;
+        if (board.IsInStalemate() || board.IsInsufficientMaterial() || board.IsRepeatedPosition()) eval -= 100000;
+        if (board.IsDraw() || board.IsFiftyMoveDraw()) eval -= 500;
         return eval;
     }
 
