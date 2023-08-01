@@ -34,6 +34,7 @@ namespace ChessChallenge.Application
                 PlayerType.MyBotV1 => new ChessPlayer(new MyBotV1(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV1NoDebug => new ChessPlayer(new MyBotV1NoDebug(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV1_1 => new ChessPlayer(new MyBotV1_1(), type, GameDurationMilliseconds),
+                PlayerType.MyBotV1_2 => new ChessPlayer(new MyBotV1_2(), type, GameDurationMilliseconds),
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
                 PlayerType.CompetitorBot => new ChessPlayer(new CompetitorBot(), type, GameDurationMilliseconds),
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
@@ -250,7 +251,7 @@ namespace ChessChallenge.Application
                 boardUI.SetPerspective(PlayerWhite.Bot is not EvilBot && PlayerWhite.Bot is not HumanPlayer);
             }
         }
-        
+
         static (int totalTokenCount, int debugTokenCount) GetTokenCount(PlayerType botType)
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), "src", "My Bot", botType + ".cs");
