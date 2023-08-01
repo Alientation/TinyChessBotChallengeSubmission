@@ -43,8 +43,8 @@ namespace ChessChallenge.Application
 
         public static PlayerType player1Type = PlayerType.Human;
         public static PlayerType player2Type = PlayerType.Human;
-        public static PlayerType botToTest1 = PlayerType.MyBotV1_1;
-        public static PlayerType botToTest2 = PlayerType.MyBotV1_2;
+        public static PlayerType botToTest1 = PlayerType.MyBotV1_2;
+        public static PlayerType botToTest2 = PlayerType.MyBotV1_1;
 
         // Game state
         readonly Random rng;
