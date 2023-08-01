@@ -52,7 +52,7 @@ public class MyBotV1_2 : IChessBot
     Dictionary<ulong,int> minimaxCache = new Dictionary<ulong, int>();
 
 
-    int defaultSearchDepth = 6;
+    int defaultSearchDepth = 4;
     int autoMoveThreshold = 10;
 
     int moveCount = 0;
@@ -176,7 +176,7 @@ public class MyBotV1_2 : IChessBot
             logCount(LogCountType.evalBoardCacheCount, 1);
             eval = boardEvalCache[board.ZobristKey];
         } else {
-            eval = evaluateBoard(board);
+            //eval = evaluateBoard(board);
 
             foreach (PieceList pieces in board.GetAllPieceLists()) {
                 foreach (Piece piece in pieces) {
@@ -189,14 +189,14 @@ public class MyBotV1_2 : IChessBot
         logTime(LogTimeType.evalBoardTime, cTimer.MillisecondsElapsedThisTurn-timeEvalBoardStart);
         return eval;
     }
-
+    /*
     public int evaluateBoard(Board board) {
         int eval =0;
         if (board.IsInCheck()) eval += 5;
         if (board.IsInCheckmate()) eval += 1000000;
         if (board.IsInStalemate() || board.IsInsufficientMaterial() || board.IsRepeatedPosition()) eval -= 5000;
         return eval;
-    }
+    }*/
 
     int[] pieceValue = new int[] {
         0,10,30,30,50,90,0
