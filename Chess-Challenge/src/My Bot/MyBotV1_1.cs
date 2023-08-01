@@ -409,7 +409,7 @@ public class MyBotV1_1 : IChessBot
 
         Move[] moves = getPossibleMoves(board);
         
-        int maxEval = 30000;
+        int maxEval = -30000;
         Move bestMove = moves[0];
         foreach (Move move in getPossibleMoves(board)) {
             int startMinimaxTime = timer.MillisecondsElapsedThisTurn;

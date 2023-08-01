@@ -52,10 +52,8 @@ public class MyBotV1_2 : IChessBot
     Dictionary<ulong,int> minimaxCache = new Dictionary<ulong, int>();
 
 
-    int defaultSearchDepth = 4;
+    int defaultSearchDepth = 6;
     int autoMoveThreshold = 10;
-    int maxEvalCutoff = 500;
-    int minEvalCutoff = -500;
 
     int moveCount = 0;
 
@@ -90,7 +88,7 @@ public class MyBotV1_2 : IChessBot
 
         Move[] moves = getPossibleMoves(board);
         
-        int maxEval = 30000;
+        int maxEval = -30000;
         Move bestMove = moves[0];
         foreach (Move move in getPossibleMoves(board)) {
             int startMinimaxTime = timer.MillisecondsElapsedThisTurn;
@@ -129,19 +127,21 @@ public class MyBotV1_2 : IChessBot
     /// Negamax Algorithm
     public int negamax(Board board, int depth, int alpha, int beta) {
         logCount(LogCountType.negamaxCount, 1);
-        if (depth == 0) return evaluate(board);
+        if (depth == 0 || board.IsInCheckmate() || board.IsDraw()) return evaluate(board);
 
-        int maxEval = -30000;
+        int bestEval = -30000;
         foreach (Move move in getPossibleMoves(board)) {
             board.MakeMove(move);
             int eval = -negamax(board, depth-1, -beta, -alpha);
             board.UndoMove(move);
 
-            maxEval = Math.Max(maxEval, eval);
-            alpha = Math.Max(alpha, eval);
-            if (beta <= alpha) break;
+            if (eval >= beta) return beta;
+            if (eval > bestEval) {
+                bestEval = eval;
+                if (eval > alpha) alpha = eval;
+            }
         }
-        return maxEval;
+        return alpha;
     }
 
     /// Checks for existing calculations and computes if not found
@@ -176,7 +176,7 @@ public class MyBotV1_2 : IChessBot
             logCount(LogCountType.evalBoardCacheCount, 1);
             eval = boardEvalCache[board.ZobristKey];
         } else {
-            evaluateBoard(board);
+            eval = evaluateBoard(board);
 
             foreach (PieceList pieces in board.GetAllPieceLists()) {
                 foreach (Piece piece in pieces) {
@@ -192,10 +192,9 @@ public class MyBotV1_2 : IChessBot
 
     public int evaluateBoard(Board board) {
         int eval =0;
-        if (board.IsInCheck()) eval += 1;
+        if (board.IsInCheck()) eval += 5;
         if (board.IsInCheckmate()) eval += 1000000;
-        if (board.IsInStalemate() || board.IsInsufficientMaterial() || board.IsRepeatedPosition()) eval -= 100000;
-        if (board.IsDraw() || board.IsFiftyMoveDraw()) eval -= 500;
+        if (board.IsInStalemate() || board.IsInsufficientMaterial() || board.IsRepeatedPosition()) eval -= 5000;
         return eval;
     }
 
