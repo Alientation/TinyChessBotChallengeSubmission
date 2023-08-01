@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Numerics;
 
 /*
-    MyBot V1.0  ~(637 Brain Power SMH)
+    MyBot V1.0  ~(725 Brain Power SMH)
 
     Features
     Negamax Alpha Beta Pruning
@@ -20,6 +20,10 @@ using System.Numerics;
     - 202 +/- 58 Elo difference
     - 119 / 17 / 31 (win rate 71.25%)
 
+
+    Add Transposition table (remove move cache)
+    Add move ordering
+    possibly do killer moves
 Ggame stage
 */
 
@@ -204,7 +208,7 @@ public class MyBotV2 : IChessBot {
 
         return moves;
     }
-    #region 
+    #if DEBUG
     int[][] pieceValueLocation = new int[][] {
         new int[] { //pawn
             00,00,00,00,00,00,00,00,
@@ -401,5 +405,5 @@ public class MyBotV2 : IChessBot {
     public void GameOver() {
         
     }
-    #endregion
+    #endif
 }
