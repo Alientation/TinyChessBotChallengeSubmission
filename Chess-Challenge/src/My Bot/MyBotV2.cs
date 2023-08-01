@@ -22,6 +22,7 @@ using System.Numerics;
 
 
     Add Transposition table (remove move cache)
+    Add Quiesence
     Add move ordering
     possibly do killer moves and null move pruning
 Ggame stage
