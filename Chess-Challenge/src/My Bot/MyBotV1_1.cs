@@ -480,12 +480,12 @@ public class MyBotV1_1 : IChessBot
             int minEval = int.MaxValue;
             foreach (Move move in getPossibleMoves(board)) {
                 board.MakeMove(move);
-                int eval;
+                int eval = evaluateBoard(board);
                 /*if (minimaxCache.ContainsKey(board.ZobristKey)) {
                     logCount(LogCountType.minimaxCacheCount, 1);
                     eval = minimaxCache[board.ZobristKey];
                 } else*/
-                    eval = minimax(board, depth+1, alpha, beta, true, maxDepth, bestPrevEval);
+                eval += minimax(board, depth+1, alpha, beta, true, maxDepth, bestPrevEval);
                 
                 board.UndoMove(move);
 
