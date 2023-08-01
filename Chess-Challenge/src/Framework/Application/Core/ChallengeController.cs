@@ -25,6 +25,7 @@ namespace ChessChallenge.Application
             EvilBot,
             CompetitorBot,
             EloBot2,
+            EnemyBots__EnemyEloBot1, EnemyBots__EnemyEloBot2,
         }
 
         ChessPlayer CreatePlayer(PlayerType type)
@@ -41,15 +42,18 @@ namespace ChessChallenge.Application
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
                 PlayerType.CompetitorBot => new ChessPlayer(new CompetitorBot(), type, GameDurationMilliseconds),
                 PlayerType.EloBot2 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
+                PlayerType.EnemyBots__EnemyEloBot1 => new ChessPlayer(new EnemyEloBot1(), type, GameDurationMilliseconds),
+                PlayerType.EnemyBots__EnemyEloBot2 => new ChessPlayer(new EnemyEloBot2(), type, GameDurationMilliseconds),
+                
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
             };
         }
 
         public static PlayerType player1Type = PlayerType.Human;
         public static PlayerType player2Type = PlayerType.Human;
-        public static PlayerType botToTest1 = PlayerType.MyBotV1_4;
-        public static PlayerType botToTest2 = PlayerType.EloBot2;
-        public static PlayerType botToTest3 = PlayerType.CompetitorBot;
+        public static PlayerType botToTest1 = PlayerType.MyBotV2;
+        public static PlayerType botToTest2 = PlayerType.EnemyBots__EnemyEloBot1;
+        public static PlayerType botToTest3 = PlayerType.EnemyBots__EnemyEloBot2;
 
         // Game state
         readonly Random rng;
@@ -258,8 +262,11 @@ namespace ChessChallenge.Application
         }
 
         static (int totalTokenCount, int debugTokenCount) GetTokenCount(PlayerType botType)
-        {
-            string path = Path.Combine(Directory.GetCurrentDirectory(), "src", "My Bot", botType + ".cs");
+        {   
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "src", "My Bot");
+            foreach (string t in (botType + "").Split("__"))
+                path = Path.Combine(path, t);
+            path = Path.Combine(path,".cs");
 
             using StreamReader reader = new(path);
             string txt = reader.ReadToEnd();
