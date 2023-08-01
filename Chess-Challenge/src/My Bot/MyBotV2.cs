@@ -109,6 +109,7 @@ public class MyBotV2 : IChessBot {
     int possibleMoveCacheCount = 0;
     #endif
 
+    //negamax with alpha beta pruning
     public (Move, int) negamax(Board board, int depthLeft, int depth, int alpha, int beta) {
         if (cTimer.MillisecondsElapsedThisTurn > timePerMove) {
             breakBecauseTime = true;
@@ -147,12 +148,15 @@ public class MyBotV2 : IChessBot {
     }
 
     int[] pieceValue = { 0, 110, 300, 320, 520, 910, 10000 };
-
     Dictionary<ulong,int> boardEvalCache = new Dictionary<ulong,int>(1000000);
+
+    //evaluates a position based on how desirable it is for the current player to play the next move
     public int evaluate(Board board) {
         #if DEBUG
         boardEvalCount++;
         #endif
+
+        //board eval cache
         if (boardEvalCache.ContainsKey(board.ZobristKey)) {
             #if DEBUG
             boardEvalCacheCount++;
@@ -160,12 +164,17 @@ public class MyBotV2 : IChessBot {
             return boardEvalCache[board.ZobristKey];
         }
 
+        //dont want to reach these states
         if (board.IsDraw()) return -100;
         if (board.IsInCheckmate()) return  board.IsWhiteToMove == isBotWhite ? -100000 : 100000;
 
+        //debuff future moves (anything that can be achieved earlier is prioritized)
         int eval = 40 - board.PlyCount;
-        if (board.IsInCheck()) eval -= 50;
 
+        //only give score for checking if not in end game (end game focus on piece structure/pawn promotion)
+        if (board.IsInCheck() && gameStage < 2) eval -= 50;
+
+        //add up score for pieces and their locations at current game stage
         foreach (bool flag in new[] {true, false}) {
             int piecesEval = 0;
             for (var p = PieceType.Pawn; p <= PieceType.King; p++) {
@@ -181,6 +190,7 @@ public class MyBotV2 : IChessBot {
         return eval;
     }
 
+    //evaluates a move based on what it accomplishes
     public int evaluateMove(Move move) {
         #if DEBUG
         moveEvalCount++;
@@ -192,6 +202,7 @@ public class MyBotV2 : IChessBot {
         return 0;
     }
 
+    //todo add move ordering
     Dictionary<ulong,Move[]> orderMovesCache = new Dictionary<ulong,Move[]>(100000);
     public Move[] getOrderedMoves(Board board) {
         #if DEBUG
