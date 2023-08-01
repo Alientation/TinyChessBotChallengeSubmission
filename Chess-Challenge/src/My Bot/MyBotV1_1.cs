@@ -407,7 +407,7 @@ public class MyBotV1_1 : IChessBot
 
         Move[] moves = getPossibleMoves(board);
         
-        int maxEval = int.MinValue;
+        int maxEval = 30000;
         Move bestMove = moves[0];
         foreach (Move move in getPossibleMoves(board)) {
             int startMinimaxTime = timer.MillisecondsElapsedThisTurn;
@@ -415,7 +415,7 @@ public class MyBotV1_1 : IChessBot
             board.MakeMove(move);
             int eval = scoreMove(move);
             if (moveCache.Contains(move)) eval -= 1;
-            eval = minimax(board, 0, float.NegativeInfinity, float.PositiveInfinity, false, defaultSearchDepth, maxEval);
+            eval = minimax(board, 0, -30000, 30000, false, defaultSearchDepth, maxEval);
             if (maxEval < eval) {
                 maxEval = eval;
                 bestMove = move;
@@ -445,7 +445,7 @@ public class MyBotV1_1 : IChessBot
 
 
     /// algorithm to find best move
-    public int minimax(Board board, int depth, float alpha, float beta, bool isMax, int maxDepth, int bestPrevEval) {
+    public int minimax(Board board, int depth, int alpha, int beta, bool isMax, int maxDepth, int bestPrevEval) {
         /*if (minimaxCache.ContainsKey(board.ZobristKey)) {
             logCount(LogCountType.minimaxDepthCacheCount, maxDepth - depth);
             return minimaxCache[board.ZobristKey];
@@ -455,7 +455,7 @@ public class MyBotV1_1 : IChessBot
         if (depth >= maxDepth) return evaluate(board, onWhiteSide);
 
         if (isMax) {
-            int maxEval = int.MinValue;
+            int maxEval = -30000;
             foreach (Move move in getPossibleMoves(board)) {
                 board.MakeMove(move);
                 int eval = evaluateBoard(board);
@@ -477,7 +477,7 @@ public class MyBotV1_1 : IChessBot
             //minimaxCache[board.ZobristKey] = maxEval;
             return maxEval;
         } else {
-            int minEval = int.MaxValue;
+            int minEval = 30000;
             foreach (Move move in getPossibleMoves(board)) {
                 board.MakeMove(move);
                 int eval = evaluateBoard(board);
@@ -549,7 +549,7 @@ public class MyBotV1_1 : IChessBot
 
     public int evaluateBoard(Board board) {
         int eval =0;
-        if (board.IsInCheck()) eval += 3;
+        if (board.IsInCheck()) eval += 1;
         if (board.IsInCheckmate()) eval += 1000000;
         if (board.IsInStalemate() || board.IsInsufficientMaterial() || board.IsRepeatedPosition()) eval -= 100000;
         if (board.IsDraw() || board.IsFiftyMoveDraw()) eval -= 500;
@@ -557,7 +557,7 @@ public class MyBotV1_1 : IChessBot
     }
 
     int[] pieceValue = new int[] {
-        0,1,3,3,5,9,0
+        0,10,30,30,50,90,0
     };
 
     /// Gets the value of a piece based on its position on the board and other characteristics
@@ -581,13 +581,13 @@ public class MyBotV1_1 : IChessBot
     /// Gets the value of a move  based on what it achieves
     public int scoreMove(Move move) {
         if (move.IsCapture)
-            return Math.Max(pieceValue[(int) move.CapturePieceType] - pieceValue[(int) move.MovePieceType], 0);
+            return Math.Max(pieceValue[(int) move.CapturePieceType] - pieceValue[(int) move.MovePieceType], 0) >> 1;
         if (move.IsEnPassant)
-            return 1;
+            return 5;
         if (move.IsPromotion)
-            return Math.Max(pieceValue[(int) move.MovePieceType] - pieceValue[(int) move.PromotionPieceType], 0);
+            return Math.Max(pieceValue[(int) move.MovePieceType] - pieceValue[(int) move.PromotionPieceType], 0) >> 1;
         if (move.IsCastles)
-            return 1;
+            return 40;
         return 0;
     }
 
