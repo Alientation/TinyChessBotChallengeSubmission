@@ -19,12 +19,11 @@ namespace ChessChallenge.Application
         public enum PlayerType
         {
             Human,
-            MyBotV1, MyBotV1NoDebug,
-            MyBotV1_1, MyBotV1_2, MyBotV1_3, MyBotV1_4,
+            V1__MyBotV1, V1__MyBotV1NoDebug,
+            V1__MyBotV1_1, V1__MyBotV1_2, V1__MyBotV1_3, V1__MyBotV1_4,
             MyBotV2,
-            EvilBot,
-            CompetitorBot,
-            EloBot2,
+            EvilBot, 
+            EnemyBots__NNBot, EnemyBots__EloBot2,
             EnemyBots__EnemyEloBot1, EnemyBots__EnemyEloBot2,
         }
 
@@ -32,16 +31,16 @@ namespace ChessChallenge.Application
         {
             return type switch
             {
-                PlayerType.MyBotV1 => new ChessPlayer(new MyBotV1(), type, GameDurationMilliseconds),
-                PlayerType.MyBotV1NoDebug => new ChessPlayer(new MyBotV1NoDebug(), type, GameDurationMilliseconds),
-                PlayerType.MyBotV1_1 => new ChessPlayer(new MyBotV1_1(), type, GameDurationMilliseconds),
-                PlayerType.MyBotV1_2 => new ChessPlayer(new MyBotV1_2(), type, GameDurationMilliseconds),
-                PlayerType.MyBotV1_3 => new ChessPlayer(new MyBotV1_3(), type, GameDurationMilliseconds),
-                PlayerType.MyBotV1_4 => new ChessPlayer(new MyBotV1_4(), type, GameDurationMilliseconds),
+                PlayerType.V1__MyBotV1 => new ChessPlayer(new MyBotV1(), type, GameDurationMilliseconds),
+                PlayerType.V1__MyBotV1NoDebug => new ChessPlayer(new MyBotV1NoDebug(), type, GameDurationMilliseconds),
+                PlayerType.V1__MyBotV1_1 => new ChessPlayer(new MyBotV1_1(), type, GameDurationMilliseconds),
+                PlayerType.V1__MyBotV1_2 => new ChessPlayer(new MyBotV1_2(), type, GameDurationMilliseconds),
+                PlayerType.V1__MyBotV1_3 => new ChessPlayer(new MyBotV1_3(), type, GameDurationMilliseconds),
+                PlayerType.V1__MyBotV1_4 => new ChessPlayer(new MyBotV1_4(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV2 => new ChessPlayer(new MyBotV2(), type, GameDurationMilliseconds),
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
-                PlayerType.CompetitorBot => new ChessPlayer(new CompetitorBot(), type, GameDurationMilliseconds),
-                PlayerType.EloBot2 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
+                PlayerType.EnemyBots__NNBot => new ChessPlayer(new NNBot(), type, GameDurationMilliseconds),
+                PlayerType.EnemyBots__EloBot2 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
                 PlayerType.EnemyBots__EnemyEloBot1 => new ChessPlayer(new EnemyEloBot1(), type, GameDurationMilliseconds),
                 PlayerType.EnemyBots__EnemyEloBot2 => new ChessPlayer(new EnemyEloBot2(), type, GameDurationMilliseconds),
                 
