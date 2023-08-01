@@ -23,8 +23,8 @@ namespace ChessChallenge.Application
             V1__MyBotV1_1, V1__MyBotV1_2, V1__MyBotV1_3, V1__MyBotV1_4,
             MyBotV2,
             EvilBot, 
-            EnemyBots__NNBot, EnemyBots__EloBot2,
-            EnemyBots__EnemyEloBot1, EnemyBots__EnemyEloBot2,
+            Enemy__NNBot, Enemy__EloBot0,
+            Enemy__EloBot1, Enemy__EloBot2,
         }
 
         ChessPlayer CreatePlayer(PlayerType type)
@@ -39,10 +39,10 @@ namespace ChessChallenge.Application
                 PlayerType.V1__MyBotV1_4 => new ChessPlayer(new MyBotV1_4(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV2 => new ChessPlayer(new MyBotV2(), type, GameDurationMilliseconds),
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
-                PlayerType.EnemyBots__NNBot => new ChessPlayer(new NNBot(), type, GameDurationMilliseconds),
-                PlayerType.EnemyBots__EloBot2 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
-                PlayerType.EnemyBots__EnemyEloBot1 => new ChessPlayer(new EnemyEloBot1(), type, GameDurationMilliseconds),
-                PlayerType.EnemyBots__EnemyEloBot2 => new ChessPlayer(new EnemyEloBot2(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__NNBot => new ChessPlayer(new NNBot(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__EloBot0 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__EloBot1 => new ChessPlayer(new EnemyEloBot1(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__EloBot2 => new ChessPlayer(new EnemyEloBot2(), type, GameDurationMilliseconds),
                 
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
             };
@@ -51,8 +51,8 @@ namespace ChessChallenge.Application
         public static PlayerType player1Type = PlayerType.Human;
         public static PlayerType player2Type = PlayerType.Human;
         public static PlayerType botToTest1 = PlayerType.MyBotV2;
-        public static PlayerType botToTest2 = PlayerType.EnemyBots__EnemyEloBot1;
-        public static PlayerType botToTest3 = PlayerType.EnemyBots__EnemyEloBot2;
+        public static PlayerType botToTest2 = PlayerType.Enemy__EloBot1;
+        public static PlayerType botToTest3 = PlayerType.Enemy__EloBot2;
 
         // Game state
         readonly Random rng;

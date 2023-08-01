@@ -2,6 +2,7 @@
 using System.Numerics;
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace ChessChallenge.Application
 {
@@ -9,13 +10,13 @@ namespace ChessChallenge.Application
     {
         public static void DrawButtons(ChallengeController controller)
         {
-            int initX = 235, initY = 150, initWidth = 350, initHeight = 35;
+            int initX = 235, initY = 150, initWidth = 420, initHeight = 35;
 
             Vector2 buttonPos = UIHelper.Scale(new Vector2(initX, initY));
             Vector2 buttonSize = UIHelper.Scale(new Vector2(initWidth, initHeight));
-            float spacingY = buttonSize.Y * 1.2f;
+            float spacingY = buttonSize.Y * 1.3f;
             float spacingX = buttonSize.X * 1.4f;
-            float breakSpacing = spacingX * 0.6f;
+            float breakSpacing = 100;
 
             if (NextButtonInRow("Human vs " + ChallengeController.botToTest1, ref buttonPos, spacingY, buttonSize)) {
                 controller.StartNewGame(ChallengeController.PlayerType.Human, ChallengeController.botToTest1);
@@ -102,7 +103,7 @@ namespace ChessChallenge.Application
 
             bool NextButtonInRow(string name, ref Vector2 pos, float spacingY, Vector2 size)
             {
-                bool pressed = UIHelper.Button(name, pos, size);
+                bool pressed = UIHelper.Button(name.Replace("__",""), pos, size);
                 pos.Y += spacingY;
                 return pressed;
             }

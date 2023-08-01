@@ -9,6 +9,13 @@ using System.Numerics;
     Features
     Negamax Alpha Beta Pruning
     Score board based off piece locations
+
+    NOTES
+
+
+    Against NNBot, it makes unintelligent trades that result in large eval drops. why does the search do this?
+    Against the EloBot1, it fails at early game and late game but it is descent at random game positions
+
 Ggame stage
 */
 
@@ -130,7 +137,7 @@ public class MyBotV2 : IChessBot {
         return best;
     }
 
-    int[] pieceValue = { 0, 100, 300, 320, 500, 900, 10000 };
+    int[] pieceValue = { 0, 110, 300, 320, 520, 910, 10000 };
 
     Dictionary<ulong,int> boardEvalCache = new Dictionary<ulong,int>(1000000);
     public int evaluate(Board board) {
@@ -169,8 +176,8 @@ public class MyBotV2 : IChessBot {
         #if DEBUG
         moveEvalCount++;
         #endif
-        if (move.IsCapture) return (int)(move.CapturePieceType - move.MovePieceType) * 20;
-        if (move.IsCastles) return 80;
+        if (move.IsCapture) return 10;
+        if (move.IsCastles) return 160;
         if (move.IsEnPassant) return 60;
         if (move.IsPromotion) return 140;
         return 0;
@@ -201,25 +208,25 @@ public class MyBotV2 : IChessBot {
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             05,05,05,06,06,05,05,05,
-            20,21,25,30,30,25,21,20,
+            20,21,45,60,60,45,21,20,
             10,11,15,20,20,15,11,10,
             00,00,00,00,00,00,00,00,
         },
         new int[] {
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
             05,05,15,16,16,15,15,15,
+            05,05,20,20,20,25,21,20,
+            20,21,45,60,60,45,21,20,
             05,05,20,20,20,25,21,20,
             09,07,15,10,10,15,11,15,
             30,30,10,05,05,10,10,10,
-            00,00,00,00,00,00,00,00,
         },
         new int[] {
-            40,41,35,30,30,35,41,40,
-            20,21,25,20,20,25,21,20,
-            10,11,15,10,10,15,11,10,
-            30,30,10,05,05,10,10,10,
+            60,60,35,30,30,35,60,60,
+            40,40,35,25,25,35,40,40,
+            10,15,25,15,15,25,15,10,
+            30,30,10,05,05,10,30,30,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
