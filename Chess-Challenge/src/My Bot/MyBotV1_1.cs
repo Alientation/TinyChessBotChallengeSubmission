@@ -495,7 +495,7 @@ public class MyBotV1_1 : IChessBot
 
                 if (eval < minEvalCutoff) {
                     board.UndoMove(move);
-                    continue;
+                    return eval;
                 }
 
                 eval += minimax(board, depth+1, alpha, beta, true, maxDepth, bestPrevEval);
