@@ -3,56 +3,136 @@ using System;
 using System.Collections.Generic; 
 
 /*
-    MyBot V1.0  ~(637 Brain Power SMH)
+    MyBot V1.1  ~(637 Brain Power SMH)
 
     Features
     Min Max Algorithm
     Alpha Beta Pruning
 */
-/*  STATS = {
-        1st Move Metric
-        Thinking time: 692 resulting in a board eval of 0 + (0)
-        Time for ThinkTime: 692 (692)
-        Time for MinimaxTime: 673 (33.65)
-        Time for evalBoardTime: 682 (0.05)
-        Time for evalPieceTime: 624 (0)
-        Time for getPossibleMovesTime: 0 (0)
-        Total moves: 15942
-        Total count for ThinkCount: 1
-        Total count for minimaxCount: 15962
+/*  STATS depth3 = {
+        Move 1 Metric
+        ThinkTime: 966 (966)
+        MinimaxTime: 966 (24.15)
+        evalBoardTime: 828 (0)
+        evalPieceTime: 122 (0)
+        getPossibleMovesTime: 31 (0)
+
+        Moves: 298158
+        ThinkCount: 1
+        ThinkCount: 298198 |  cache (0) | depthCache (0)
+        ThinkCount: 15143 | cache (0.11998943)
+        ThinkCount: 283058 | cache (0.3053226)
+        ThinkCount: 5801194 | cache (0)
+
+
+        Move 2 Metric
+        ThinkTime: 1005 (502.5)
+        MinimaxTime: 1005 (22.84)
+        evalBoardTime: 863 (0)
+        evalPieceTime: 124 (0)
+        getPossibleMovesTime: 33 (0)
+
+        Moves: 309775
+        ThinkCount: 2
+        ThinkCount: 309819 |  cache (0) | depthCache (0)
+        ThinkCount: 15921 | cache (0.114754096)
+        ThinkCount: 293904 | cache (0.30061856)
+        ThinkCount: 6051415 | cache (0)
+
+
+        Move 5 Metric
+        ThinkTime: 1802 (360.4)
+        MinimaxTime: 1802 (14.08)
+        evalBoardTime: 1530 (0)
+        evalPieceTime: 228 (0)
+        getPossibleMovesTime: 71 (0)
+
+        Moves: 568964
+        ThinkCount: 5
+        ThinkCount: 569092 |  cache (0) | depthCache (0)
+        ThinkCount: 43308 | cache (0.16336474)
+        ThinkCount: 525799 | cache (0.28246915)
+        ThinkCount: 10515830 | cache (0)
+
+
+
+        Move 10 Metric
+        ThinkTime: 1987 (198.7)
+        MinimaxTime: 1987 (12.66)
+        evalBoardTime: 1684 (0)
+        evalPieceTime: 250 (0)
+        getPossibleMovesTime: 80 (0)
+
+        Moves: 636264
+        ThinkCount: 10
+        ThinkCount: 636421 |  cache (0) | depthCache (0)
+        ThinkCount: 50554 | cache (0.16204454)
+        ThinkCount: 585897 | cache (0.28076267)
+        ThinkCount: 11518135 | cache (0)
+
+
+        Move 20 Metric
+        ThinkTime: 2578 (128.9)
+        MinimaxTime: 2578 (11.06)
+        evalBoardTime: 2155 (0)
+        evalPieceTime: 312 (0)
+        getPossibleMovesTime: 112 (0)
+
+        Moves: 885272
+        ThinkCount: 20
+        ThinkCount: 885505 |  cache (0) | depthCache (0)
+        ThinkCount: 75929 | cache (0.1706726)
+        ThinkCount: 809636 | cache (0.30279532)
+        ThinkCount: 14598729 | cache (0)
+
+
+        Move 30 Metric
+        ThinkTime: 3044 (101.47)
+        MinimaxTime: 3044 (9.31)
+        evalBoardTime: 2507 (0)
+        evalPieceTime: 338 (0)
+        getPossibleMovesTime: 138 (0)
+
+        Moves: 1133878
+        ThinkCount: 30
+        ThinkCount: 1134205 |  cache (0) | depthCache (0)
+        ThinkCount: 110398 | cache (0.18947807)
+        ThinkCount: 1023897 | cache (0.3342729)
+        ThinkCount: 16593107 | cache (0)
+
+
+        Move 40 Metric
+        ThinkTime: 3156 (78.9)
+        MinimaxTime: 3156 (8.6)
+        evalBoardTime: 2585 (0)
+        evalPieceTime: 346 (0)
+        getPossibleMovesTime: 146 (0)
+
+        Moves: 1197967
+        ThinkCount: 40
+        ThinkCount: 1198334 |  cache (0) | depthCache (0)
+        ThinkCount: 120050 | cache (0.18948771)
+        ThinkCount: 1078404 | cache (0.34265545)
+        ThinkCount: 16913636 | cache (0)
+
+
+        Game Summary
+        Total time for ThinkTime: 3197
+        Total time for MinimaxTime: 3197
+        Total time for evalBoardTime: 2610
+        Total time for evalPieceTime: 347
+        Total time for getPossibleMovesTime: 152
+        Total moves: 1236847
+        Total count for ThinkCount: 48
+        Total count for minimaxCount: 1237291
         Total count for minimaxCacheCount: 0
         Total count for minimaxDepthCacheCount: 0
-        Total count for getPossibleMovesCount: 1618
-        Total count for getPossibleMovesCacheCount: 66
-        Total count for evalBoardCount: 14347
-        Total count for evalBoardCacheCount: 1508
-        Total count for evalPieceCount: 410448
-        Total count for evalPieceCacheCount: 410272
-
-        2nd Move Metric
-
-
-
-        5th Move Metric
-
-
-
-        10th Move Metric
-
-
-
-        20th Move Metric
-
-
-
-
-        30th Move Metric
-
-
-        40th Move Metric
-
-
-        50th Move Metric
+        Total count for getPossibleMovesCount: 129371
+        Total count for getPossibleMovesCacheCount: 26817
+        Total count for evalBoardCount: 1108064
+        Total count for evalBoardCacheCount: 386801
+        Total count for evalPieceCount: 17027130
+        Total count for evalPieceCacheCount: 0
 
     }*/
 
@@ -291,7 +371,7 @@ public class MyBotV1_1 : IChessBot
     Dictionary<ulong,int> minimaxCache = new Dictionary<ulong, int>();
 
 
-    int defaultSearchDepth = 3;
+    int defaultSearchDepth = 4;
     int autoMoveThreshold = 10;
 
     int moveCount = 0;
@@ -314,6 +394,9 @@ public class MyBotV1_1 : IChessBot
     HashSet<Move> moveCache = new HashSet<Move>();
     public Move Think(Board board, Timer timer)
     {
+        if (timer.MillisecondsRemaining < 30000) defaultSearchDepth = 3;
+        if (timer.MillisecondsRemaining < 15000) defaultSearchDepth = 2;
+        if (timer.MillisecondsRemaining < 3000) defaultSearchDepth = 1;
         moveCount++;
         cTimer = timer;
         onWhiteSide = board.IsWhiteToMove;
@@ -467,7 +550,7 @@ public class MyBotV1_1 : IChessBot
     }
 
     int[] pieceValue = new int[] {
-        0,1,3,3,5,9,10000
+        0,1,3,3,5,9,100
     };
 
     /// Gets the value of a piece based on its position on the board and other characteristics
@@ -544,11 +627,10 @@ public class MyBotV1_1 : IChessBot
     }
 
     public void compileLogs() {
-        if (cTimer.MillisecondsRemaining < 6000) return;
         for (int i = 0; i < timeLog.Length; i++) {
             int sum = 0;
-            foreach (int time in timeLog[i]) {
-                sum += time;
+            for (int j = 0; j < timeLog[i].Count; j++) {
+                sum += timeLog[i][j];
             }
             if (timeLog[i].Count > 0)
                 Console.WriteLine((LogTimeType) i + ": " + (sum) + " (" + Math.Round(sum/ (float)timeLog[i].Count,2) + ")");
@@ -559,17 +641,17 @@ public class MyBotV1_1 : IChessBot
         Console.WriteLine("\nMoves: " + moveLog.Count);
         
         Console.WriteLine((LogCountType) 0 + ": " + countLogs[0]);
-        Console.WriteLine((LogCountType) 0 + ": " + countLogs[1] + " |  cache (" + (countLogs[2] / (float) countLogs[1]) + ") | depthCache (" + (countLogs[3] / (float) countLogs[1]) + ")");
-        Console.WriteLine((LogCountType) 0 + ": " + countLogs[4] + " | cache (" + (countLogs[5] / (float) countLogs[4]) + ")");
-        Console.WriteLine((LogCountType) 0 + ": " + countLogs[6] + " | cache (" + (countLogs[7] / (float) countLogs[6]) + ")");
-        Console.WriteLine((LogCountType) 0 + ": " + countLogs[8] + " | cache (" + (countLogs[9] / (float)countLogs[8]) + ")");
+        Console.WriteLine((LogCountType) 1 + ": " + countLogs[1] + " |  cache (" + (countLogs[2] / (float) countLogs[1]) + ") | depthCache (" + (countLogs[3] / (float) countLogs[1]) + ")");
+        Console.WriteLine((LogCountType) 4 + ": " + countLogs[4] + " | cache (" + (countLogs[5] / (float) countLogs[4]) + ")");
+        Console.WriteLine((LogCountType) 6 + ": " + countLogs[6] + " | cache (" + (countLogs[7] / (float) countLogs[6]) + ")");
+        Console.WriteLine((LogCountType) 8 + ": " + countLogs[8] + " | cache (" + (countLogs[9] / (float)countLogs[8]) + ")");
     }
     public void GameOver() {
         Console.WriteLine("Game over\n--------------------\n\n");
         for (int i = 0; i < timeLog.Length; i++) {
             int sum = 0;
-            foreach (int time in timeLog[i]) {
-                sum += time;
+            for (int j = 0; j < timeLog[i].Count; j++) {
+                sum += timeLog[i][j];
             }
             Console.WriteLine("Total time for " + (LogTimeType) i + ": " + (sum));
         }
