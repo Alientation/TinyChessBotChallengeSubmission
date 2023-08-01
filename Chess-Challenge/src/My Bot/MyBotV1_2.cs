@@ -44,7 +44,6 @@ using System.Collections.Generic;
 */
 public class MyBotV1_2 : IChessBot
 {
-    Boolean onWhiteSide;
 
     //dont reset after each game to get a slight advantage (lol)
     Dictionary<ulong,Move[]> movesFromBoardCache = new Dictionary<ulong,Move[]>();
@@ -80,7 +79,6 @@ public class MyBotV1_2 : IChessBot
         if (timer.MillisecondsRemaining < 3000) defaultSearchDepth = 1;
         moveCount++;
         cTimer = timer;
-        onWhiteSide = board.IsWhiteToMove;
         logCount(LogCountType.ThinkCount, 1);
         
         int startThinkingTime = timer.MillisecondsElapsedThisTurn;
@@ -180,7 +178,7 @@ public class MyBotV1_2 : IChessBot
 
             foreach (PieceList pieces in board.GetAllPieceLists()) {
                 foreach (Piece piece in pieces) {
-                    eval += getPieceValue(board, piece) * (piece.IsWhite ^ !onWhiteSide ? 1 : -1);
+                    eval += getPieceValue(board, piece) * (piece.IsWhite == board.IsWhiteToMove ? 1 : -1);
                 }
             }
 

@@ -363,7 +363,6 @@ public class MyBotV1_1 : IChessBot
             0,0,0,0,0,0,0,0,
         },
     };*/
-    Boolean onWhiteSide;
 
     //dont reset after each game to get a slight advantage (lol)
     Dictionary<ulong,Move[]> movesFromBoardCache = new Dictionary<ulong,Move[]>();
@@ -401,11 +400,10 @@ public class MyBotV1_1 : IChessBot
         if (timer.MillisecondsRemaining < 3000) defaultSearchDepth = 1;
         moveCount++;
         cTimer = timer;
-        onWhiteSide = board.IsWhiteToMove;
         logCount(LogCountType.ThinkCount, 1);
         
         int startThinkingTime = timer.MillisecondsElapsedThisTurn;
-        int boardEvalInitial = evaluate(board, onWhiteSide);
+        int boardEvalInitial = evaluate(board);
 
         Move[] moves = getPossibleMoves(board);
         
@@ -454,7 +452,7 @@ public class MyBotV1_1 : IChessBot
         } */
         logCount(LogCountType.minimaxCount, 1);
 
-        if (depth >= maxDepth) return evaluate(board, onWhiteSide);
+        if (depth >= maxDepth) return evaluate(board);
 
         if (isMax) {
             int maxEval = -30000;
@@ -539,7 +537,7 @@ public class MyBotV1_1 : IChessBot
 
 
     /// Checks for existing calculations and computes if not found
-    public int evaluate(Board board, Boolean evaluatingForWhite) {
+    public int evaluate(Board board) {
         logCount(LogCountType.evalBoardCount, 1);
         int timeEvalBoardStart = cTimer.MillisecondsElapsedThisTurn;
 
@@ -552,7 +550,7 @@ public class MyBotV1_1 : IChessBot
 
             foreach (PieceList pieces in board.GetAllPieceLists()) {
                 foreach (Piece piece in pieces) {
-                    eval += getPieceValue(board, piece) * (piece.IsWhite ^ !evaluatingForWhite ? 1 : -1);
+                    eval += getPieceValue(board, piece) * (piece.IsWhite == board.IsWhiteToMove ? 1 : -1);
                 }
             }
 
