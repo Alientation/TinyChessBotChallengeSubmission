@@ -373,6 +373,8 @@ public class MyBotV1_1 : IChessBot
 
     int defaultSearchDepth = 4;
     int autoMoveThreshold = 10;
+    int maxEvalCutoff = 500;
+    int minEvalCutoff = -500;
 
     int moveCount = 0;
 
@@ -463,6 +465,11 @@ public class MyBotV1_1 : IChessBot
                     logCount(LogCountType.minimaxCacheCount, 1);
                     eval = minimaxCache[board.ZobristKey];
                 } else*/ 
+                if (eval > maxEvalCutoff) {
+                    board.UndoMove(move);
+                    return eval;
+                }
+
                 eval += minimax(board, depth+1, alpha, beta, false, maxDepth, bestPrevEval);
                 
                 board.UndoMove(move);
@@ -485,6 +492,12 @@ public class MyBotV1_1 : IChessBot
                     logCount(LogCountType.minimaxCacheCount, 1);
                     eval = minimaxCache[board.ZobristKey];
                 } else*/
+
+                if (eval < minEvalCutoff) {
+                    board.UndoMove(move);
+                    continue;
+                }
+
                 eval += minimax(board, depth+1, alpha, beta, true, maxDepth, bestPrevEval);
                 
                 board.UndoMove(move);
