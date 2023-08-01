@@ -23,6 +23,7 @@ namespace ChessChallenge.Application
             MyBotV1NoDebug,
             MyBotV1_1,
             MyBotV1_2,
+            MyBotV1_3,
             EvilBot,
             CompetitorBot,
         }
@@ -35,6 +36,7 @@ namespace ChessChallenge.Application
                 PlayerType.MyBotV1NoDebug => new ChessPlayer(new MyBotV1NoDebug(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV1_1 => new ChessPlayer(new MyBotV1_1(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV1_2 => new ChessPlayer(new MyBotV1_2(), type, GameDurationMilliseconds),
+                PlayerType.MyBotV1_3 => new ChessPlayer(new MyBotV1_3(), type, GameDurationMilliseconds),
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
                 PlayerType.CompetitorBot => new ChessPlayer(new CompetitorBot(), type, GameDurationMilliseconds),
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
@@ -43,7 +45,7 @@ namespace ChessChallenge.Application
 
         public static PlayerType player1Type = PlayerType.Human;
         public static PlayerType player2Type = PlayerType.Human;
-        public static PlayerType botToTest1 = PlayerType.MyBotV1_2;
+        public static PlayerType botToTest1 = PlayerType.MyBotV1_3;
         public static PlayerType botToTest2 = PlayerType.MyBotV1;
 
         // Game state
