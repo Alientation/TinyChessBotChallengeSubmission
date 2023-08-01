@@ -7,49 +7,43 @@ using System.Numerics;
     MyBot V1.0  ~(637 Brain Power SMH)
 
     Features
-    Min Max Algorithm
-    Alpha Beta Pruning
+    Negamax Alpha Beta Pruning
+    Score board based off piece locations
+Ggame stage
 */
 
 /*
     TODO
 
-    Score board based off piece locations
     sort moves when getting possible moves
     add more features to board evaluation
         - pawn advancement
         - piece mobility
         - piece threats
         - piece protection
-
-    add more features to move scoring
-    add game stage
     Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
     Quiesence Searching (only applies to moves that result in a capture)
     Optimized Searching (go down only promising paths)
     OPTIMIZE CODE
     Move Pruning
     Late Move Reductions, History Reductions
-    Use NegaMax??
     Store minimax traversals (edges that haven't been searched from a particular board state)
     
 */
 public class MyBotV1_4 : IChessBot {
-    bool isBotWhite;
-    int timePerMove = 500;
-    int gameStage = 0;
+    bool isBotWhite, breakBecauseTime = false;
+    int timePerMove = 500, gameStage = 0;
     Timer cTimer;
     Board cBoard;
-    (Move, int) bestMove = (Move.NullMove, 0);
+    static Move nullMove = Move.NullMove;
+    (Move, int) bestMove = (nullMove, 0), bestRootMove;
 
     public Move Think(Board board, Timer timer) {
         if (cTimer == null) {
             isBotWhite = board.IsWhiteToMove;
-            if (!isBotWhite) {
-                for (int i = 0; i < pieceValueLocation.Length; i++) {
+            if (!isBotWhite)
+                for (int i = 0; i < pieceValueLocation.Length; i++)
                     Array.Reverse(pieceValueLocation[i]);
-                }
-            }
         }
         cBoard = board;
         cTimer = timer;
@@ -67,19 +61,27 @@ public class MyBotV1_4 : IChessBot {
         
         for (int depth = 1; depth <= 3 * gameStage + 5 && timer.MillisecondsElapsedThisTurn < timePerMove; depth++) {
             negamax(board, depth, 0, -300000000, 300000000);
+            if (!breakBecauseTime)
+                bestRootMove = bestMove;
+            breakBecauseTime = false;
             #if DEBUG
             Console.WriteLine("depth " + depth + " " + bestMove.Item1 + " (" + bestMove.Item2 +") | " + "(" + timer.MillisecondsElapsedThisTurn + "ms)");
             #endif
         }
 
-        if (timer.MillisecondsRemaining < 30000) timePerMove = 300;
-        if (timer.MillisecondsRemaining < 15000) timePerMove = 150;
+        if (bestRootMove.Item1 == nullMove) bestRootMove = bestMove;
+
+        if (timer.MillisecondsRemaining < 50000) timePerMove = 400;
+        if (timer.MillisecondsRemaining < 35000) timePerMove = 300;
+        if (timer.MillisecondsRemaining < 25000) timePerMove = 200;
+        if (timer.MillisecondsRemaining < 15000) timePerMove = 100;
+        if (timer.MillisecondsRemaining < 05000) timePerMove = 50;
 
         #if DEBUG
-        Console.WriteLine("Chosen Move " + bestMove.Item1 + " (" + bestMove.Item2 + ") -> [" + "nodes=" + negamaxNodesCount + ", eval=" + boardEvalCount + " (" + 
+        Console.WriteLine("Chosen Move " + bestRootMove.Item1 + " (" + bestRootMove.Item2 + ") -> [" + "nodes=" + negamaxNodesCount + ", eval=" + boardEvalCount + " (" + 
         (boardEvalCacheCount / (float) boardEvalCount) + "), moveEval=" + moveEvalCount + ", findMove=" + possibleMoveCount + " (" + (possibleMoveCacheCount / (float) possibleMoveCount) + ")"); 
         #endif
-        return bestMove.Item1;
+        return bestRootMove.Item1;
     }
 
     #if DEBUG
@@ -92,19 +94,23 @@ public class MyBotV1_4 : IChessBot {
     #endif
 
     public (Move, int) negamax(Board board, int depthLeft, int depth, int alpha, int beta) {
+        if (cTimer.MillisecondsElapsedThisTurn > timePerMove) {
+            breakBecauseTime = true;
+            return (nullMove,0);
+        }
+
         #if DEBUG
         negamaxNodesCount++;
         #endif
-        if (board.IsDraw()) return (Move.NullMove, -100);
-        if (board.IsInCheckmate()) return (Move.NullMove, board.PlyCount - 100000000);
+        if (board.IsDraw()) return (nullMove, -100);
+        if (board.IsInCheckmate()) return (nullMove, board.PlyCount - 100000000);
 
-        if (depthLeft == 0 || board.IsInCheckmate() || board.IsInStalemate() || board.IsFiftyMoveDraw() || board.IsInsufficientMaterial()) {
-            return (Move.NullMove, evaluate(board));
-        }
+        if (depthLeft == 0 || board.IsInCheckmate() || board.IsInStalemate() || board.IsFiftyMoveDraw() || board.IsInsufficientMaterial())
+            return (nullMove, evaluate(board));
 
         Move[] moves = getOrderedMoves(board);
 
-        var best = (Move.NullMove, -200000);
+        var best = (nullMove, -200000);
         foreach (Move move in moves) {
             board.MakeMove(move);
             int eval = evaluateMove(move);
@@ -118,11 +124,10 @@ public class MyBotV1_4 : IChessBot {
             }
 
             alpha = Math.Max(alpha, eval);
-            if (alpha >= beta) {
+            if (alpha >= beta)
                 break;
-            }
         }
-        return (best);
+        return best;
     }
 
     int[] pieceValue = { 0, 100, 300, 320, 500, 900, 10000 };
@@ -164,7 +169,7 @@ public class MyBotV1_4 : IChessBot {
         #if DEBUG
         moveEvalCount++;
         #endif
-        if (move.IsCapture) return ((int)move.CapturePieceType - (int)move.MovePieceType) * 20;
+        if (move.IsCapture) return (int)(move.CapturePieceType - move.MovePieceType) * 20;
         if (move.IsCastles) return 80;
         if (move.IsEnPassant) return 60;
         if (move.IsPromotion) return 140;
@@ -188,7 +193,7 @@ public class MyBotV1_4 : IChessBot {
 
         return moves;
     }
-
+    #region 
     int[][] pieceValueLocation = new int[][] {
         new int[] { //pawn
             00,00,00,00,00,00,00,00,
@@ -260,29 +265,29 @@ public class MyBotV1_4 : IChessBot {
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
+            20,00,10,00,00,10,00,20,
+            00,30,00,00,00,00,30,00,
+            00,00,10,00,00,10,00,00,
         },
         new int[] {
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
+            -20,-10,-10,-10,-10,-10,-10,-20,
+            -10,  0,  0,  0,  0,  0,  0,-10,
+            -10,  0,  5, 10, 10,  5,  0,-10,
+            -10,  5,  5, 10, 10,  5,  5,-10,
+            -10,  0, 10, 10, 10, 10,  0,-10,
+            -10, 10, 10, 10, 10, 10, 10,-10,
+            -10,  5,  0,  0,  0,  0,  5,-10,
+            -20,-10,-40,-10,-10,-40,-10,-20,
         },
         new int[] {
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
+            -10,-05,-05,-05,-05,-05,-05,-10,
+            -05,  0,  0,  0,  0,  0,  0,-05,
+            -05,  0,  5, 10, 10,  5,  0,-05,
+            -05,  5,  5, 10, 10,  5,  5,-05,
+            -05,  0, 10, 10, 10, 10,  0,-05,
+            -05, 10, 10, 10, 10, 10, 10,-05,
+            -05,  5,  0,  0,  0,  0,  5,-05,
+            -10,-05,-20,-05,-05,-20,-05,-10,
         },
 
 
@@ -298,91 +303,92 @@ public class MyBotV1_4 : IChessBot {
         },
         new int[] {
             00,00,00,00,00,00,00,00,
+            15,15,15,20,20,15,15,15,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
+            00,00,00,10,10,10,00,00,
         },
         new int[] {
             00,00,00,00,00,00,00,00,
+            15,15,15,20,20,15,15,15,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
+            00,00,00,10,10,10,00,00,
         },
 
 
         new int[] { //queen
             00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
+            -8,-6,-5,-3,-3,-5,-6,-8,
+            -8,-8,-6,-5,-5,-6,-8,-8,
+            00,00,00,-3,-3,00,00,00,
+            01,00,00,00,00,00,00,01,
+            00,05,00,00,00,00,05,00,
+            00,00,10,00,00,10,00,00,
+            00,00,00,20,20,00,00,00,
         },
         new int[] {
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
+            10,10,10,15,15,10,10,10,
+            15,15,15,20,20,15,15,15,
+            10,10,10,15,15,10,10,10,
             00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
+            00,00,00,20,20,20,00,00,
         },
         new int[] {
             00,00,00,00,00,00,00,00,
+            15,15,15,20,20,15,15,15,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
             00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
+            00,00,00,10,10,10,00,00,
         },
 
 
         new int[] { //king
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
+            -30, -40, -40, -50, -50, -40, -40, -30,
+            -30, -40, -40, -50, -50, -40, -40, -30,
+            -30, -40, -40, -50, -50, -40, -40, -30,
+            -30, -40, -40, -50, -50, -40, -40, -30,
+            -20, -30, -30, -40, -40, -30, -30, -20,
+            -10, -20, -20, -20, -20, -20, -20, -10, 
+             20,  20,   0,   0,   0,   0,  20,  20,
+             20,  30,  10,   0,   0,  10,  30,  20
         },
         new int[] {
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
+            -30, -40, -40, -50, -50, -40, -40, -30,
+            -30, -40, -40, -50, -50, -40, -40, -30,
+            -30, -40, -40, -50, -50, -40, -40, -30,
+            -30, -40, -40, -50, -50, -40, -40, -30,
+            -20, -30, -30, -40, -40, -30, -30, -20,
+            -10, -20, -20, -20, -20, -20, -20, -10, 
+             20,  20,   0,   0,   0,   0,  20,  20,
+             20,  30,  10,   0,   0,  10,  30,  20
         },
         new int[] {
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
+            -50,-40,-30,-20,-20,-30,-40,-50,
+            -30,-20,-10,  0,  0,-10,-20,-30,
+            -30,-10, 20, 30, 30, 20,-10,-30,
+            -30,-10, 30, 40, 40, 30,-10,-30,
+            -30,-10, 30, 40, 40, 30,-10,-30,
+            -30,-10, 20, 30, 30, 20,-10,-30,
+            -30,-30,  0,  0,  0,  0,-30,-30,
+            -50,-30,-30,-30,-30,-30,-30,-50
         },
     };
 
     public void GameOver() {
         
     }
+    #endregion
 }
