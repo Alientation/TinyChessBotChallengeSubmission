@@ -19,12 +19,9 @@ namespace ChessChallenge.Application
         public enum PlayerType
         {
             Human,
-            MyBotV1,
-            MyBotV1NoDebug,
-            MyBotV1_1,
-            MyBotV1_2,
-            MyBotV1_3,
-            MyBotV1_4,
+            MyBotV1, MyBotV1NoDebug,
+            MyBotV1_1, MyBotV1_2, MyBotV1_3, MyBotV1_4,
+            MyBotV2,
             EvilBot,
             CompetitorBot,
             EloBot2,
@@ -40,6 +37,7 @@ namespace ChessChallenge.Application
                 PlayerType.MyBotV1_2 => new ChessPlayer(new MyBotV1_2(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV1_3 => new ChessPlayer(new MyBotV1_3(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV1_4 => new ChessPlayer(new MyBotV1_4(), type, GameDurationMilliseconds),
+                PlayerType.MyBotV2 => new ChessPlayer(new MyBotV2(), type, GameDurationMilliseconds),
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
                 PlayerType.CompetitorBot => new ChessPlayer(new CompetitorBot(), type, GameDurationMilliseconds),
                 PlayerType.EloBot2 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
