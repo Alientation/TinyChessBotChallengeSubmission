@@ -557,7 +557,7 @@ public class MyBotV1_1 : IChessBot
     }
 
     int[] pieceValue = new int[] {
-        0,1,3,3,5,9,100
+        0,1,3,3,5,9,0
     };
 
     /// Gets the value of a piece based on its position on the board and other characteristics
