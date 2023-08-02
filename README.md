@@ -21,6 +21,8 @@ Features Multiple Different Bots
   
 ### V2_2
 - Fixed board evaluation problems, implemented Quiescence
+- Issues with illegal moves
 
 ### V3
 - Implemented Move Ordering
+- Apparently implementing move ordering fixed illegal moves??
