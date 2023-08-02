@@ -2,15 +2,25 @@
 using System.Numerics;
 using System;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace ChessChallenge.Application
 {
     public static class MenuUI
     {
+        public static int selectedPlayer1 = -1;
+        public static bool is1Open = false;
+        public static int selectedPlayer2 = -1;
+        public static bool is2Open = false;
+        public static string pattern = @"(?<=\w__)";
+
+        public static string getShortName(int type) {
+            ChallengeController.PlayerType playerType = (ChallengeController.PlayerType) type;
+            return ((playerType + "").Split("__")[(playerType + "").Split("__").Length-1]);
+        }
+
         public static void DrawButtons(ChallengeController controller)
         {
-            int initX = 235, initY = 150, initWidth = 420, initHeight = 35;
+            int initX = 250, initY = 70, initWidth = 420, initHeight = 35;
 
             Vector2 buttonPos = UIHelper.Scale(new Vector2(initX, initY));
             Vector2 buttonSize = UIHelper.Scale(new Vector2(initWidth, initHeight));
@@ -18,51 +28,59 @@ namespace ChessChallenge.Application
             float spacingX = buttonSize.X * 1.4f;
             float breakSpacing = 100;
 
-            if (NextButtonInRow("Human vs " + ChallengeController.botToTest1, ref buttonPos, spacingY, buttonSize)) {
-                controller.StartNewGame(ChallengeController.PlayerType.Human, ChallengeController.botToTest1);
-            }
-
-            if (NextButtonInRow("Human vs " + ChallengeController.botToTest2, ref buttonPos, spacingY, buttonSize)) {
-                controller.StartNewGame(ChallengeController.PlayerType.Human, ChallengeController.botToTest2);
-            }
-
-            if (NextButtonInRow("Human vs " + ChallengeController.botToTest3, ref buttonPos, spacingY, buttonSize)) {
-                controller.StartNewGame(ChallengeController.PlayerType.Human, ChallengeController.botToTest3);
-            }
-
-            if (NextButtonInRow(ChallengeController.botToTest1 + " vs " + ChallengeController.botToTest2, ref buttonPos, spacingY, buttonSize)) {
-                controller.StartNewBotMatch(ChallengeController.botToTest1, ChallengeController.botToTest2);
-            }
-
-            if (NextButtonInRow(ChallengeController.botToTest2 + " vs " + ChallengeController.botToTest3, ref buttonPos, spacingY, buttonSize)) {
-                controller.StartNewBotMatch(ChallengeController.botToTest2, ChallengeController.botToTest3);
-            }
-
-            if (NextButtonInRow(ChallengeController.botToTest3 + " vs " + ChallengeController.botToTest1, ref buttonPos, spacingY, buttonSize)) {
-                controller.StartNewBotMatch(ChallengeController.botToTest3, ChallengeController.botToTest1);
-            }
-
-            if (NextButtonInRow(ChallengeController.botToTest1 + " vs EvilBot", ref buttonPos, spacingY, buttonSize)) {
-                controller.StartNewBotMatch(ChallengeController.PlayerType.EvilBot, ChallengeController.botToTest1);
-            }
-
-            if (NextButtonInRow(ChallengeController.botToTest2 + " vs EvilBot", ref buttonPos, spacingY, buttonSize)) {
-                controller.StartNewBotMatch(ChallengeController.PlayerType.EvilBot, ChallengeController.botToTest2);
-            }
-
-            if (NextButtonInRow(ChallengeController.botToTest3 + " vs EvilBot", ref buttonPos, spacingY, buttonSize)) {
-                controller.StartNewBotMatch(ChallengeController.PlayerType.EvilBot, ChallengeController.botToTest3);
-            }
-
 
             if (NextButtonInRow("Tournament", ref buttonPos, spacingY, buttonSize)) {
                 controller.StartTournament();
             }
 
+            if (selectedPlayer1 >= 0 && selectedPlayer2 >= 0) {
+                if (NextButtonInRow("Play " + getShortName(selectedPlayer1) + " vs " + getShortName(selectedPlayer2), ref buttonPos, spacingY, buttonSize)) {
+                    if ((ChallengeController.PlayerType) selectedPlayer1 == ChallengeController.PlayerType.Human || 
+                        (ChallengeController.PlayerType) selectedPlayer2 == ChallengeController.PlayerType.Human)
+                        controller.StartNewGame((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
+                    else
+                        controller.StartNewBotMatch((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
+                }
+            }
+
+            buttonPos.Y = 350;
+
+            if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize)) {
+                controller.StartNewGame(ChallengeController.PlayerType.Human,ChallengeController.PlayerType.Human);
+            }
+
+            buttonPos.Y = 100 + initY;
+
+            int temp1 = DropdownList(selectedPlayer1 < 0 ? "Choose" : getShortName(selectedPlayer1), new ChallengeController.PlayerType[] {
+                ChallengeController.PlayerType.Human,
+                ChallengeController.PlayerType.V1__MyBotV1, ChallengeController.PlayerType.V1__MyBotV1NoDebug,
+                ChallengeController.PlayerType.V1__MyBotV1_1, ChallengeController.PlayerType.V1__MyBotV1_2, ChallengeController.PlayerType.V1__MyBotV1_3, ChallengeController.PlayerType.V1__MyBotV1_4,
+                ChallengeController.PlayerType.MyBotV2,
+                ChallengeController.PlayerType.EvilBot, 
+                ChallengeController.PlayerType.Enemy__NNBot, ChallengeController.PlayerType.Enemy__EloBot0,
+                ChallengeController.PlayerType.Enemy__EloBot1, ChallengeController.PlayerType.Enemy__EloBot2,
+                ChallengeController.PlayerType.Enemy__HumanBot,
+            }, is1Open, new Vector2(88, 140), new Vector2(160,35));
+            is1Open = temp1 == -2;
+            if (temp1 >= 0) selectedPlayer1 = temp1;
+
+
+            int temp2 = DropdownList(selectedPlayer2 < 0 ? "Choose" : getShortName(selectedPlayer2), new ChallengeController.PlayerType[] {
+                ChallengeController.PlayerType.Human,
+                ChallengeController.PlayerType.V1__MyBotV1, ChallengeController.PlayerType.V1__MyBotV1NoDebug,
+                ChallengeController.PlayerType.V1__MyBotV1_1, ChallengeController.PlayerType.V1__MyBotV1_2, ChallengeController.PlayerType.V1__MyBotV1_3, ChallengeController.PlayerType.V1__MyBotV1_4,
+                ChallengeController.PlayerType.MyBotV2,
+                ChallengeController.PlayerType.EvilBot, 
+                ChallengeController.PlayerType.Enemy__NNBot, ChallengeController.PlayerType.Enemy__EloBot0,
+                ChallengeController.PlayerType.Enemy__EloBot1, ChallengeController.PlayerType.Enemy__EloBot2,
+                ChallengeController.PlayerType.Enemy__HumanBot,
+            }, is2Open, new Vector2(258, 140), new Vector2(160,35));
+            is2Open = temp2 == -2;
+            if (temp2 >= 0) selectedPlayer2 = temp2;
 
 
             // Page buttons
-            buttonPos.Y += breakSpacing;
+            buttonPos.Y = 500;
 
             if (NextButtonInRow("Save Games", ref buttonPos, spacingY, buttonSize))
             {
@@ -106,6 +124,37 @@ namespace ChessChallenge.Application
                 bool pressed = UIHelper.Button(name.Replace("__",""), pos, size);
                 pos.Y += spacingY;
                 return pressed;
+            }
+
+            int DropdownList(string text, ChallengeController.PlayerType[] options, bool isOpen, Vector2 pos, Vector2 size) {
+                bool pressed = UIHelper.Button(text.Replace("__",""), pos, size);
+                if (pressed) isOpen = !isOpen;
+
+                int item = -1;
+                if (isOpen) {
+                    is1Open = false;
+                    is2Open = false;
+                    Vector2 itemPos = UIHelper.Scale(new Vector2(pos.X + 40, pos.Y + 120));
+                    float initX = itemPos.X;
+                    Vector2 itemSize = UIHelper.Scale(new Vector2(250, 30));
+                    bool toggle = false;
+                    foreach (ChallengeController.PlayerType option in options) {
+                        bool itemPressed = UIHelper.Button(getShortName((int) option), itemPos, itemSize);
+
+                        if (itemPressed)
+                            item = (int) option;
+                        
+                        if (toggle) {
+                            itemPos.Y += 22;
+                            itemPos.X = initX;
+                        } else {
+                            itemPos.X += 175;
+                        }
+                        toggle = !toggle;
+                    }
+                    if (item == -1) return -2;
+                }
+                return item;
             }
         }
     }
