@@ -16,5 +16,11 @@ Features Multiple Different Bots
 - Working Negamax (flawed board evaluations - sometimes stupid trades are made when they should not have happened, ie queen for a pawn)
 - Piece Square Table implementation (will need to compress into ulongs and unpack at runtime later)
 
-### V2
-- Ideally, fix board evaluation problems, and implement Quisence + move ordering
+### V2, V2_1, 
+- implemented Transposition Tables + corrected time control in bot while mid move
+  
+### V2_2
+- Fixed board evaluation problems, implemented Quiescence
+
+### V3
+- Implemented Move Ordering
