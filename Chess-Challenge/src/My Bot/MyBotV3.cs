@@ -159,12 +159,12 @@ public class MyBotV3 : IChessBot {
 
     //negamax with alpha beta pruning
     public int negamax(int depthLeft, int depth, int alpha, int beta) {
+        if (depthLeft <= 0)
+            return quiesence(depth, alpha, beta);
+        
         #if DEBUG
         negamaxNodesCount++;
         #endif
-
-        if (depthLeft <= 0)
-            return quiesence(depth, alpha, beta);
         
         Move prevBestMove = Move.NullMove;
 
