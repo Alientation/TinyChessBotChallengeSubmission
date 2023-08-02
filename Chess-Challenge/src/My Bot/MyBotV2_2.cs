@@ -108,7 +108,7 @@ public class MyBotV2_2 : IChessBot {
         #if DEBUG
         Console.WriteLine($"{bestRootMove} ({bestRootEval}) | {cTimer.MillisecondsElapsedThisTurn}ms");
         Console.WriteLine($"{negamaxNodesCount} Negamax\t{boardEvalCount} boardEvals\t TTable ({(tTableCacheCount - tTableExpiredCacheCount) / (float)negamaxNodesCount}))");
-        Console.WriteLine($"{negamaxNodesCount / (float) timer.MillisecondsElapsedThisTurn} Nodes/s");
+        Console.WriteLine($"{1000 * negamaxNodesCount / (float) timer.MillisecondsElapsedThisTurn} Nodes/s");
         Console.WriteLine($"{tTableExpiredCacheCount} TtableExpired");
         #endif
         return bestRootMove;
