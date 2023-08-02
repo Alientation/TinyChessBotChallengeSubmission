@@ -268,7 +268,7 @@ public class MyBotV3_1 : IChessBot {
     }
 
     //todo add move ordering
-    public void getOrderedMoves(ref Span<Move> moves, Move bestMove, int depth) {
+    public void getOrderedMoves(ref Span<Move> moves, Move prevBestMove, int depth) {
         //use pv (principal variation) as first move in array
         //use stack alloc to store array (order by captures then non captures)
         Span<int> priorities = stackalloc int[moves.Length];
@@ -281,7 +281,7 @@ public class MyBotV3_1 : IChessBot {
 
             //prioritize lower eval pieces moving
             int priority = -pieceEval[(int)move.CapturePieceType];
-            if (move == bestMove) priority += MAX_VALUE;
+            if (move == prevBestMove) priority += MAX_VALUE;
 
             //bonuses for capture, promotion, enpassant, castles
             if (move.IsCapture) priority += pieceEval[(int)move.CapturePieceType];
