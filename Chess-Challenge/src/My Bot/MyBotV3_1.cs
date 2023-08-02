@@ -1,89 +1,81 @@
 using ChessChallenge.API;
 using System;
+using System.Linq;
 
 /*
     MyBot V1.0  ~(725 Brain Power SMH)
 
     Features
     Negamax Alpha Beta Pruning
-    Score board based off piece locations
-     Added Transposition table (remove move cache)
+    Score board based off piece locations and phases (?dunno what this is tbh) with emphasis on the stage of the game
+    Transposition table
+    Time management (fail safe by preventing unfinished depth searches from affecting results)
+    Quiescense searching (only applies to moves that result in a capture)
+    Move ordering (basic)
 
     NOTES
     When its end game, it incorrectly values moving the king as winning the game instead of promoting pawns and checkmating with queens.. this does not make sense. might be a problem with the Ttables
 
 
-    Against MyBotV2_2
-    44 / 18 / -2
-    0 timeouts, 0 illegal moves,
-    win rate (68.75%)
-    elo difference (273 +/- 84)
-
-
-    Against NNBot
+    Against MyBotV3
     
 
     Against the EloBot1
-    - 202 +/- 58 Elo difference
-    - 119 / 17 / 31 (win rate 71.25%)
+    
 
 
-    Add Quiesence
-    Add move ordering
+
     possibly do killer moves and null move pruning
-Ggame stage
 */
 
 /*
     TODO
-
     Go back and correct MyBotV2_1's negamax/eval functions because i think they are flawed and is the reason it blundered pieces
 
-    sort moves when getting possible moves
     add more features to board evaluation
         - pawn advancement
         - piece mobility
         - piece threats
         - piece protection
     Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
-    Quiesence Searching (only applies to moves that result in a capture)
     OPTIMIZE CODE
     Move Pruning
     Late Move Reductions, History Reductions
     
 */
 public class MyBotV3_1 : IChessBot {
+
+    //save tokens by storing references here
     Timer timer; Board board;
+
+    //is this a lambda function??
     bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
+
+    //save who knows how many tokens (like 1 or 2 maybe)
     static Move nullMove = Move.NullMove;
+
+    //best move from the current depth, best move for the search as a whole
     Move bestMove, bestRootMove;
     int bestEval, bestRootEval, timePerMove;
+
+    //TTable (also Thanks @Selenaut for the extremely compact version)
     (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[] TTable = new (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[TranspositionTableLength];
-    private const int MIN_VALUE = -1_000_000,  MAX_VALUE = 1_000_000, TranspositionTableLength = 1<<21;
+    private const int MIN_VALUE = -1_000_000,  MAX_VALUE = 1_000_000, TranspositionTableLength = 2097152;
 
     int[] piecePhase = { 0, 0, 1, 1, 2, 4, 0 };
-    ulong[] psts = {
-    657614902731556116, 420894446315227099, 384592972471695068, 312245244820264086,
-    364876803783607569, 366006824779723922, 366006826859316500, 786039115310605588,
-    421220596516513823, 366011295806342421, 366006826859316436, 366006896669578452,
-    162218943720801556, 440575073001255824, 657087419459913430, 402634039558223453,
-    347425219986941203, 365698755348489557, 311382605788951956, 147850316371514514,
-    329107007234708689, 402598430990222677, 402611905376114006, 329415149680141460,
-    257053881053295759, 291134268204721362, 492947507967247313, 367159395376767958,
-    384021229732455700, 384307098409076181, 402035762391246293, 328847661003244824,
-    365712019230110867, 366002427738801364, 384307168185238804, 347996828560606484,
-    329692156834174227, 365439338182165780, 386018218798040211, 456959123538409047,
-    347157285952386452, 365711880701965780, 365997890021704981, 221896035722130452,
-    384289231362147538, 384307167128540502, 366006826859320596, 366006826876093716,
-    366002360093332756, 366006824694793492, 347992428333053139, 457508666683233428,
-    329723156783776785, 329401687190893908, 366002356855326100, 366288301819245844,
-    329978030930875600, 420621693221156179, 422042614449657239, 384602117564867863,
-    419505151144195476, 366274972473194070, 329406075454444949, 275354286769374224,
-    366855645423297932, 329991151972070674, 311105941360174354, 256772197720318995,
-    365993560693875923, 258219435335676691, 383730812414424149, 384601907111998612,
-    401758895947998613, 420612834953622999, 402607438610388375, 329978099633296596,
-    67159620133902};
-    private readonly int[] pieceEval = { 0, 100, 310, 330, 500, 901, 20000};
+    private readonly decimal[] PackedPestoTables = {
+        63746705523041458768562654720m, 71818693703096985528394040064m, 75532537544690978830456252672m, 75536154932036771593352371712m, 76774085526445040292133284352m, 3110608541636285947269332480m, 936945638387574698250991104m, 75531285965747665584902616832m,
+        77047302762000299964198997571m, 3730792265775293618620982364m, 3121489077029470166123295018m, 3747712412930601838683035969m, 3763381335243474116535455791m, 8067176012614548496052660822m, 4977175895537975520060507415m, 2475894077091727551177487608m,
+        2458978764687427073924784380m, 3718684080556872886692423941m, 4959037324412353051075877138m, 3135972447545098299460234261m, 4371494653131335197311645996m, 9624249097030609585804826662m, 9301461106541282841985626641m, 2793818196182115168911564530m,
+        77683174186957799541255830262m, 4660418590176711545920359433m, 4971145620211324499469864196m, 5608211711321183125202150414m, 5617883191736004891949734160m, 7150801075091790966455611144m, 5619082524459738931006868492m, 649197923531967450704711664m,
+        75809334407291469990832437230m, 78322691297526401047122740223m, 4348529951871323093202439165m, 4990460191572192980035045640m, 5597312470813537077508379404m, 4980755617409140165251173636m, 1890741055734852330174483975m, 76772801025035254361275759599m,
+        75502243563200070682362835182m, 78896921543467230670583692029m, 2489164206166677455700101373m, 4338830174078735659125311481m, 4960199192571758553533648130m, 3420013420025511569771334658m, 1557077491473974933188251927m, 77376040767919248347203368440m,
+        73949978050619586491881614568m, 77043619187199676893167803647m, 1212557245150259869494540530m, 3081561358716686153294085872m, 3392217589357453836837847030m, 1219782446916489227407330320m, 78580145051212187267589731866m, 75798434925965430405537592305m,
+        68369566912511282590874449920m, 72396532057599326246617936384m, 75186737388538008131054524416m, 77027917484951889231108827392m, 73655004947793353634062267392m, 76417372019396591550492896512m, 74568981255592060493492515584m, 70529879645288096380279255040m,
+    };
+    private readonly int[][] UnpackedPestoTables;
+    private readonly short[] pieceEval = {  82, 337, 365, 477, 1025, 20000, // Middlegame
+                                            94, 281, 297, 512, 936, 20000}; //Endgame
 
     public Move Think(Board cBoard, Timer cTimer) {
         #if DEBUG
@@ -92,7 +84,7 @@ public class MyBotV3_1 : IChessBot {
 
         board = cBoard;
         timer = cTimer;
-        timePerMove = Math.Max(timer.MillisecondsRemaining >> 5 , 50);
+        timePerMove = timer.MillisecondsRemaining / 40;
         
         bestMove = bestRootMove = nullMove;
 
@@ -103,8 +95,11 @@ public class MyBotV3_1 : IChessBot {
         for (int depth = 1; depth <= 50 && !shouldStop; depth++) {
             int val = negamax(depth, 0, MIN_VALUE, MAX_VALUE);
             if (!shouldStop) {
-                bestRootEval = val;
                 bestRootMove = bestMove;
+
+                #if DEBUG
+                bestRootEval = val;
+                #endif
             }
             #if DEBUG
             Console.WriteLine("depth " + depth + " " + bestMove + " (" + val +") | " + "(" + timer.MillisecondsElapsedThisTurn + "ms)");
@@ -113,7 +108,10 @@ public class MyBotV3_1 : IChessBot {
 
         if (bestRootMove == nullMove) {
             bestRootMove = bestMove;
+
+            #if DEBUG
             bestRootEval = bestEval;
+            #endif
         }
 
         #if DEBUG
@@ -159,10 +157,10 @@ public class MyBotV3_1 : IChessBot {
 
     //negamax with alpha beta pruning
     public int negamax(int depthLeft, int depth, int alpha, int beta) {
-        if (depthLeft <= 0)
+        if (depthLeft < 1)
             return quiesence(depth, alpha, beta);
         
-        Move prevBestMove = Move.NullMove;
+        Move prevBestMove = nullMove;
 
         ref var transpositionTableEntry = ref TTable[board.ZobristKey % TranspositionTableLength];
         if (transpositionTableEntry.zobristKey == board.ZobristKey) {
@@ -173,14 +171,11 @@ public class MyBotV3_1 : IChessBot {
             tTableCacheCount++;
             #endif
 
-            if (depth != 0 && transpositionTableEntry.depthSearchedAfter >= depthLeft) {
-                if (transpositionTableEntry.flag == 0)
+            if (depth != 0 && transpositionTableEntry.depthSearchedAfter >= depthLeft)
+                if (transpositionTableEntry.flag == 0 ||
+                transpositionTableEntry.flag == 1 && transpositionTableEntry.eval >= beta ||
+                transpositionTableEntry.flag == 2 && transpositionTableEntry.eval <= alpha)
                     return transpositionTableEntry.eval;
-                else if (transpositionTableEntry.flag == 1 && transpositionTableEntry.eval >= beta)
-                    return transpositionTableEntry.eval;
-                else if (transpositionTableEntry.flag == 2 && transpositionTableEntry.eval <= alpha)
-                    return transpositionTableEntry.eval;
-            }
 
             #if DEBUG
             tTableExpiredCacheCount++;
@@ -247,23 +242,36 @@ public class MyBotV3_1 : IChessBot {
         if (board.HasQueensideCastleRight(board.IsWhiteToMove)) eval += 5;
 
         //add up score for pieces and their locations at current game stage
+        // Define evaluation variables
         int mg = 0, eg = 0, phase = 0;
+        // Iterate through both players
+        foreach (bool stm in new[] { true, false })
+        {
+            // Iterate through all piece types
+            for (int piece = -1; ++piece < 6;)
+            {
+                // Get piece bitboard
+                ulong bb = board.GetPieceBitboard((PieceType)(piece + 1), stm);
 
-        foreach (bool stm in new[] { true, false }) {
-            for (var p = PieceType.Pawn; p <= PieceType.King; p++) {
-                int piece = (int)p, ind;
-                ulong mask = board.GetPieceBitboard(p, stm);
-                while (mask != 0)
+                // Iterate through each individual piece
+                while (bb != 0)
                 {
+                    // Get square index for pst based on color
+                    int sq = BitboardHelper.ClearAndGetIndexOfLSB(ref bb) ^ (stm ? 56 : 0);
+                    // Increment mg and eg score
+                    mg += UnpackedPestoTables[sq][piece];
+                    eg += UnpackedPestoTables[sq][piece + 6];
+                    // Updating position phase
                     phase += piecePhase[piece];
-                    ind = 128 * piece - 128 + BitboardHelper.ClearAndGetIndexOfLSB(ref mask) ^ (stm ? 56 : 0);
-                    mg += getPstVal(ind) + pieceEval[piece];
-                    eg += getPstVal(ind + 64) + pieceEval[piece];
                 }
             }
             mg = -mg;
             eg = -eg;
         }
+
+        // In case of premature promotion
+        phase = Math.Min(phase, 24);
+        // Tapered evaluation
         return (mg * phase + eg * (24 - phase)) / 24 * (board.IsWhiteToMove ? 1 : -1) + eval;
     }
 
@@ -280,13 +288,13 @@ public class MyBotV3_1 : IChessBot {
             //board.UndoMove(move);
 
             //prioritize lower eval pieces moving
-            int priority = -pieceEval[(int)move.CapturePieceType];
+            int priority = - 10 * (int) move.MovePieceType;
             if (move == prevBestMove) priority += MAX_VALUE;
 
             //bonuses for capture, promotion, enpassant, castles
-            if (move.IsCapture) priority += pieceEval[(int)move.CapturePieceType];
-            if (move.IsPromotion) priority += pieceEval[(int)move.PromotionPieceType];
-            if (move.IsEnPassant || move.IsCastles) priority += 100;
+            if (move.IsCapture) priority += 10 * (int) move.CapturePieceType;
+            if (move.IsPromotion) priority += 10 * (int) move.PromotionPieceType;
+            if (move.IsEnPassant || move.IsCastles) priority += 20;
 
             priorities[i] = -priority;
         }
@@ -294,7 +302,15 @@ public class MyBotV3_1 : IChessBot {
         priorities.Sort(moves);
     }
 
-    int getPstVal(int psq) {
-        return (int)(((psts[psq / 10] >> (6 * (psq % 10))) & 63) - 20) * 8;
+    public MyBotV3_1() {
+        UnpackedPestoTables = new int[64][];
+        UnpackedPestoTables = PackedPestoTables.Select(packedTable =>
+        {
+            int pieceType = 0;
+            return decimal.GetBits(packedTable).Take(3)
+                .SelectMany(c => BitConverter.GetBytes(c)
+                    .Select((byte square) => (int)((sbyte)square * 1.461) + pieceEval[pieceType++]))
+                .ToArray();
+        }).ToArray();
     }
 }
