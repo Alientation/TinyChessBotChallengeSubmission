@@ -47,7 +47,6 @@ namespace ChessChallenge.Application
 
             if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize)) {
                 controller.EndGame();
-                controller.StartNewGame(ChallengeController.PlayerType.Human,ChallengeController.PlayerType.Human);
             }
 
             buttonPos.Y = UIHelper.ScaleInt(110) + UIHelper.ScaleInt(initY);
