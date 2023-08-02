@@ -20,13 +20,13 @@ namespace ChessChallenge.Application
 
         public static void DrawButtons(ChallengeController controller)
         {
-            int initX = 250, initY = 70, initWidth = 420, initHeight = 35;
+            int initX = 250, initY = 45, initWidth = 420, initHeight = 35;
 
             Vector2 buttonPos = UIHelper.Scale(new Vector2(initX, initY));
             Vector2 buttonSize = UIHelper.Scale(new Vector2(initWidth, initHeight));
             float spacingY = buttonSize.Y * 1.3f;
             float spacingX = buttonSize.X * 1.4f;
-            float breakSpacing = 100;
+            float breakSpacing = UIHelper.ScaleInt(50);
 
 
             if (NextButtonInRow("Tournament", ref buttonPos, spacingY, buttonSize)) {
@@ -43,13 +43,13 @@ namespace ChessChallenge.Application
                 }
             }
 
-            buttonPos.Y = 350;
+            buttonPos.Y = UIHelper.ScaleInt(450);
 
             if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize)) {
                 controller.StartNewGame(ChallengeController.PlayerType.Human,ChallengeController.PlayerType.Human);
             }
 
-            buttonPos.Y = 100 + initY;
+            buttonPos.Y = UIHelper.ScaleInt(110) + UIHelper.ScaleInt(initY);
 
             int temp1 = DropdownList(selectedPlayer1 < 0 ? "Choose" : getShortName(selectedPlayer1), new ChallengeController.PlayerType[] {
                 ChallengeController.PlayerType.Human,
@@ -60,7 +60,7 @@ namespace ChessChallenge.Application
                 ChallengeController.PlayerType.Enemy__NNBot, ChallengeController.PlayerType.Enemy__EloBot0,
                 ChallengeController.PlayerType.Enemy__EloBot1, ChallengeController.PlayerType.Enemy__EloBot2,
                 ChallengeController.PlayerType.Enemy__HumanBot,
-            }, is1Open, new Vector2(88, 140), new Vector2(160,35));
+            }, is1Open, new Vector2(130, 160), new Vector2(240,35));
             is1Open = temp1 == -2;
             if (temp1 >= 0) selectedPlayer1 = temp1;
 
@@ -74,13 +74,13 @@ namespace ChessChallenge.Application
                 ChallengeController.PlayerType.Enemy__NNBot, ChallengeController.PlayerType.Enemy__EloBot0,
                 ChallengeController.PlayerType.Enemy__EloBot1, ChallengeController.PlayerType.Enemy__EloBot2,
                 ChallengeController.PlayerType.Enemy__HumanBot,
-            }, is2Open, new Vector2(258, 140), new Vector2(160,35));
+            }, is2Open, new Vector2(400, 160), new Vector2(240,35));
             is2Open = temp2 == -2;
             if (temp2 >= 0) selectedPlayer2 = temp2;
 
 
             // Page buttons
-            buttonPos.Y = 500;
+            buttonPos.Y = UIHelper.ScaleInt(600);
 
             if (NextButtonInRow("Save Games", ref buttonPos, spacingY, buttonSize))
             {
@@ -127,6 +127,9 @@ namespace ChessChallenge.Application
             }
 
             int DropdownList(string text, ChallengeController.PlayerType[] options, bool isOpen, Vector2 pos, Vector2 size) {
+                pos = UIHelper.Scale(pos);
+                size = UIHelper.Scale(size);
+
                 bool pressed = UIHelper.Button(text.Replace("__",""), pos, size);
                 if (pressed) isOpen = !isOpen;
 
@@ -134,9 +137,9 @@ namespace ChessChallenge.Application
                 if (isOpen) {
                     is1Open = false;
                     is2Open = false;
-                    Vector2 itemPos = UIHelper.Scale(new Vector2(pos.X + 40, pos.Y + 120));
+                    Vector2 itemPos = new Vector2(pos.X, pos.Y + UIHelper.ScaleInt(45));
                     float initX = itemPos.X;
-                    Vector2 itemSize = UIHelper.Scale(new Vector2(250, 30));
+                    Vector2 itemSize = UIHelper.Scale(new Vector2(250, 50));
                     bool toggle = false;
                     foreach (ChallengeController.PlayerType option in options) {
                         bool itemPressed = UIHelper.Button(getShortName((int) option), itemPos, itemSize);
@@ -145,10 +148,10 @@ namespace ChessChallenge.Application
                             item = (int) option;
                         
                         if (toggle) {
-                            itemPos.Y += 22;
+                            itemPos.Y += UIHelper.ScaleInt(45);
                             itemPos.X = initX;
                         } else {
-                            itemPos.X += 175;
+                            itemPos.X += UIHelper.ScaleInt(250);
                         }
                         toggle = !toggle;
                     }
