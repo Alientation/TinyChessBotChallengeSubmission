@@ -9,19 +9,19 @@ using System.Numerics;
     Features
     Negamax Alpha Beta Pruning
     Score board based off piece locations
+     Added Transposition table (remove move cache)
 
     NOTES
 
 
-    Against NNBot, it makes unintelligent trades that result in large eval drops. why does the search do this?
+    Against NNBot
     
 
-    Against the EloBot1, it fails at early game and late game but it is descent at random game positions
+    Against the EloBot1
     - 202 +/- 58 Elo difference
     - 119 / 17 / 31 (win rate 71.25%)
 
 
-    Add Transposition table (remove move cache)
     Add Quiesence
     Add move ordering
     possibly do killer moves and null move pruning
@@ -39,11 +39,9 @@ Ggame stage
         - piece protection
     Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
     Quiesence Searching (only applies to moves that result in a capture)
-    Optimized Searching (go down only promising paths)
     OPTIMIZE CODE
     Move Pruning
     Late Move Reductions, History Reductions
-    Store minimax traversals (edges that haven't been searched from a particular board state)
     
 */
 public class MyBotV2_2 : IChessBot {
