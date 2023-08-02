@@ -266,18 +266,9 @@ public class MyBotV3 : IChessBot {
         Span<int> priorities = stackalloc int[moves.Length];
         for (int i = 0; i < moves.Length; i++) {
             var move = moves[i];
-            int value = 0;
-            if (move == bestMove)
-                value += 100000;
-            if (move.IsCapture)
-                value += 1000 + 20 * (int)move.CapturePieceType - (int)move.MovePieceType;
-            if (move.IsCastles)
-                value += 100;
-            if (move.IsEnPassant)
-                value += 50;
-            if (move.IsPromotion)
-                value += 100 * (int) move.PromotionPieceType;
-            priorities[i] = -value;
+            board.MakeMove(move);
+            priorities[i] = -evaluate(depth);
+            board.UndoMove(move);
         }
         priorities.Sort(moves);
     }
