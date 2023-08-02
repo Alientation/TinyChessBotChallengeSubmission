@@ -137,11 +137,11 @@ public class MyBotV2_1 : IChessBot {
             if (eval > best.Item2) {
                 best = (move, eval);
                 if (depth == 0) bestMove = best;
-            }
 
-            alpha = Math.Max(alpha, eval);
-            if (alpha >= beta)
-                break;
+                alpha = Math.Max(alpha, eval);
+                if (alpha >= beta)
+                    break;
+            }
         }
         return best;
     }
