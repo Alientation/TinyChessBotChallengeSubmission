@@ -44,17 +44,13 @@ Ggame stage
     
 */
 public class MyBotV2_2 : IChessBot {
-    int timePerMove = 500;
-    Timer timer;
-    Board board;
+    Timer timer; Board board;
     bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
     static Move nullMove = Move.NullMove;
     Move bestMove = nullMove, bestRootMove;
-    int bestEval, bestRootEval;
-    private const int TranspositionTableLength = 1<<22;
+    int bestEval, bestRootEval, timePerMove = 500;
     (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[] TTable = new (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[TranspositionTableLength];
-    private const int MIN_VALUE = -1_000_000;
-    private const int MAX_VALUE = 1_000_000;
+    private const int MIN_VALUE = -1_000_000,  MAX_VALUE = 1_000_000, TranspositionTableLength = 1<<22;
 
     int[] piecePhase = { 0, 0, 1, 1, 2, 4, 0 };
     ulong[] psts = {
@@ -84,9 +80,6 @@ public class MyBotV2_2 : IChessBot {
         board = cBoard;
         timer = cTimer;
 
-        //Game stage
-        int pieceCount = BitOperations.PopCount(board.AllPiecesBitboard);
-
         #if DEBUG
         Console.WriteLine("eval " + evaluate(0));
         #endif
@@ -107,11 +100,7 @@ public class MyBotV2_2 : IChessBot {
             bestRootEval = bestEval;
         }
 
-        if (timer.MillisecondsRemaining < 50000) timePerMove = 400;
-        if (timer.MillisecondsRemaining < 35000) timePerMove = 300;
-        if (timer.MillisecondsRemaining < 25000) timePerMove = 200;
-        if (timer.MillisecondsRemaining < 15000) timePerMove = 100;
-        if (timer.MillisecondsRemaining < 05000) timePerMove = 50;
+        timePerMove = Math.Max(timer.MillisecondsRemaining / 100, 50);
 
         #if DEBUG
         Console.WriteLine($"{bestRootMove} ({bestRootEval}) | {cTimer.MillisecondsElapsedThisTurn}ms");
@@ -134,7 +123,6 @@ public class MyBotV2_2 : IChessBot {
 
         ref var transpositionTableEntry = ref TTable[board.ZobristKey % TranspositionTableLength];
         if (transpositionTableEntry.zobristKey == board.ZobristKey) {
-        
             //todo do pv on current best move cached on this board position
             prevBestMove = transpositionTableEntry.Move;
 
@@ -210,7 +198,7 @@ public class MyBotV2_2 : IChessBot {
 
         //dont want to reach these states
         if (board.IsDraw()) return -1;
-        if (board.IsInCheckmate()) return  board.IsWhiteToMove ? MIN_VALUE + depth * 10 : MAX_VALUE - depth * 10;
+        if (board.IsInCheckmate()) return  board.IsWhiteToMove ? MIN_VALUE + depth * 1000 : MAX_VALUE - depth * 1000;
 
         //add up score for pieces and their locations at current game stage
         int mg = 0, eg = 0, phase = 0;
@@ -222,7 +210,7 @@ public class MyBotV2_2 : IChessBot {
                 while (mask != 0)
                 {
                     phase += piecePhase[piece];
-                    ind = 128 * (piece - 1) + BitboardHelper.ClearAndGetIndexOfLSB(ref mask) ^ (stm ? 56 : 0);
+                    ind = 128 * piece - 128 + BitboardHelper.ClearAndGetIndexOfLSB(ref mask) ^ (stm ? 56 : 0);
                     mg += getPstVal(ind) + pieceEval[piece];
                     eg += getPstVal(ind + 64) + pieceEval[piece];
                 }
