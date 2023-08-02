@@ -54,7 +54,7 @@ namespace ChessChallenge.Application
                 PlayerType.Enemy__EloBot1 => new ChessPlayer(new EloBot1(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__EloBot2 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__HumanBot => new ChessPlayer(new HumanBot(), type, GameDurationMilliseconds),
-                PlayerType.Enemy__SelenautBot => new ChessPlayer(new Selenaut(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__SelenautBot => new ChessPlayer(new SelenautBot(), type, GameDurationMilliseconds),
                 
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
             };

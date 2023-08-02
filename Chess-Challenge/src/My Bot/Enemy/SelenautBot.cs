@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using static System.Math;
 
 
-public class Selenaut : IChessBot
+public class SelenautBot : IChessBot
 {
     private const int TRANSPOSITION_TABLE_COUNT = 4_194_304;
 
