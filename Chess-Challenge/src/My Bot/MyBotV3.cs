@@ -58,7 +58,7 @@ public class MyBotV3 : IChessBot {
     Timer timer; Board board;
     bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
     static Move nullMove = Move.NullMove;
-    Move bestMove = nullMove, bestRootMove;
+    Move bestMove, bestRootMove;
     int bestEval, bestRootEval, timePerMove = 500;
     (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[] TTable = new (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[TranspositionTableLength];
     private const int MIN_VALUE = -1_000_000,  MAX_VALUE = 1_000_000, TranspositionTableLength = 1<<22;
@@ -93,6 +93,8 @@ public class MyBotV3 : IChessBot {
         #endif
         board = cBoard;
         timer = cTimer;
+
+        bestMove = bestRootMove = nullMove;
 
         #if DEBUG
         Console.WriteLine("eval " + evaluate(0));
