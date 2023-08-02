@@ -28,6 +28,17 @@ namespace ChessChallenge.Application
             Enemy__HumanBot,
         }
 
+        public static PlayerType[] ActivePlayers = {
+                PlayerType.Human,
+                PlayerType.V1__MyBotV1, PlayerType.V1__MyBotV1NoDebug,
+                PlayerType.V1__MyBotV1_1, PlayerType.V1__MyBotV1_2, PlayerType.V1__MyBotV1_3, PlayerType.V1__MyBotV1_4,
+                PlayerType.MyBotV2,
+                PlayerType.EvilBot, 
+                PlayerType.Enemy__NNBot, PlayerType.Enemy__EloBot0,
+                PlayerType.Enemy__EloBot1, PlayerType.Enemy__EloBot2,
+                PlayerType.Enemy__HumanBot,
+        };
+
         ChessPlayer CreatePlayer(PlayerType type)
         {
             return type switch
@@ -454,7 +465,11 @@ namespace ChessChallenge.Application
 
         public void DrawOverlay()
         {
-            BotBrainCapacityUI.Draw(MenuUI.getShortName((int) player2Type), MenuUI.getShortName((int) player1Type),tokenCount2, debugTokenCount2, tokenCount1, debugTokenCount1, MaxTokenCount);
+            if (PlayerBlack.IsHuman)
+                BotBrainCapacityUI.Draw(MenuUI.getShortName((int) player1Type), MenuUI.getShortName((int) player2Type),tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2, MaxTokenCount);
+            else {
+                BotBrainCapacityUI.Draw(MenuUI.getShortName((int) player2Type), MenuUI.getShortName((int) player1Type),tokenCount2, debugTokenCount2, tokenCount1, debugTokenCount1, MaxTokenCount);
+            }
             MenuUI.DrawButtons(this);
             MatchStatsUI.DrawMatchStats(this);
         }

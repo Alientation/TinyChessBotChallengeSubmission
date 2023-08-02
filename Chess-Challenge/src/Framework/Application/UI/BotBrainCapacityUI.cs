@@ -20,7 +20,7 @@ namespace ChessChallenge.Application
             int height = UIHelper.ScaleInt(48);
             int fontSize = UIHelper.ScaleInt(30);
 
-            int startX = UIHelper.ScaleInt(1390);
+            int startX = UIHelper.ScaleInt(1200);
             // Bg
             Raylib.DrawRectangle(startX, 0, screenWidth - startX, height, background);
             Raylib.DrawRectangle(startX, screenHeight - height, screenWidth - startX, height, background);
