@@ -47,10 +47,10 @@ Ggame stage
     
 */
 public class MyBotV2_1 : IChessBot {
-    bool isBotWhite, breakBecauseTime = false;
-    int timePerMove = 500, gameStage = 0;
-    Timer cTimer;
-    Board cBoard;
+    bool breakBecauseTime = false;
+    int timePerMove = 500;
+    Timer timer;
+    Board board;
     static Move nullMove = Move.NullMove;
     Move bestMove = nullMove, bestRootMove;
     int bestEval, bestRootEval;
@@ -59,25 +59,21 @@ public class MyBotV2_1 : IChessBot {
     short currentAncientValue = 0;
     
 
-    public Move Think(Board board, Timer timer) {
+    public Move Think(Board cBoard, Timer cTimer) {
         currentAncientValue++;
         
-        cBoard = board;
-        cTimer = timer;
+        board = cBoard;
+        timer = cTimer;
 
         //Game stage
         int pieceCount = BitOperations.PopCount(board.AllPiecesBitboard);
-        int score = 32 - pieceCount + (board.PlyCount);
-        if (score < 10) gameStage = 0;
-        else if (score < 20) gameStage = 1;
-        else gameStage = 2;
 
         #if DEBUG
-        Console.WriteLine("eval " + evaluate(board) + " stage=" + gameStage);
+        Console.WriteLine("eval " + evaluate());
         #endif
         
-        for (int depth = 1; depth <= 3 * gameStage + 6 && timer.MillisecondsElapsedThisTurn < timePerMove; depth++) {
-            int val = negamax(board, depth, 0, -300000000, 300000000);
+        for (int depth = 1; depth <= 50 && timer.MillisecondsElapsedThisTurn < timePerMove; depth++) {
+            int val = negamax(depth, 0, -100000, 100000, 1);
             if (!breakBecauseTime) {
                 bestRootEval = val;
                 bestRootMove = bestMove;
@@ -101,19 +97,18 @@ public class MyBotV2_1 : IChessBot {
 
         #if DEBUG
         Console.WriteLine($"{bestRootMove} ({bestRootEval}) | {cTimer.MillisecondsElapsedThisTurn}ms");
-        Console.WriteLine($"{negamaxNodesCount} Negamax\t{boardEvalCount} boardEvals ({boardEvalCacheCount / (float) boardEvalCount}\t{tTableCount} tTable ({(tTableCacheCount - tTableExpiredCacheCount) / (float)negamaxNodesCount}))");
+        Console.WriteLine($"{negamaxNodesCount} Negamax\t{boardEvalCount} boardEvals\t{tTableCount} tTable ({(tTableCacheCount - tTableExpiredCacheCount) / (float)negamaxNodesCount}))");
         Console.WriteLine($"{tTableExpiredCacheCount} TtableExpired");
-        Console.WriteLine($"{possibleMoveCount} findMove {possibleMoveCacheCount / (float) possibleMoveCount}");
         #endif
         return bestRootMove;
     }
 
     #if DEBUG
-    int negamaxNodesCount = 0, tTableCount = 0, tTableCacheCount = 0, tTableExpiredCacheCount = 0, boardEvalCount = 0, boardEvalCacheCount = 0, moveEvalCount = 0, possibleMoveCount = 0, possibleMoveCacheCount = 0;
+    int negamaxNodesCount = 0, tTableCount = 0, tTableCacheCount = 0, tTableExpiredCacheCount = 0, boardEvalCount = 0;
     #endif
 
     //negamax with alpha beta pruning
-    public int negamax(Board board, int depthLeft, int depth, int alpha, int beta) {
+    public int negamax(int depthLeft, int depth, int alpha, int beta, int color) {
         #if DEBUG
         negamaxNodesCount++;
         #endif
@@ -143,27 +138,21 @@ public class MyBotV2_1 : IChessBot {
             #endif
         }
 
-        if (cTimer.MillisecondsElapsedThisTurn > timePerMove) {
+        if (timer.MillisecondsElapsedThisTurn > timePerMove) {
             breakBecauseTime = true;
             return 0;
         }
 
+        if (depthLeft == 0 || board.IsInCheckmate() || board.IsDraw())
+            return color * evaluate();
 
-        if (board.IsDraw()) return -100;
-        if (board.IsInCheckmate()) return board.PlyCount - 100000000;
-
-        if (depthLeft == 0 || board.IsInCheckmate() || board.IsInStalemate() || board.IsFiftyMoveDraw() || board.IsInsufficientMaterial())
-            return evaluate(board);
-
-        Move[] moves = getOrderedMoves(board, depth);
+        Move[] moves = getOrderedMoves(depth);
 
         int highestEval = -200000;
         Move highestMove = Move.NullMove;
         foreach (Move move in moves) {
             board.MakeMove(move);
-            int eval = evaluateMove(move);
-
-            eval -= negamax(board, depthLeft - 1, depth+1, -beta, -alpha);
+            int eval = negamax(depthLeft - 1, depth+1, -beta, -alpha, -color);
             
             board.UndoMove(move);
 
@@ -200,7 +189,7 @@ public class MyBotV2_1 : IChessBot {
     private readonly int[] pieceEval = { 0, 100, 310, 330, 500, 901, 30000 };
 
     //evaluates a position based on how desirable it is for the current player to play the next move
-    public int evaluate(Board board) {
+    public int evaluate() {
         #if DEBUG
         boardEvalCount++;
         #endif
@@ -208,9 +197,6 @@ public class MyBotV2_1 : IChessBot {
         //dont want to reach these states
         if (board.IsDraw()) return -10;
         if (board.IsInCheckmate()) return  board.IsWhiteToMove ? -100000 + board.PlyCount * 10 : 100000 - board.PlyCount * 10;
-
-        //debuff future moves (anything that can be achieved earlier is prioritized)
-        int eval = 40 - board.PlyCount;
 
         //add up score for pieces and their locations at current game stage
         int mg = 0, eg = 0, phase = 0;
@@ -230,46 +216,20 @@ public class MyBotV2_1 : IChessBot {
             mg = -mg;
             eg = -eg;
         }
-        return 40 - (board.PlyCount >> 2) + (mg * phase + eg * (24 - phase)) / 24;
-    }
-
-    //evaluates a move based on what it accomplishes
-    public int evaluateMove(Move move) {
-        #if DEBUG
-        moveEvalCount++;
-        #endif
-        if (move.IsCapture) return (move.CapturePieceType - move.MovePieceType) * 10;
-        if (move.IsCastles) return 160;
-        if (move.IsEnPassant) return 60;
-        if (move.IsPromotion) return pieceEval[(int)move.PromotionPieceType];
-        return 0;
+        return (mg * phase + eg * (24 - phase)) / 24;
     }
 
     //todo add move ordering
-    Dictionary<ulong,Move[]> orderMovesCache = new Dictionary<ulong,Move[]>(100000);
-    public Move[] getOrderedMoves(Board board, int depth) {
-        #if DEBUG
-        possibleMoveCount++;
-        #endif
-
+    public Move[] getOrderedMoves(int depth) {
         //use pv (principal variation) as first move in array
         //use stack alloc to store array (order by captures then non captures)
 
-        if (orderMovesCache.ContainsKey(board.ZobristKey)) {
-            #if DEBUG
-            possibleMoveCacheCount++;
-            #endif
-            return orderMovesCache[board.ZobristKey];
-        }
 
         Move[] moves = board.GetLegalMoves();
-        orderMovesCache[board.ZobristKey] = moves;
-
         return moves;
     }
 
-    int getPstVal(int psq)
-    {
+    int getPstVal(int psq) {
         return (int)(((psts[psq / 10] >> (6 * (psq % 10))) & 63) - 20) * 8;
     }
 
