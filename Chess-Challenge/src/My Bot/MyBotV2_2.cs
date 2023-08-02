@@ -157,7 +157,7 @@ public class MyBotV2_2 : IChessBot {
             }
 
             board.MakeMove(move);
-            int eval = -negamax(depthLeft - 1, depth+1, -beta, -alpha, -color);
+            int eval = -negamax(depthLeft - 1, depth+1, -beta, -alpha, -color) + (move.IsPromotion ? (int) move.PromotionPieceType : 0);
             board.UndoMove(move);
 
             if (eval > highestEval) {
