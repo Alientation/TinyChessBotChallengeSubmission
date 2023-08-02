@@ -21,7 +21,7 @@ namespace ChessChallenge.Application
             Human,
             V1__MyBotV1, V1__MyBotV1NoDebug,
             V1__MyBotV1_1, V1__MyBotV1_2, V1__MyBotV1_3, V1__MyBotV1_4,
-            MyBotV2,
+            MyBotV2, MyBotV2_1,
             EvilBot, 
             Enemy__NNBot, Enemy__EloBot0,
             Enemy__EloBot1, Enemy__EloBot2,
@@ -29,10 +29,11 @@ namespace ChessChallenge.Application
         }
 
         public static PlayerType[] ActivePlayers = {
-                PlayerType.Human, PlayerType.MyBotV2,
-                PlayerType.EvilBot, PlayerType.Enemy__NNBot, 
-                PlayerType.Enemy__EloBot0, PlayerType.Enemy__HumanBot,
-                PlayerType.Enemy__EloBot1, PlayerType.Enemy__EloBot2,
+                PlayerType.Human,           PlayerType.MyBotV2,
+                PlayerType.Enemy__NNBot,    PlayerType.MyBotV2_1,
+                PlayerType.EvilBot,         PlayerType.Enemy__EloBot0,
+                PlayerType.Enemy__EloBot1,  PlayerType.Enemy__HumanBot,
+                PlayerType.Enemy__EloBot2,  
         };
 
         ChessPlayer CreatePlayer(PlayerType type)
