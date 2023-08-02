@@ -1,5 +1,6 @@
 # TinyChessBotChallengeSubmission
 My submission for Sebastian Lague's Tiny Chess Bot Challenge
+Also containing several changes to the engine supplied to allow for easier bot testing
 https://github.com/SebLague/Chess-Challenge
 
 Features Multiple Different Bots
