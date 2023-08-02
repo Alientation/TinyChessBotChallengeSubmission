@@ -21,7 +21,7 @@ namespace ChessChallenge.Application
             Human,
             V1__MyBotV1, V1__MyBotV1NoDebug,
             V1__MyBotV1_1, V1__MyBotV1_2, V1__MyBotV1_3, V1__MyBotV1_4,
-            MyBotV2, MyBotV2_1,
+            MyBotV2, MyBotV2_1, MyBotV2_2,
             EvilBot, 
             Enemy__NNBot, Enemy__EloBot0,
             Enemy__EloBot1, Enemy__EloBot2,
@@ -31,9 +31,10 @@ namespace ChessChallenge.Application
         public static PlayerType[] ActivePlayers = {
                 PlayerType.Human,           PlayerType.MyBotV2,
                 PlayerType.Enemy__NNBot,    PlayerType.MyBotV2_1,
-                PlayerType.EvilBot,         PlayerType.Enemy__HumanBot,
-                PlayerType.Enemy__EloBot1,  PlayerType.Enemy__EloBot0,
-                PlayerType.Enemy__EloBot2,  PlayerType.Enemy__SelenautBot,
+                PlayerType.EvilBot,         PlayerType.MyBotV2_2,
+                PlayerType.Enemy__EloBot0,  PlayerType.Enemy__SelenautBot,
+                PlayerType.Enemy__EloBot1,  PlayerType.Enemy__HumanBot, 
+                PlayerType.Enemy__EloBot2,
         };
 
         ChessPlayer CreatePlayer(PlayerType type)
@@ -48,6 +49,7 @@ namespace ChessChallenge.Application
                 PlayerType.V1__MyBotV1_4 => new ChessPlayer(new MyBotV1_4(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV2 => new ChessPlayer(new MyBotV2(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV2_1 => new ChessPlayer(new MyBotV2_1(), type, GameDurationMilliseconds),
+                PlayerType.MyBotV2_2 => new ChessPlayer(new MyBotV2_2(), type, GameDurationMilliseconds),
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__NNBot => new ChessPlayer(new NNBot(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__EloBot0 => new ChessPlayer(new EloBot0(), type, GameDurationMilliseconds),
