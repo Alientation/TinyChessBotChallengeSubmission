@@ -13,7 +13,7 @@ Features Multiple Different Bots
 - Learning how Minimax ACTUALLY works by trying (and failing) a Negamax implementation
 
 ### V1_4
-- Working Negamax (flawed board evaluations - sometimes stupid trades are made when they should not have happened, ie queen for a pawn)
+- Working Negamax (flawed board evaluations - sometimes stupid trades are made when they should not have happened, ie queen for a knight) - FUTURE ME: realized this was because of a search ending in a nonquiet state (quiescence fixed this)
 - Piece Square Table implementation (will need to compress into ulongs and unpack at runtime later)
 
 ### V2, V2_1, 
