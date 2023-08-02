@@ -47,6 +47,7 @@ namespace ChessChallenge.Application
                 PlayerType.V1__MyBotV1_3 => new ChessPlayer(new MyBotV1_3(), type, GameDurationMilliseconds),
                 PlayerType.V1__MyBotV1_4 => new ChessPlayer(new MyBotV1_4(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV2 => new ChessPlayer(new MyBotV2(), type, GameDurationMilliseconds),
+                PlayerType.MyBotV2_1 => new ChessPlayer(new MyBotV2_1(), type, GameDurationMilliseconds),
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__NNBot => new ChessPlayer(new NNBot(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__EloBot0 => new ChessPlayer(new EloBot0(), type, GameDurationMilliseconds),
