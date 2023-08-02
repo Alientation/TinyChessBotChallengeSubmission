@@ -276,6 +276,8 @@ namespace ChessChallenge.Application
                 path = Path.Combine(path, t);
             path = path + ".cs";
 
+            if (botType == PlayerType.EvilBot) path = Path.Combine(Directory.GetCurrentDirectory(), "src", "Evil Bot", "EvilBot.cs");
+
             using StreamReader reader = new(path);
             string txt = reader.ReadToEnd();
             return TokenCounter.CountTokens(txt);
@@ -452,7 +454,7 @@ namespace ChessChallenge.Application
 
         public void DrawOverlay()
         {
-            BotBrainCapacityUI.Draw(MenuUI.getShortName((int) player1Type), MenuUI.getShortName((int) player2Type) + "",tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2, MaxTokenCount);
+            BotBrainCapacityUI.Draw(MenuUI.getShortName((int) player2Type), MenuUI.getShortName((int) player1Type),tokenCount2, debugTokenCount2, tokenCount1, debugTokenCount1, MaxTokenCount);
             MenuUI.DrawButtons(this);
             MatchStatsUI.DrawMatchStats(this);
         }
