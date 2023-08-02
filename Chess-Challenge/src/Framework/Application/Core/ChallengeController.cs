@@ -41,9 +41,9 @@ namespace ChessChallenge.Application
                 PlayerType.MyBotV2 => new ChessPlayer(new MyBotV2(), type, GameDurationMilliseconds),
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__NNBot => new ChessPlayer(new NNBot(), type, GameDurationMilliseconds),
-                PlayerType.Enemy__EloBot0 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
-                PlayerType.Enemy__EloBot1 => new ChessPlayer(new EnemyEloBot1(), type, GameDurationMilliseconds),
-                PlayerType.Enemy__EloBot2 => new ChessPlayer(new EnemyEloBot2(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__EloBot0 => new ChessPlayer(new EloBot0(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__EloBot1 => new ChessPlayer(new EloBot1(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__EloBot2 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__HumanBot => new ChessPlayer(new HumanBot(), type, GameDurationMilliseconds),
                 
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
@@ -85,14 +85,18 @@ namespace ChessChallenge.Application
         // Other
         readonly BoardUI boardUI;
         readonly MoveGenerator moveGenerator;
-        readonly int tokenCount;
-        readonly int debugTokenCount;
+        int tokenCount1;
+        int debugTokenCount1;
+        int tokenCount2;
+        int debugTokenCount2;
+        
         readonly StringBuilder pgns;
 
         public ChallengeController()
         {
             Log($"Launching Chess-Challenge version {Settings.Version}");
-            (tokenCount, debugTokenCount) = GetTokenCount(botToTest1);
+            (tokenCount1, debugTokenCount1) = GetTokenCount(botToTest1);
+            (tokenCount2, debugTokenCount2) = GetTokenCount(botToTest2);
             Warmer.Warm();
 
             rng = new Random();
@@ -132,6 +136,9 @@ namespace ChessChallenge.Application
 
         public void StartNewGame(PlayerType whiteType, PlayerType blackType)
         {
+            (tokenCount1, debugTokenCount1) = GetTokenCount(botToTest1);
+            (tokenCount2, debugTokenCount2) = GetTokenCount(botToTest2);
+
             // End any ongoing game
             EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
             gameID = rng.Next();
@@ -444,7 +451,7 @@ namespace ChessChallenge.Application
 
         public void DrawOverlay()
         {
-            BotBrainCapacityUI.Draw(tokenCount, debugTokenCount, MaxTokenCount);
+            BotBrainCapacityUI.Draw(MenuUI.getShortName((int) botToTest1), MenuUI.getShortName((int) botToTest2) + "",tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2, MaxTokenCount);
             MenuUI.DrawButtons(this);
             MatchStatsUI.DrawMatchStats(this);
         }

@@ -7,7 +7,7 @@ namespace ChessChallenge.Example
     Negamax bot with some basic piece evaluation
     */
 
-    public class EnemyEloBot1 : IChessBot
+    public class EloBot1 : IChessBot
     {
         //                     .  P    K    B    R    Q    K
         int[] kPieceValues = { 0, 100, 300, 310, 500, 900, 10000 };
