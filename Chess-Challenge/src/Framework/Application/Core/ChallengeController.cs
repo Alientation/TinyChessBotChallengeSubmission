@@ -167,8 +167,8 @@ namespace ChessChallenge.Application
             // UI Setup
             boardUI.UpdatePosition(board);
             boardUI.ResetSquareColours();
-            (tokenCount1, debugTokenCount1) = GetTokenCount(botToTest1);
-            (tokenCount2, debugTokenCount2) = GetTokenCount(botToTest2);
+            (tokenCount1, debugTokenCount1) = GetTokenCount(player1Type);
+            (tokenCount2, debugTokenCount2) = GetTokenCount(player2Type);
             SetBoardPerspective();
 
             // Start
@@ -270,7 +270,7 @@ namespace ChessChallenge.Application
         static (int totalTokenCount, int debugTokenCount) GetTokenCount(PlayerType botType)
         {   
             if (botType == PlayerType.Human) return (0,0);
-            
+
             string path = Path.Combine(Directory.GetCurrentDirectory(), "src", "My Bot");
             foreach (string t in (botType + "").Split("__"))
                 path = Path.Combine(path, t);
@@ -452,7 +452,7 @@ namespace ChessChallenge.Application
 
         public void DrawOverlay()
         {
-            BotBrainCapacityUI.Draw(MenuUI.getShortName((int) botToTest1), MenuUI.getShortName((int) botToTest2) + "",tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2, MaxTokenCount);
+            BotBrainCapacityUI.Draw(MenuUI.getShortName((int) player1Type), MenuUI.getShortName((int) player2Type) + "",tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2, MaxTokenCount);
             MenuUI.DrawButtons(this);
             MatchStatsUI.DrawMatchStats(this);
         }
