@@ -54,18 +54,14 @@ public class MyBotV2_1 : IChessBot {
     static Move nullMove = Move.NullMove;
     Move bestMove = nullMove, bestRootMove;
     int bestEval, bestRootEval;
-    (ulong zobristKey, short depth, int eval, byte flag, Move Move, short ancient)[] TTable = new (ulong zobristKey, short depth, int eval, byte flag, Move Move, short ancient)[1<<21];
-    int maxDepthDifferenceFromCurrentAllowedToBeUsedFromTTable = 2;
-    short currentAncientValue = 0, maxAncientDifferenceAllowed = 6;
+    private const int TranspositionTableLength = 1<<22;
+    (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[] TTable = new (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[TranspositionTableLength];
+    short currentAncientValue = 0;
     
 
     public Move Think(Board board, Timer timer) {
-        if (cTimer == null) {
-            isBotWhite = board.IsWhiteToMove;
-            if (!isBotWhite)
-                for (int i = 0; i < pieceValueLocation.Length; i++)
-                    Array.Reverse(pieceValueLocation[i]);
-        }
+        currentAncientValue++;
+        
         cBoard = board;
         cTimer = timer;
 
@@ -80,7 +76,7 @@ public class MyBotV2_1 : IChessBot {
         Console.WriteLine("eval " + evaluate(board) + " stage=" + gameStage);
         #endif
         
-        for (int depth = 1; depth <= 3 * gameStage + 5 && timer.MillisecondsElapsedThisTurn < timePerMove; depth++) {
+        for (int depth = 1; depth <= 3 * gameStage + 6 && timer.MillisecondsElapsedThisTurn < timePerMove; depth++) {
             int val = negamax(board, depth, 0, -300000000, 300000000);
             if (!breakBecauseTime) {
                 bestRootEval = val;
@@ -104,26 +100,55 @@ public class MyBotV2_1 : IChessBot {
         if (timer.MillisecondsRemaining < 05000) timePerMove = 50;
 
         #if DEBUG
-        Console.WriteLine("Chosen Move " + bestRootMove + " (" + bestRootEval + ") -> [" + "nodes=" + negamaxNodesCount + ", eval=" + boardEvalCount + " (" + 
-        (boardEvalCacheCount / (float) boardEvalCount) + "), moveEval=" + moveEvalCount + ", findMove=" + possibleMoveCount + " (" + (possibleMoveCacheCount / (float) possibleMoveCount) + ")"); 
+        Console.WriteLine($"{bestRootMove} ({bestRootEval}) | {cTimer.MillisecondsElapsedThisTurn}ms");
+        Console.WriteLine($"{negamaxNodesCount} Negamax\t{boardEvalCount} boardEvals ({boardEvalCacheCount / (float) boardEvalCount}\t{tTableCount} tTable ({(tTableCacheCount - tTableExpiredCacheCount) / (float)negamaxNodesCount}))");
+        Console.WriteLine($"{tTableExpiredCacheCount} TtableExpired");
+        Console.WriteLine($"{possibleMoveCount} findMove {possibleMoveCacheCount / (float) possibleMoveCount}");
         #endif
         return bestRootMove;
     }
 
     #if DEBUG
-    int negamaxNodesCount = 0, boardEvalCount = 0, boardEvalCacheCount = 0, moveEvalCount = 0, possibleMoveCount = 0, possibleMoveCacheCount = 0;
+    int negamaxNodesCount = 0, tTableCount = 0, tTableCacheCount = 0, tTableExpiredCacheCount = 0, boardEvalCount = 0, boardEvalCacheCount = 0, moveEvalCount = 0, possibleMoveCount = 0, possibleMoveCacheCount = 0;
     #endif
 
     //negamax with alpha beta pruning
     public int negamax(Board board, int depthLeft, int depth, int alpha, int beta) {
+        #if DEBUG
+        negamaxNodesCount++;
+        #endif
+        Move prevBestMove;
+
+        ref var transpositionTableEntry = ref TTable[board.ZobristKey % TranspositionTableLength];
+        if (transpositionTableEntry.zobristKey == board.ZobristKey) {
+        
+            //todo do pv on current best move cached on this board position
+            prevBestMove = transpositionTableEntry.Move;
+
+            #if DEBUG
+            tTableCacheCount++;
+            #endif
+
+            if (transpositionTableEntry.depthSearchedAfter >= depthLeft) {
+                if (transpositionTableEntry.flag == 0)
+                    return transpositionTableEntry.eval;
+                else if (transpositionTableEntry.flag == 1 && transpositionTableEntry.eval >= beta)
+                    return transpositionTableEntry.eval;
+                else if (transpositionTableEntry.flag == 2 && transpositionTableEntry.eval <= alpha)
+                    return transpositionTableEntry.eval;
+            }
+
+            #if DEBUG
+            tTableExpiredCacheCount++;
+            #endif
+        }
+
         if (cTimer.MillisecondsElapsedThisTurn > timePerMove) {
             breakBecauseTime = true;
             return 0;
         }
 
-        #if DEBUG
-        negamaxNodesCount++;
-        #endif
+
         if (board.IsDraw()) return -100;
         if (board.IsInCheckmate()) return board.PlyCount - 100000000;
 
@@ -133,6 +158,7 @@ public class MyBotV2_1 : IChessBot {
         Move[] moves = getOrderedMoves(board, depth);
 
         int highestEval = -200000;
+        Move highestMove = Move.NullMove;
         foreach (Move move in moves) {
             board.MakeMove(move);
             int eval = evaluateMove(move);
@@ -143,6 +169,8 @@ public class MyBotV2_1 : IChessBot {
 
             if (eval > highestEval) {
                 highestEval = eval;
+                highestMove = move;
+
                 if (depth == 0) {
                     bestMove = move;
                     bestEval = highestEval;
@@ -153,11 +181,23 @@ public class MyBotV2_1 : IChessBot {
                 break;
         }
 
+
+        #if DEBUG
+        tTableCount++;
+        #endif
+
+        transpositionTableEntry.depthSearchedAfter = depthLeft;
+        transpositionTableEntry.eval = highestEval;
+        transpositionTableEntry.Move = highestMove;
+        transpositionTableEntry.flag = 0;
+        if (highestEval <= beta) transpositionTableEntry.flag = 1;
+        if (highestEval >= alpha) transpositionTableEntry.flag = 2;
+        transpositionTableEntry.zobristKey = board.ZobristKey;
+
         return highestEval;
     }
 
-    int[] pieceValue = { 0, 110, 300, 320, 520, 910, 10000 };
-    Dictionary<ulong,int> boardEvalCache = new Dictionary<ulong,int>(1000000);
+    private readonly int[] pieceEval = { 0, 100, 310, 330, 500, 901, 30000 };
 
     //evaluates a position based on how desirable it is for the current player to play the next move
     public int evaluate(Board board) {
@@ -165,39 +205,32 @@ public class MyBotV2_1 : IChessBot {
         boardEvalCount++;
         #endif
 
-        //board eval cache
-        if (boardEvalCache.ContainsKey(board.ZobristKey)) {
-            #if DEBUG
-            boardEvalCacheCount++;
-            #endif
-            return boardEvalCache[board.ZobristKey];
-        }
-
         //dont want to reach these states
-        if (board.IsDraw()) return -100;
-        if (board.IsInCheckmate()) return  board.IsWhiteToMove == isBotWhite ? -100000 : 100000;
+        if (board.IsDraw()) return -10;
+        if (board.IsInCheckmate()) return  board.IsWhiteToMove ? -100000 + board.PlyCount * 10 : 100000 - board.PlyCount * 10;
 
         //debuff future moves (anything that can be achieved earlier is prioritized)
-        int eval = 0;//40 - board.PlyCount;
-
-        //only give score for checking if not in end game (end game focus on piece structure/pawn promotion)
-        //if (board.IsInCheck() && gameStage < 2) eval -= 50;
+        int eval = 40 - board.PlyCount;
 
         //add up score for pieces and their locations at current game stage
-        foreach (bool flag in new[] {true, false}) {
-            int piecesEval = 0;
+        int mg = 0, eg = 0, phase = 0;
+
+        foreach (bool stm in new[] { true, false }) {
             for (var p = PieceType.Pawn; p <= PieceType.King; p++) {
-                ulong mask = board.GetPieceBitboard(p, flag);
-                while (mask != 0) {
-                    int index = BitboardHelper.ClearAndGetIndexOfLSB(ref mask);
-                    //piecesEval += pieceValue[(int)p] + pieceValueLocation[((int)p - 1) * 3 + gameStage][index];
-                    piecesEval += pieceValue[(int)p];
+                int piece = (int)p, ind;
+                ulong mask = board.GetPieceBitboard(p, stm);
+                while (mask != 0)
+                {
+                    phase += piecePhase[piece];
+                    ind = 128 * (piece - 1) + BitboardHelper.ClearAndGetIndexOfLSB(ref mask) ^ (stm ? 56 : 0);
+                    mg += getPstVal(ind) + pieceEval[piece];
+                    eg += getPstVal(ind + 64) + pieceEval[piece];
                 }
-                eval += piecesEval * (flag == board.IsWhiteToMove ? 1 : -1);
             }
+            mg = -mg;
+            eg = -eg;
         }
-        boardEvalCache[board.ZobristKey] = eval;
-        return eval;
+        return 40 - (board.PlyCount >> 2) + (mg * phase + eg * (24 - phase)) / 24;
     }
 
     //evaluates a move based on what it accomplishes
@@ -205,10 +238,10 @@ public class MyBotV2_1 : IChessBot {
         #if DEBUG
         moveEvalCount++;
         #endif
-        //if (move.IsCapture) return move.CapturePieceType - move.MovePieceType;
-        //if (move.IsCastles) return 160;
-        //if (move.IsEnPassant) return 60;
-        //if (move.IsPromotion) return pieceValue[(int)move.PromotionPieceType];
+        if (move.IsCapture) return (move.CapturePieceType - move.MovePieceType) * 10;
+        if (move.IsCastles) return 160;
+        if (move.IsEnPassant) return 60;
+        if (move.IsPromotion) return pieceEval[(int)move.PromotionPieceType];
         return 0;
     }
 
@@ -234,202 +267,36 @@ public class MyBotV2_1 : IChessBot {
 
         return moves;
     }
-    #if DEBUG
-    int[][] pieceValueLocation = new int[][] {
-        new int[] { //pawn
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            05,05,05,06,06,05,05,05,
-            20,21,45,60,60,45,21,20,
-            10,11,15,20,20,15,11,10,
-            00,00,00,00,00,00,00,00,
-        },
-        new int[] {
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            05,05,15,16,16,15,15,15,
-            05,05,20,20,20,25,21,20,
-            20,21,45,60,60,45,21,20,
-            05,05,20,20,20,25,21,20,
-            09,07,15,10,10,15,11,15,
-            30,30,10,05,05,10,10,10,
-        },
-        new int[] {
-            60,60,35,30,30,35,60,60,
-            40,40,35,25,25,35,40,40,
-            10,15,25,15,15,25,15,10,
-            30,30,10,05,05,10,30,30,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-        },
 
-
-        new int[] { //knight
-            00,00,00,00,00,00,00,00,
-            00,05,05,05,05,05,05,00,
-            00,05,07,07,07,07,05,00,
-            00,05,09,09,09,09,05,00,
-            00,05,10,12,12,10,05,00,
-            00,05,15,10,10,15,05,00,
-            00,05,05,05,05,05,05,00,
-            00,00,00,00,00,00,00,00,
-        },
-        new int[] {
-            00,00,00,00,00,00,00,00,
-            00,05,05,05,05,05,05,00,
-            00,05,15,10,10,15,05,00,
-            00,05,15,15,15,15,05,00,
-            00,05,15,15,15,15,05,00,
-            00,05,15,10,10,15,05,00,
-            00,05,05,05,05,05,05,00,
-            00,00,00,00,00,00,00,00,
-        },
-        new int[] {
-            00,00,05,05,05,05,00,00,
-            00,05,10,10,10,10,05,00,
-            05,10,15,15,15,15,10,05,
-            00,10,15,15,15,15,10,00,
-            00,10,15,15,15,15,10,00,
-            00,10,15,15,15,15,10,00,
-            00,05,05,05,05,05,05,00,
-            00,00,00,00,00,00,00,00,
-        },
-
-
-        new int[] { //bishop
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            20,00,10,00,00,10,00,20,
-            00,30,00,00,00,00,30,00,
-            00,00,10,00,00,10,00,00,
-        },
-        new int[] {
-            -20,-10,-10,-10,-10,-10,-10,-20,
-            -10,  0,  0,  0,  0,  0,  0,-10,
-            -10,  0,  5, 10, 10,  5,  0,-10,
-            -10,  5,  5, 10, 10,  5,  5,-10,
-            -10,  0, 10, 10, 10, 10,  0,-10,
-            -10, 10, 10, 10, 10, 10, 10,-10,
-            -10,  5,  0,  0,  0,  0,  5,-10,
-            -20,-10,-40,-10,-10,-40,-10,-20,
-        },
-        new int[] {
-            -10,-05,-05,-05,-05,-05,-05,-10,
-            -05,  0,  0,  0,  0,  0,  0,-05,
-            -05,  0,  5, 10, 10,  5,  0,-05,
-            -05,  5,  5, 10, 10,  5,  5,-05,
-            -05,  0, 10, 10, 10, 10,  0,-05,
-            -05, 10, 10, 10, 10, 10, 10,-05,
-            -05,  5,  0,  0,  0,  0,  5,-05,
-            -10,-05,-20,-05,-05,-20,-05,-10,
-        },
-
-
-        new int[] { //rook
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-        },
-        new int[] {
-            00,00,00,00,00,00,00,00,
-            15,15,15,20,20,15,15,15,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,10,10,10,00,00,
-        },
-        new int[] {
-            00,00,00,00,00,00,00,00,
-            15,15,15,20,20,15,15,15,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,10,10,10,00,00,
-        },
-
-
-        new int[] { //queen
-            00,00,00,00,00,00,00,00,
-            -8,-6,-5,-3,-3,-5,-6,-8,
-            -8,-8,-6,-5,-5,-6,-8,-8,
-            00,00,00,-3,-3,00,00,00,
-            01,00,00,00,00,00,00,01,
-            00,05,00,00,00,00,05,00,
-            00,00,10,00,00,10,00,00,
-            00,00,00,20,20,00,00,00,
-        },
-        new int[] {
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            10,10,10,15,15,10,10,10,
-            15,15,15,20,20,15,15,15,
-            10,10,10,15,15,10,10,10,
-            00,00,00,00,00,00,00,00,
-            00,00,00,20,20,20,00,00,
-        },
-        new int[] {
-            00,00,00,00,00,00,00,00,
-            15,15,15,20,20,15,15,15,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,00,00,00,00,00,
-            00,00,00,10,10,10,00,00,
-        },
-
-
-        new int[] { //king
-            -30, -40, -40, -50, -50, -40, -40, -30,
-            -30, -40, -40, -50, -50, -40, -40, -30,
-            -30, -40, -40, -50, -50, -40, -40, -30,
-            -30, -40, -40, -50, -50, -40, -40, -30,
-            -20, -30, -30, -40, -40, -30, -30, -20,
-            -10, -20, -20, -20, -20, -20, -20, -10, 
-             20,  20,   0,   0,   0,   0,  20,  20,
-             20,  30,  10,   0,   0,  10,  30,  20
-        },
-        new int[] {
-            -30, -40, -40, -50, -50, -40, -40, -30,
-            -30, -40, -40, -50, -50, -40, -40, -30,
-            -30, -40, -40, -50, -50, -40, -40, -30,
-            -30, -40, -40, -50, -50, -40, -40, -30,
-            -20, -30, -30, -40, -40, -30, -30, -20,
-            -10, -20, -20, -20, -20, -20, -20, -10, 
-             20,  20,   0,   0,   0,   0,  20,  20,
-             20,  30,  10,   0,   0,  10,  30,  20
-        },
-        new int[] {
-            -50,-40,-30,-20,-20,-30,-40,-50,
-            -30,-20,-10,  0,  0,-10,-20,-30,
-            -30,-10, 20, 30, 30, 20,-10,-30,
-            -30,-10, 30, 40, 40, 30,-10,-30,
-            -30,-10, 30, 40, 40, 30,-10,-30,
-            -30,-10, 20, 30, 30, 20,-10,-30,
-            -30,-30,  0,  0,  0,  0,-30,-30,
-            -50,-30,-30,-30,-30,-30,-30,-50
-        },
-    };
+    int getPstVal(int psq)
+    {
+        return (int)(((psts[psq / 10] >> (6 * (psq % 10))) & 63) - 20) * 8;
+    }
 
     public void GameOver() {
         
     }
-    #endif
+
+    int[] piecePhase = { 0, 0, 1, 1, 2, 4, 0 };
+    ulong[] psts = {
+    657614902731556116, 420894446315227099, 384592972471695068, 312245244820264086,
+    364876803783607569, 366006824779723922, 366006826859316500, 786039115310605588,
+    421220596516513823, 366011295806342421, 366006826859316436, 366006896669578452,
+    162218943720801556, 440575073001255824, 657087419459913430, 402634039558223453,
+    347425219986941203, 365698755348489557, 311382605788951956, 147850316371514514,
+    329107007234708689, 402598430990222677, 402611905376114006, 329415149680141460,
+    257053881053295759, 291134268204721362, 492947507967247313, 367159395376767958,
+    384021229732455700, 384307098409076181, 402035762391246293, 328847661003244824,
+    365712019230110867, 366002427738801364, 384307168185238804, 347996828560606484,
+    329692156834174227, 365439338182165780, 386018218798040211, 456959123538409047,
+    347157285952386452, 365711880701965780, 365997890021704981, 221896035722130452,
+    384289231362147538, 384307167128540502, 366006826859320596, 366006826876093716,
+    366002360093332756, 366006824694793492, 347992428333053139, 457508666683233428,
+    329723156783776785, 329401687190893908, 366002356855326100, 366288301819245844,
+    329978030930875600, 420621693221156179, 422042614449657239, 384602117564867863,
+    419505151144195476, 366274972473194070, 329406075454444949, 275354286769374224,
+    366855645423297932, 329991151972070674, 311105941360174354, 256772197720318995,
+    365993560693875923, 258219435335676691, 383730812414424149, 384601907111998612,
+    401758895947998613, 420612834953622999, 402607438610388375, 329978099633296596,
+    67159620133902};
 }
