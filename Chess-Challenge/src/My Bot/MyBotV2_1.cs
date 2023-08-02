@@ -13,7 +13,7 @@ using System.Numerics;
 
     NOTES
 
-    Massive thanks to Selenaut Bot 
+    Massive help from selenaut bot to fix issues with my negamax/eval functions trying to trade a queen for a knight and losing so many pieces without reason
 
 
     Against NNBot
