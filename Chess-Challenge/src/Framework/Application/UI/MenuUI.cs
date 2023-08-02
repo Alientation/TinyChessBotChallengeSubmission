@@ -33,6 +33,8 @@ namespace ChessChallenge.Application
                 controller.StartTournament();
             }
 
+            buttonPos.Y = UIHelper.ScaleInt(450);
+
             if (selectedPlayer1 >= 0 && selectedPlayer2 >= 0) {
                 if (NextButtonInRow("Play " + getShortName(selectedPlayer1) + " vs " + getShortName(selectedPlayer2), ref buttonPos, spacingY, buttonSize)) {
                     if ((ChallengeController.PlayerType) selectedPlayer1 == ChallengeController.PlayerType.Human || 
@@ -42,8 +44,6 @@ namespace ChessChallenge.Application
                         controller.StartNewBotMatch((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
                 }
             }
-
-            buttonPos.Y = UIHelper.ScaleInt(450);
 
             if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize)) {
                 controller.StartNewGame(ChallengeController.PlayerType.Human,ChallengeController.PlayerType.Human);
