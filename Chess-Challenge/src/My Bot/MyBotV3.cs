@@ -15,6 +15,13 @@ using System.Numerics;
     When its end game, it incorrectly values moving the king as winning the game instead of promoting pawns and checkmating with queens.. this does not make sense. might be a problem with the Ttables
 
 
+    Against MyBotV2_2
+    44 / 18 / -2
+    0 timeouts, 0 illegal moves,
+    win rate (68.75%)
+    elo difference (273 +/- 84)
+
+
     Against NNBot
     
 
