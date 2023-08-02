@@ -502,7 +502,7 @@ namespace ChessChallenge.Application
         }
 
         static string GetPlayerName(ChessPlayer player) => GetPlayerName(player.PlayerType);
-        static string GetPlayerName(PlayerType type) => type.ToString();
+        static string GetPlayerName(PlayerType type) => (type.ToString()).Split("__")[(type.ToString()).Split("__").Length-1];
 
         public void StartNewBotMatch(PlayerType botTypeA, PlayerType botTypeB)
         {
