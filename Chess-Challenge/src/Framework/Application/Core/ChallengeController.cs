@@ -144,6 +144,17 @@ namespace ChessChallenge.Application
             tournamentScores = new int[tournament.Length,5];
         }
 
+        public void EndGame() {
+            EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
+            gameID = rng.Next();
+
+            // Stop prev task and create a new one
+            if (RunBotsOnSeparateThread) {
+                // Allow task to terminate
+                botTaskWaitHandle.Set();
+            }
+        }
+
         public void StartNewGame(PlayerType whiteType, PlayerType blackType)
         {
             // End any ongoing game

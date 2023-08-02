@@ -46,6 +46,7 @@ namespace ChessChallenge.Application
             }
 
             if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize)) {
+                controller.EndGame();
                 controller.StartNewGame(ChallengeController.PlayerType.Human,ChallengeController.PlayerType.Human);
             }
 
