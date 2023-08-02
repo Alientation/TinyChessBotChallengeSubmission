@@ -1,5 +1,6 @@
 using ChessChallenge.API;
 using System;
+using System.Linq;
 using System.Numerics;
 
 /*
@@ -80,6 +81,9 @@ public class MyBotV2_2 : IChessBot {
     private readonly int[] pieceEval = { 0, 100, 310, 330, 500, 901, 20000};
 
     public Move Think(Board cBoard, Timer cTimer) {
+        #if DEBUG
+        negamaxNodesCount = 0; tTableCacheCount = 0; tTableExpiredCacheCount = 0; boardEvalCount = 0;
+        #endif
         board = cBoard;
         timer = cTimer;
 
@@ -148,17 +152,23 @@ public class MyBotV2_2 : IChessBot {
             #endif
         }
 
-        if (depthLeft == 0 || board.IsInCheckmate() || board.IsDraw())
-            return evaluate(depth);
+        bool doQuiescence = depthLeft <= 0;
 
-        Move[] moves = getOrderedMoves(prevBestMove);
+        /*ulong myPieces = board.IsWhiteToMove ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
+        var isSquareAttacked = new Square[BitOperations.PopCount(myPieces)];
+        for (int i = 0; i < isSquareAttacked.Length; i++)
+            isSquareAttacked[i] = new Square(BitboardHelper.ClearAndGetIndexOfLSB(ref myPieces));*/
+
+        Move[] moves = doQuiescence ? board.GetLegalMoves(doQuiescence && !board.IsInCheck()) : getOrderedMoves(prevBestMove);
+
+        if (moves.Length == 0 || doQuiescence)
+            return evaluate(depth);
 
         int highestEval = MIN_VALUE;
         Move highestMove = Move.NullMove;
         foreach (Move move in moves) {
-            if (shouldStop) {
+            if (shouldStop)
                 return 0;
-            }
 
             board.MakeMove(move);
             int eval = -negamax(depthLeft - 1, depth+1, -beta, -alpha) + (move.IsPromotion ? 20 * (int) move.PromotionPieceType : 0);
