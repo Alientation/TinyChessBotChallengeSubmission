@@ -30,6 +30,8 @@ Ggame stage
 /*
     TODO
 
+    Go back and correct MyBotV2_1's negamax/eval functions because i think they are flawed and is the reason it blundered pieces
+
     sort moves when getting possible moves
     add more features to board evaluation
         - pawn advancement
@@ -157,7 +159,7 @@ public class MyBotV2_2 : IChessBot {
             }
 
             board.MakeMove(move);
-            int eval = -negamax(depthLeft - 1, depth+1, -beta, -alpha, -color) + (move.IsPromotion ? (int) move.PromotionPieceType : 0);
+            int eval = -negamax(depthLeft - 1, depth+1, -beta, -alpha, -color) + (move.IsPromotion ? 20 * (int) move.PromotionPieceType : 0);
             board.UndoMove(move);
 
             if (eval > highestEval) {
