@@ -52,7 +52,7 @@ Ggame stage
     Late Move Reductions, History Reductions
     
 */
-public class MyBotV3 : IChessBot {
+public class MyBotV3_1 : IChessBot {
     Timer timer; Board board;
     bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
     static Move nullMove = Move.NullMove;
