@@ -25,4 +25,4 @@ Features Multiple Different Bots
 
 ### V3
 - Implemented Move Ordering
-- Apparently implementing move ordering fixed illegal moves??
+- Apparently implementing move ordering fixed illegal moves?? -NVM illegal moves happen when my bot is losing so it tries to cheat nice
