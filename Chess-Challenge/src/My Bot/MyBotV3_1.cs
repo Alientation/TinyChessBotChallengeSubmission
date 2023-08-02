@@ -159,8 +159,8 @@ public class MyBotV3_1 : IChessBot {
 
     //negamax with alpha beta pruning
     public int negamax(int depthLeft, int depth, int alpha, int beta) {
-        //if (depthLeft <= 0)
-            //return quiesence(depth, alpha, beta);
+        if (depthLeft <= 0)
+            return quiesence(depth, alpha, beta);
         
         Move prevBestMove = Move.NullMove;
 
@@ -274,10 +274,22 @@ public class MyBotV3_1 : IChessBot {
         Span<int> priorities = stackalloc int[moves.Length];
         for (int i = 0; i < moves.Length; i++) {
             var move = moves[i];
-            board.MakeMove(move);
-            priorities[i] = -evaluate(depth);
-            board.UndoMove(move);
+            //this causes immense lag, figure out if we can hash a board's eval
+            //board.MakeMove(move);
+            //priorities[i] = -evaluate(depth);
+            //board.UndoMove(move);
+
+            //prioritize lower eval pieces moving
+            int priority = -pieceEval[(int)move.CapturePieceType];
+
+            //bonuses for capture, promotion, enpassant, castles
+            if (move.IsCapture) priority += pieceEval[(int)move.CapturePieceType];
+            if (move.IsPromotion) priority += pieceEval[(int)move.PromotionPieceType];
+            if (move.IsEnPassant || move.IsCastles) priority += 100;
+
+            priorities[i] = -priority;
         }
+        //sort
         priorities.Sort(moves);
     }
 
