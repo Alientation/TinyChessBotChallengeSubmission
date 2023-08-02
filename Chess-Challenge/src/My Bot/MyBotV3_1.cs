@@ -281,6 +281,7 @@ public class MyBotV3_1 : IChessBot {
 
             //prioritize lower eval pieces moving
             int priority = -pieceEval[(int)move.CapturePieceType];
+            if (move == bestMove) priority += MAX_VALUE;
 
             //bonuses for capture, promotion, enpassant, castles
             if (move.IsCapture) priority += pieceEval[(int)move.CapturePieceType];
