@@ -15,13 +15,16 @@ using System.Numerics;
 
     Massive help from selenaut bot to fix issues with my negamax/eval functions trying to trade a queen for a knight and losing so many pieces without reason
 
+    50 games metric
 
     Against NNBot
+    - 377 +/- 198 elo difference
+    - 44 / 2 / -4 (win rate 87.76%) (6 wins from enemy timeout, 0 loss from timeout or illegal moves)
     
 
     Against the EloBot1
-    - 202 +/- 58 Elo difference
-    - 119 / 17 / 31 (win rate 71.25%)
+    - 319 +/- 153 Elo difference
+    - 44 / 0 / -6 (win rate 86.27%) (5 losses from timeouts because of poor endgame)
 
 
     Add Quiesence

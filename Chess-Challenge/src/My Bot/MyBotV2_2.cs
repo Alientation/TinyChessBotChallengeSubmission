@@ -11,6 +11,7 @@ using System.Numerics;
      Added Transposition table (remove move cache)
 
     NOTES
+    When its end game, it incorrectly values moving the king as winning the game instead of promoting pawns and checkmating with queens.. this does not make sense. might be a problem with the Ttables
 
 
     Against NNBot
@@ -87,7 +88,7 @@ public class MyBotV2_2 : IChessBot {
         #endif
         
         for (int depth = 1; depth <= 50 && !shouldStop; depth++) {
-            int val = negamax(depth, 0, -100000, 100000, board.IsWhiteToMove ? 1 : -1);
+            int val = negamax(depth, 0, MIN_VALUE, MAX_VALUE);
             if (!shouldStop) {
                 bestRootEval = val;
                 bestRootMove = bestMove;
@@ -102,26 +103,27 @@ public class MyBotV2_2 : IChessBot {
             bestRootEval = bestEval;
         }
 
-        timePerMove = Math.Max(timer.MillisecondsRemaining / 100, 50);
+        timePerMove = Math.Max(timer.MillisecondsRemaining >> 7 , 50);
 
         #if DEBUG
         Console.WriteLine($"{bestRootMove} ({bestRootEval}) | {cTimer.MillisecondsElapsedThisTurn}ms");
-        Console.WriteLine($"{negamaxNodesCount} Negamax\t{boardEvalCount} boardEvals\t{tTableCount} tTable ({(tTableCacheCount - tTableExpiredCacheCount) / (float)negamaxNodesCount}))");
+        Console.WriteLine($"{negamaxNodesCount} Negamax\t{boardEvalCount} boardEvals\t TTable ({(tTableCacheCount - tTableExpiredCacheCount) / (float)negamaxNodesCount}))");
+        Console.WriteLine($"{negamaxNodesCount / (float) timer.MillisecondsElapsedThisTurn} Nodes/s");
         Console.WriteLine($"{tTableExpiredCacheCount} TtableExpired");
         #endif
         return bestRootMove;
     }
 
     #if DEBUG
-    int negamaxNodesCount = 0, tTableCount = 0, tTableCacheCount = 0, tTableExpiredCacheCount = 0, boardEvalCount = 0;
+    int negamaxNodesCount = 0, tTableCacheCount = 0, tTableExpiredCacheCount = 0, boardEvalCount = 0;
     #endif
 
     //negamax with alpha beta pruning
-    public int negamax(int depthLeft, int depth, int alpha, int beta, int color) {
+    public int negamax(int depthLeft, int depth, int alpha, int beta) {
         #if DEBUG
         negamaxNodesCount++;
         #endif
-        Move prevBestMove;
+        Move prevBestMove = Move.NullMove;
 
         ref var transpositionTableEntry = ref TTable[board.ZobristKey % TranspositionTableLength];
         if (transpositionTableEntry.zobristKey == board.ZobristKey) {
@@ -132,7 +134,7 @@ public class MyBotV2_2 : IChessBot {
             tTableCacheCount++;
             #endif
 
-            if (transpositionTableEntry.depthSearchedAfter >= depthLeft) {
+            if (depth != 0 && transpositionTableEntry.depthSearchedAfter >= depthLeft) {
                 if (transpositionTableEntry.flag == 0)
                     return transpositionTableEntry.eval;
                 else if (transpositionTableEntry.flag == 1 && transpositionTableEntry.eval >= beta)
@@ -147,9 +149,9 @@ public class MyBotV2_2 : IChessBot {
         }
 
         if (depthLeft == 0 || board.IsInCheckmate() || board.IsDraw())
-            return color * evaluate(depth);
+            return evaluate(depth);
 
-        Move[] moves = getOrderedMoves(depth);
+        Move[] moves = getOrderedMoves(prevBestMove);
 
         int highestEval = MIN_VALUE;
         Move highestMove = Move.NullMove;
@@ -159,7 +161,7 @@ public class MyBotV2_2 : IChessBot {
             }
 
             board.MakeMove(move);
-            int eval = -negamax(depthLeft - 1, depth+1, -beta, -alpha, -color) + (move.IsPromotion ? 20 * (int) move.PromotionPieceType : 0);
+            int eval = -negamax(depthLeft - 1, depth+1, -beta, -alpha) + (move.IsPromotion ? 20 * (int) move.PromotionPieceType : 0);
             board.UndoMove(move);
 
             if (eval > highestEval) {
@@ -176,19 +178,11 @@ public class MyBotV2_2 : IChessBot {
                 break;
         }
 
+        byte flag = 0;
+        if (highestEval <= beta) flag = 1;
+        if (highestEval >= alpha) flag = 2;
 
-        #if DEBUG
-        tTableCount++;
-        #endif
-
-        transpositionTableEntry.depthSearchedAfter = depthLeft;
-        transpositionTableEntry.eval = highestEval;
-        transpositionTableEntry.Move = highestMove;
-        transpositionTableEntry.flag = 0;
-        if (highestEval <= beta) transpositionTableEntry.flag = 1;
-        if (highestEval >= alpha) transpositionTableEntry.flag = 2;
-        transpositionTableEntry.zobristKey = board.ZobristKey;
-
+        TTable[board.ZobristKey % TranspositionTableLength] = (board.ZobristKey, depth, highestEval, flag, highestMove);
         return highestEval;
     }
 
@@ -199,8 +193,13 @@ public class MyBotV2_2 : IChessBot {
         #endif
 
         //dont want to reach these states
-        if (board.IsDraw()) return -1;
-        if (board.IsInCheckmate()) return  board.IsWhiteToMove ? MIN_VALUE + depth * 1000 : MAX_VALUE - depth * 1000;
+        if (board.IsDraw()) return 0;
+        if (board.IsInCheckmate()) return  -30000 + depth;
+
+        int eval = 0;
+        //bonus points for having the right to castle
+        if (board.HasKingsideCastleRight(board.IsWhiteToMove)) eval += 10;
+        if (board.HasQueensideCastleRight(board.IsWhiteToMove)) eval += 5;
 
         //add up score for pieces and their locations at current game stage
         int mg = 0, eg = 0, phase = 0;
@@ -220,11 +219,11 @@ public class MyBotV2_2 : IChessBot {
             mg = -mg;
             eg = -eg;
         }
-        return (mg * phase + eg * (24 - phase)) / 24;
+        return (mg * phase + eg * (24 - phase)) / 24 * (board.IsWhiteToMove ? 1 : -1) + eval;
     }
 
     //todo add move ordering
-    public Move[] getOrderedMoves(int depth) {
+    public Move[] getOrderedMoves(Move prevBestMove) {
         //use pv (principal variation) as first move in array
         //use stack alloc to store array (order by captures then non captures)
 
