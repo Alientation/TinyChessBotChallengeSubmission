@@ -52,7 +52,8 @@ public class MyBotV2_1 : IChessBot {
     Timer cTimer;
     Board cBoard;
     static Move nullMove = Move.NullMove;
-    (Move, int) bestMove = (nullMove, 0), bestRootMove;
+    Move bestMove = nullMove, bestRootMove;
+    int bestEval, bestRootEval;
     (ulong zobristKey, short depth, int eval, byte flag, Move Move, short ancient)[] TTable = new (ulong zobristKey, short depth, int eval, byte flag, Move Move, short ancient)[1<<21];
     int maxDepthDifferenceFromCurrentAllowedToBeUsedFromTTable = 2;
     short currentAncientValue = 0, maxAncientDifferenceAllowed = 6;
@@ -80,16 +81,21 @@ public class MyBotV2_1 : IChessBot {
         #endif
         
         for (int depth = 1; depth <= 3 * gameStage + 5 && timer.MillisecondsElapsedThisTurn < timePerMove; depth++) {
-            negamax(board, depth, 0, -300000000, 300000000);
-            if (!breakBecauseTime)
+            int val = negamax(board, depth, 0, -300000000, 300000000);
+            if (!breakBecauseTime) {
+                bestRootEval = val;
                 bestRootMove = bestMove;
+            }
             breakBecauseTime = false;
             #if DEBUG
-            Console.WriteLine("depth " + depth + " " + bestMove.Item1 + " (" + bestMove.Item2 +") | " + "(" + timer.MillisecondsElapsedThisTurn + "ms)");
+            Console.WriteLine("depth " + depth + " " + bestMove + " (" + val +") | " + "(" + timer.MillisecondsElapsedThisTurn + "ms)");
             #endif
         }
 
-        if (bestRootMove.Item1 == nullMove) bestRootMove = bestMove;
+        if (bestRootMove == nullMove) {
+            bestRootMove = bestMove;
+            bestRootEval = bestEval;
+        }
 
         if (timer.MillisecondsRemaining < 50000) timePerMove = 400;
         if (timer.MillisecondsRemaining < 35000) timePerMove = 300;
@@ -98,10 +104,10 @@ public class MyBotV2_1 : IChessBot {
         if (timer.MillisecondsRemaining < 05000) timePerMove = 50;
 
         #if DEBUG
-        Console.WriteLine("Chosen Move " + bestRootMove.Item1 + " (" + bestRootMove.Item2 + ") -> [" + "nodes=" + negamaxNodesCount + ", eval=" + boardEvalCount + " (" + 
+        Console.WriteLine("Chosen Move " + bestRootMove + " (" + bestRootEval + ") -> [" + "nodes=" + negamaxNodesCount + ", eval=" + boardEvalCount + " (" + 
         (boardEvalCacheCount / (float) boardEvalCount) + "), moveEval=" + moveEvalCount + ", findMove=" + possibleMoveCount + " (" + (possibleMoveCacheCount / (float) possibleMoveCount) + ")"); 
         #endif
-        return bestRootMove.Item1;
+        return bestRootMove;
     }
 
     #if DEBUG
@@ -109,41 +115,43 @@ public class MyBotV2_1 : IChessBot {
     #endif
 
     //negamax with alpha beta pruning
-    public (Move, int) negamax(Board board, int depthLeft, int depth, int alpha, int beta) {
+    public int negamax(Board board, int depthLeft, int depth, int alpha, int beta) {
         if (cTimer.MillisecondsElapsedThisTurn > timePerMove) {
             breakBecauseTime = true;
-            return (nullMove,0);
+            return 0;
         }
 
         #if DEBUG
         negamaxNodesCount++;
         #endif
-        if (board.IsDraw()) return (nullMove, -100);
-        if (board.IsInCheckmate()) return (nullMove, board.PlyCount - 100000000);
+        if (board.IsDraw()) return -100;
+        if (board.IsInCheckmate()) return board.PlyCount - 100000000;
 
         if (depthLeft == 0 || board.IsInCheckmate() || board.IsInStalemate() || board.IsFiftyMoveDraw() || board.IsInsufficientMaterial())
-            return (nullMove, evaluate(board));
+            return evaluate(board);
 
         Move[] moves = getOrderedMoves(board, depth);
 
-        var best = (nullMove, -200000);
+        int highestEval = -200000;
         foreach (Move move in moves) {
             board.MakeMove(move);
             int eval = evaluateMove(move);
 
-            eval -= negamax(board, depthLeft - 1, depth+1, -beta, -alpha).Item2;
+            eval -= negamax(board, depthLeft - 1, depth+1, -beta, -alpha);
             board.UndoMove(move);
 
-            if (eval > best.Item2) {
-                best = (move, eval);
-                if (depth == 0) bestMove = best;
-
-                alpha = Math.Max(alpha, eval);
-                if (alpha >= beta)
-                    break;
+            if (eval > highestEval) {
+                highestEval = eval;
+                if (depth == 0) {
+                    bestMove = move;
+                    bestEval = highestEval;
+                }
             }
+            alpha = Math.Max(alpha, eval);
+            if (alpha >= beta)
+                break;
         }
-        return best;
+        return highestEval;
     }
 
     int[] pieceValue = { 0, 110, 300, 320, 520, 910, 10000 };
@@ -168,10 +176,10 @@ public class MyBotV2_1 : IChessBot {
         if (board.IsInCheckmate()) return  board.IsWhiteToMove == isBotWhite ? -100000 : 100000;
 
         //debuff future moves (anything that can be achieved earlier is prioritized)
-        int eval = 40 - board.PlyCount;
+        int eval = 0;//40 - board.PlyCount;
 
         //only give score for checking if not in end game (end game focus on piece structure/pawn promotion)
-        if (board.IsInCheck() && gameStage < 2) eval -= 50;
+        //if (board.IsInCheck() && gameStage < 2) eval -= 50;
 
         //add up score for pieces and their locations at current game stage
         foreach (bool flag in new[] {true, false}) {
@@ -180,7 +188,8 @@ public class MyBotV2_1 : IChessBot {
                 ulong mask = board.GetPieceBitboard(p, flag);
                 while (mask != 0) {
                     int index = BitboardHelper.ClearAndGetIndexOfLSB(ref mask);
-                    piecesEval += pieceValue[(int)p] + pieceValueLocation[((int)p - 1) * 3 + gameStage][index];
+                    //piecesEval += pieceValue[(int)p] + pieceValueLocation[((int)p - 1) * 3 + gameStage][index];
+                    piecesEval += pieceValue[(int)p];
                 }
                 eval += piecesEval * (flag == board.IsWhiteToMove ? 1 : -1);
             }
@@ -194,10 +203,10 @@ public class MyBotV2_1 : IChessBot {
         #if DEBUG
         moveEvalCount++;
         #endif
-        if (move.IsCapture) return move.CapturePieceType - move.MovePieceType;
-        if (move.IsCastles) return 160;
-        if (move.IsEnPassant) return 60;
-        if (move.IsPromotion) return pieceValue[(int)move.PromotionPieceType];
+        //if (move.IsCapture) return move.CapturePieceType - move.MovePieceType;
+        //if (move.IsCastles) return 160;
+        //if (move.IsEnPassant) return 60;
+        //if (move.IsPromotion) return pieceValue[(int)move.PromotionPieceType];
         return 0;
     }
 
