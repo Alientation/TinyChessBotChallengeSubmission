@@ -28,6 +28,7 @@ namespace ChessChallenge.Application
             Enemy__EloBot1, Enemy__EloBot2,
             Enemy__HumanBot, Enemy__SelenautBot,
             Enemy__LiteBlueEngine__LiteBlueEngine1, Enemy__LiteBlueEngine__LiteBlueEngine2, Enemy__LiteBlueEngine__LiteBlueEngine3, Enemy__LiteBlueEngine__LiteBlueEngine4, Enemy__LiteBlueEngine__LiteBlueEngine5,
+            Enemy__MagnusCarlBot,
         }
 
         public static PlayerType[] ActivePlayers = {
@@ -38,7 +39,7 @@ namespace ChessChallenge.Application
                 PlayerType.Enemy__EloBot2,  PlayerType.EvilBot,
                 PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine1, PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine4,
                 PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine2, PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine5,
-                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine3,
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine3, PlayerType.Enemy__MagnusCarlBot,
         };
 
         ChessPlayer CreatePlayer(PlayerType type)
@@ -74,6 +75,8 @@ namespace ChessChallenge.Application
                 PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine3 => new ChessPlayer(new LiteBlueEngine3(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine4 => new ChessPlayer(new LiteBlueEngine4(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine5 => new ChessPlayer(new LiteBlueEngine5(), type, GameDurationMilliseconds),
+
+                PlayerType.Enemy__MagnusCarlBot => new ChessPlayer(new MagnusCarlBot(), type, GameDurationMilliseconds),
                 
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
             };
