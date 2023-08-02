@@ -47,7 +47,7 @@ Ggame stage
     Late Move Reductions, History Reductions
     
 */
-public class MyBotV2_2 : IChessBot {
+public class MyBotV3 : IChessBot {
     Timer timer; Board board;
     bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
     static Move nullMove = Move.NullMove;
@@ -122,11 +122,35 @@ public class MyBotV2_2 : IChessBot {
     int negamaxNodesCount = 0, tTableCacheCount = 0, tTableExpiredCacheCount = 0, boardEvalCount = 0;
     #endif
 
+
+    public int quiesence(int depth, int alpha, int beta) {
+        int stand_pat = evaluate(depth);
+        if (stand_pat >= beta)
+            return beta;
+        if (alpha < stand_pat)
+            alpha = stand_pat;
+
+        foreach (Move move in board.GetLegalMoves(!board.IsInCheck())) {
+            board.MakeMove(move);
+            int score = -quiesence(depth + 1, -beta, -alpha);
+            board.UndoMove(move);
+
+            if (score >= beta) return beta;
+            if (score > alpha) alpha = score;
+        }
+
+        return alpha;
+    }
+
     //negamax with alpha beta pruning
     public int negamax(int depthLeft, int depth, int alpha, int beta) {
         #if DEBUG
         negamaxNodesCount++;
         #endif
+
+        if (depthLeft <= 0)
+            return quiesence(depth, alpha, beta);
+        
         Move prevBestMove = Move.NullMove;
 
         ref var transpositionTableEntry = ref TTable[board.ZobristKey % TranspositionTableLength];
@@ -152,16 +176,9 @@ public class MyBotV2_2 : IChessBot {
             #endif
         }
 
-        bool doQuiescence = depthLeft <= 0;
+        Move[] moves = getOrderedMoves(prevBestMove);
 
-        /*ulong myPieces = board.IsWhiteToMove ? board.WhitePiecesBitboard : board.BlackPiecesBitboard;
-        var isSquareAttacked = new Square[BitOperations.PopCount(myPieces)];
-        for (int i = 0; i < isSquareAttacked.Length; i++)
-            isSquareAttacked[i] = new Square(BitboardHelper.ClearAndGetIndexOfLSB(ref myPieces));*/
-
-        Move[] moves = doQuiescence ? board.GetLegalMoves(doQuiescence && !board.IsInCheck()) : getOrderedMoves(prevBestMove);
-
-        if (moves.Length == 0 || doQuiescence)
+        if (moves.Length == 0)
             return evaluate(depth);
 
         int highestEval = MIN_VALUE;
