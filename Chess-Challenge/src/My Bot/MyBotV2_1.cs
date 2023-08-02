@@ -53,6 +53,10 @@ public class MyBotV2_1 : IChessBot {
     Board cBoard;
     static Move nullMove = Move.NullMove;
     (Move, int) bestMove = (nullMove, 0), bestRootMove;
+    (ulong zobristKey, short depth, int eval, byte flag, Move Move, short ancient)[] TTable = new (ulong zobristKey, short depth, int eval, byte flag, Move Move, short ancient)[1<<21];
+    int maxDepthDifferenceFromCurrentAllowedToBeUsedFromTTable = 2;
+    short currentAncientValue = 0, maxAncientDifferenceAllowed = 6;
+    
 
     public Move Think(Board board, Timer timer) {
         if (cTimer == null) {
@@ -101,12 +105,7 @@ public class MyBotV2_1 : IChessBot {
     }
 
     #if DEBUG
-    int negamaxNodesCount = 0;
-    int boardEvalCount = 0;
-    int boardEvalCacheCount = 0;
-    int moveEvalCount = 0;
-    int possibleMoveCount = 0;
-    int possibleMoveCacheCount = 0;
+    int negamaxNodesCount = 0, boardEvalCount = 0, boardEvalCacheCount = 0, moveEvalCount = 0, possibleMoveCount = 0, possibleMoveCacheCount = 0;
     #endif
 
     //negamax with alpha beta pruning
@@ -125,7 +124,7 @@ public class MyBotV2_1 : IChessBot {
         if (depthLeft == 0 || board.IsInCheckmate() || board.IsInStalemate() || board.IsFiftyMoveDraw() || board.IsInsufficientMaterial())
             return (nullMove, evaluate(board));
 
-        Move[] moves = getOrderedMoves(board);
+        Move[] moves = getOrderedMoves(board, depth);
 
         var best = (nullMove, -200000);
         foreach (Move move in moves) {
@@ -204,10 +203,14 @@ public class MyBotV2_1 : IChessBot {
 
     //todo add move ordering
     Dictionary<ulong,Move[]> orderMovesCache = new Dictionary<ulong,Move[]>(100000);
-    public Move[] getOrderedMoves(Board board) {
+    public Move[] getOrderedMoves(Board board, int depth) {
         #if DEBUG
         possibleMoveCount++;
         #endif
+
+        //use pv (principal variation) as first move in array
+        //use stack alloc to store array (order by captures then non captures)
+
         if (orderMovesCache.ContainsKey(board.ZobristKey)) {
             #if DEBUG
             possibleMoveCacheCount++;
