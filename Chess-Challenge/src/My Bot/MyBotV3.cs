@@ -134,7 +134,11 @@ public class MyBotV3 : IChessBot {
         if (alpha < stand_pat)
             alpha = stand_pat;
 
-        foreach (Move move in board.GetLegalMoves(!board.IsInCheck())) {
+        Span<Move> moves = stackalloc Move[128];
+        board.GetLegalMovesNonAlloc(ref moves, true);
+        getOrderedMoves(ref moves, Move.NullMove, depth);
+
+        foreach (Move move in moves) {
             board.MakeMove(move);
             int score = -quiesence(depth + 1, -beta, -alpha);
             board.UndoMove(move);
@@ -179,8 +183,10 @@ public class MyBotV3 : IChessBot {
             tTableExpiredCacheCount++;
             #endif
         }
-
-        Move[] moves = getOrderedMoves(prevBestMove);
+        
+        Span<Move> moves = stackalloc Move[128];
+        board.GetLegalMovesNonAlloc(ref moves);
+        getOrderedMoves(ref moves, prevBestMove, depth);
 
         if (moves.Length == 0)
             return evaluate(depth);
@@ -254,13 +260,26 @@ public class MyBotV3 : IChessBot {
     }
 
     //todo add move ordering
-    public Move[] getOrderedMoves(Move prevBestMove) {
+    public void getOrderedMoves(ref Span<Move> moves, Move bestMove, int depth) {
         //use pv (principal variation) as first move in array
         //use stack alloc to store array (order by captures then non captures)
-
-
-        Move[] moves = board.GetLegalMoves();
-        return moves;
+        Span<int> priorities = stackalloc int[moves.Length];
+        for (int i = 0; i < moves.Length; i++) {
+            var move = moves[i];
+            int value = 0;
+            if (move == bestMove)
+                value += 100000;
+            if (move.IsCapture)
+                value += 1000 + 20 * (int)move.CapturePieceType - (int)move.MovePieceType;
+            if (move.IsCastles)
+                value += 100;
+            if (move.IsEnPassant)
+                value += 50;
+            if (move.IsPromotion)
+                value += 100 * (int) move.PromotionPieceType;
+            priorities[i] = -value;
+        }
+        priorities.Sort(moves);
     }
 
     int getPstVal(int psq) {
