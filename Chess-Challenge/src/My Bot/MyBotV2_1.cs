@@ -138,6 +138,7 @@ public class MyBotV2_1 : IChessBot {
             int eval = evaluateMove(move);
 
             eval -= negamax(board, depthLeft - 1, depth+1, -beta, -alpha);
+            
             board.UndoMove(move);
 
             if (eval > highestEval) {
@@ -151,6 +152,7 @@ public class MyBotV2_1 : IChessBot {
             if (alpha >= beta)
                 break;
         }
+
         return highestEval;
     }
 
