@@ -136,9 +136,6 @@ namespace ChessChallenge.Application
 
         public void StartNewGame(PlayerType whiteType, PlayerType blackType)
         {
-            (tokenCount1, debugTokenCount1) = GetTokenCount(botToTest1);
-            (tokenCount2, debugTokenCount2) = GetTokenCount(botToTest2);
-
             // End any ongoing game
             EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
             gameID = rng.Next();
@@ -170,6 +167,8 @@ namespace ChessChallenge.Application
             // UI Setup
             boardUI.UpdatePosition(board);
             boardUI.ResetSquareColours();
+            (tokenCount1, debugTokenCount1) = GetTokenCount(botToTest1);
+            (tokenCount2, debugTokenCount2) = GetTokenCount(botToTest2);
             SetBoardPerspective();
 
             // Start
@@ -270,6 +269,8 @@ namespace ChessChallenge.Application
 
         static (int totalTokenCount, int debugTokenCount) GetTokenCount(PlayerType botType)
         {   
+            if (botType == PlayerType.Human) return (0,0);
+            
             string path = Path.Combine(Directory.GetCurrentDirectory(), "src", "My Bot");
             foreach (string t in (botType + "").Split("__"))
                 path = Path.Combine(path, t);
