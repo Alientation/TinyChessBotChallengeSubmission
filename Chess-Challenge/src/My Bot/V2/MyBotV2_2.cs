@@ -19,8 +19,8 @@ using System.Numerics;
     
 
     Against the EloBot1
-    - 202 +/- 58 Elo difference
-    - 119 / 17 / 31 (win rate 71.25%)
+    - 384 +/- 92 Elo difference
+    - 112 / 13 / -7 (win rate 84.85%)
 
 
     Add Quiesence

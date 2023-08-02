@@ -27,6 +27,7 @@ namespace ChessChallenge.Application
             Enemy__NNBot, Enemy__EloBot0,
             Enemy__EloBot1, Enemy__EloBot2,
             Enemy__HumanBot, Enemy__SelenautBot,
+            Enemy__LiteBlueEngine__LiteBlueEngine1, Enemy__LiteBlueEngine__LiteBlueEngine2, Enemy__LiteBlueEngine__LiteBlueEngine3, Enemy__LiteBlueEngine__LiteBlueEngine4, Enemy__LiteBlueEngine__LiteBlueEngine5,
         }
 
         public static PlayerType[] ActivePlayers = {
@@ -35,6 +36,9 @@ namespace ChessChallenge.Application
                 PlayerType.Enemy__EloBot0,  PlayerType.Enemy__SelenautBot,
                 PlayerType.Enemy__EloBot1,  PlayerType.Enemy__HumanBot, 
                 PlayerType.Enemy__EloBot2,  PlayerType.EvilBot,
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine1, PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine4,
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine2, PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine5,
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine3,
         };
 
         ChessPlayer CreatePlayer(PlayerType type)
@@ -47,17 +51,29 @@ namespace ChessChallenge.Application
                 PlayerType.V1__MyBotV1_2 => new ChessPlayer(new MyBotV1_2(), type, GameDurationMilliseconds),
                 PlayerType.V1__MyBotV1_3 => new ChessPlayer(new MyBotV1_3(), type, GameDurationMilliseconds),
                 PlayerType.V1__MyBotV1_4 => new ChessPlayer(new MyBotV1_4(), type, GameDurationMilliseconds),
+
                 PlayerType.V2__MyBotV2 => new ChessPlayer(new MyBotV2(), type, GameDurationMilliseconds),
                 PlayerType.V2__MyBotV2_1 => new ChessPlayer(new MyBotV2_1(), type, GameDurationMilliseconds),
                 PlayerType.V2__MyBotV2_2 => new ChessPlayer(new MyBotV2_2(), type, GameDurationMilliseconds),
+
                 PlayerType.MyBotV3 => new ChessPlayer(new MyBotV3(), type, GameDurationMilliseconds),
+
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
+
                 PlayerType.Enemy__NNBot => new ChessPlayer(new NNBot(), type, GameDurationMilliseconds),
+
                 PlayerType.Enemy__EloBot0 => new ChessPlayer(new EloBot0(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__EloBot1 => new ChessPlayer(new EloBot1(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__EloBot2 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
+
                 PlayerType.Enemy__HumanBot => new ChessPlayer(new HumanBot(), type, GameDurationMilliseconds),
                 PlayerType.Enemy__SelenautBot => new ChessPlayer(new SelenautBot(), type, GameDurationMilliseconds),
+
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine1 => new ChessPlayer(new LiteBlueEngine1(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine2 => new ChessPlayer(new LiteBlueEngine2(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine3 => new ChessPlayer(new LiteBlueEngine3(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine4 => new ChessPlayer(new LiteBlueEngine4(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine5 => new ChessPlayer(new LiteBlueEngine5(), type, GameDurationMilliseconds),
                 
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
             };
@@ -370,11 +386,6 @@ namespace ChessChallenge.Application
 
                 string pgn = PGNCreator.CreatePGN(board, result, GetPlayerName(PlayerWhite), GetPlayerName(PlayerBlack));
                 pgns.AppendLine(pgn);
-
-                if (PlayerWhite.IsBot)
-                    PlayerWhite.Bot.GameOver();
-                if (PlayerBlack.IsBot)
-                    PlayerBlack.Bot.GameOver();
 
                 // If 2 bots playing each other, start next game automatically.
                 if (PlayerWhite.IsBot && PlayerBlack.IsBot)

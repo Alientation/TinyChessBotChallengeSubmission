@@ -124,6 +124,10 @@ public class MyBotV3 : IChessBot {
 
 
     public int quiesence(int depth, int alpha, int beta) {
+        #if DEBUG
+        negamaxNodesCount++;
+        #endif
+
         int stand_pat = evaluate(depth);
         if (stand_pat >= beta)
             return beta;
@@ -261,9 +265,5 @@ public class MyBotV3 : IChessBot {
 
     int getPstVal(int psq) {
         return (int)(((psts[psq / 10] >> (6 * (psq % 10))) & 63) - 20) * 8;
-    }
-
-    public void GameOver() {
-        
     }
 }
