@@ -8,6 +8,7 @@ namespace ChessChallenge.Application {
         static readonly bool SDF_Enabled = true;
         const string fontName = "OPENSANS-SEMIBOLD.TTF";
         const int referenceResolution = 1920;
+        const int textInputBlinkingSpeed = 3;
 
         static Font font;
         static Font fontSdf;
@@ -62,6 +63,76 @@ namespace ChessChallenge.Application {
             } else {
                 Raylib.DrawTextEx(font, text, pos + offset, size, spacing, col);
             }
+        }
+
+        public static (string, bool) TextInput(string existingText, bool isActive, Vector2 centre, Vector2 size) {
+            //inner and outer rectangles for input
+            Rectangle recInside = GetRectangle(centre, size);
+
+            size.X += UIHelper.ScaleInt(5);
+            size.Y += UIHelper.ScaleInt(5);
+            Rectangle recOutside = GetRectangle(centre, size);
+
+            Color normalCol = new(40, 40, 40, 255);
+            Color hoverCol = new(3, 173, 252, 255);
+            Color pressCol = new(2, 119, 173, 255);
+            Color insideCol = new(87, 83, 83, 255);
+            Color insideHoverCol = new(134, 211, 247, 255);
+            Color insidePressCol = new(61, 141, 179, 255);
+
+            bool mouseOver = MouseInRect(recOutside);
+            bool pressed = mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT);
+
+            isActive = (isActive && !(pressed && !mouseOver) || (pressed && mouseOver));
+
+            //mouse over, pretend its like a text input
+            Raylib.SetMouseCursor(mouseOver ? MouseCursor.MOUSE_CURSOR_IBEAM : MouseCursor.MOUSE_CURSOR_DEFAULT);
+
+            Color col1 = mouseOver ? (pressed ? pressCol : hoverCol) : normalCol;
+            Color col2 = mouseOver ? (pressed ? insidePressCol : insideHoverCol) : insideCol;
+
+            Raylib.DrawRectangleRec(recOutside, col1);
+            Raylib.DrawRectangleRec(recInside, col2);
+
+            Color textCol = mouseOver ? Color.WHITE : new Color(180, 180, 180, 255);
+            int fontSize = ScaleInt(32);
+
+            //returns current text and closes the text input
+            if (!isActive) {
+                DrawText(existingText, centre, fontSize, 1, textCol, AlignH.Centre);
+                return (existingText, false);
+            } else { //blinking cursor thing
+                bool doBlink = Math.Round(Raylib.GetTime() * textInputBlinkingSpeed) % 2 == 0;
+
+                string text = existingText + (doBlink ? "|" : "");
+                DrawText(text, centre, fontSize, 1, textCol, AlignH.Centre);
+            }            
+            
+            //get keys pressed since last frame
+            int key = Raylib.GetKeyPressed();
+            while (key != 0) {
+                if (key == (int)KeyboardKey.KEY_BACKSPACE) {
+                    if (existingText.Length > 0)
+                        existingText = existingText.Substring(0, existingText.Length - 1);
+                } else {
+                
+                    //entered, so return what we have and close the window
+                    if (key == (int)KeyboardKey.KEY_ENTER) {
+                        while (Raylib.GetKeyPressed() != 0) {
+                            //get rid of all keys in queue
+                        }
+
+                        Raylib.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
+                        return (existingText, false);
+                    }
+
+                    existingText += (char) key;
+                }
+                key = Raylib.GetKeyPressed();
+            }
+
+            //keep it open if not escaped
+            return (existingText, true);
         }
 
         public static Rectangle GetRectangle(Vector2 centre, Vector2 size) {

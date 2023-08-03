@@ -5,11 +5,11 @@ using System.IO;
 
 namespace ChessChallenge.Application {
     public static class MenuUI {
-        public static int selectedPlayer1 = -1;
-        public static bool is1Open = false;
-        public static int selectedPlayer2 = -1;
-        public static bool is2Open = false;
-        public static string pattern = @"(?<=\w__)";
+        public static int selectedPlayer1 = -1, selectedPlayer2 = -1;
+        public static bool is1Open = false, is2Open = false;
+        
+        public static string timeControlInput = "";
+        public static bool isTextInput1Active = false;
 
         public static string getShortName(int type) {
             ChallengeController.PlayerType playerType = (ChallengeController.PlayerType) type;
@@ -70,8 +70,13 @@ namespace ChessChallenge.Application {
                 controller.fastForward = !controller.fastForward;
 
             //time control input here
-            
+            var textInput1 = UIHelper.TextInput(timeControlInput, isTextInput1Active, buttonPos, buttonSize);
 
+            //parse time control input.. remove any non digits
+            timeControlInput = textInput1.Item1;
+            isTextInput1Active = textInput1.Item2;
+            
+            buttonPos.Y += UIHelper.ScaleInt(80);
             if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize))
                 controller.EndGame(false);
 
