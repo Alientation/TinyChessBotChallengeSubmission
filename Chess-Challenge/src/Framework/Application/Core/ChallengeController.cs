@@ -415,35 +415,26 @@ namespace ChessChallenge.Application {
             ConsoleHelper.Log("Saved games to " + fullPath, false, ConsoleColor.Blue);
         }
 
-        private void AutoStartNextBotMatchGame(int originalGameID, System.Timers.Timer timer)
-        {
-            if (originalGameID == gameID) {
+        private void AutoStartNextBotMatchGame(int originalGameID, System.Timers.Timer timer) {
+            if (originalGameID == gameID)
                 StartNewGame(PlayerBlack.PlayerType, PlayerWhite.PlayerType);
-            }
             timer.Close();
         }
 
 
-        void UpdateBotMatchStats(GameResult result)
-        {
+        void UpdateBotMatchStats(GameResult result) {
             UpdateStats(BotStatsA, botAPlaysWhite);
             UpdateStats(BotStatsB, !botAPlaysWhite);
 
-            void UpdateStats(BotMatchStats stats, bool isWhiteStats)
-            {
-                // Draw
-                if (Arbiter.IsDrawResult(result))
-                {
+            void UpdateStats(BotMatchStats stats, bool isWhiteStats) {
+                if (Arbiter.IsDrawResult(result)) {
+                    //Draws
                     stats.NumDraws++;
-                }
-                // Win
-                else if (Arbiter.IsWhiteWinsResult(result) == isWhiteStats)
-                {
+                } else if (Arbiter.IsWhiteWinsResult(result) == isWhiteStats) {
+                    //Wins
                     stats.NumWins++;
-                }
-                // Loss
-                else
-                {
+                } else {
+                    //Losses
                     stats.NumLosses++;
                     stats.NumTimeouts += (result is GameResult.WhiteTimeout or GameResult.BlackTimeout) ? 1 : 0;
                     stats.NumIllegalMoves += (result is GameResult.WhiteIllegalMove or GameResult.BlackIllegalMove) ? 1 : 0;
@@ -451,50 +442,39 @@ namespace ChessChallenge.Application {
             }
         }
 
-        public void Update()
-        {
-            if (isPlaying)
-            {
+        public void Update() {
+            if (isPlaying) {
                 PlayerWhite.Update();
                 PlayerBlack.Update();
 
                 PlayerToMove.UpdateClock(Raylib.GetFrameTime());
-                if (PlayerToMove.TimeRemainingMs <= 0)
-                {
+                if (PlayerToMove.TimeRemainingMs <= 0) {
                     EndGame(PlayerToMove == PlayerWhite ? GameResult.WhiteTimeout : GameResult.BlackTimeout);
-                }
-                else
-                {
-                    if (isWaitingToPlayMove && Raylib.GetTime() > playMoveTime)
-                    {
-                        isWaitingToPlayMove = false;
-                        PlayMove(moveToPlay);
-                    }
+                } else if (isWaitingToPlayMove && Raylib.GetTime() > playMoveTime) {
+                    isWaitingToPlayMove = false;
+                    PlayMove(moveToPlay);
                 }
             }
 
-            if (hasBotTaskException)
-            {
+            if (hasBotTaskException) {
                 hasBotTaskException = false;
                 botExInfo.Throw();
             }
         }
 
-        public void Draw()
-        {
+        public void Draw() {
             boardUI.Draw();
             string nameW = GetPlayerName(PlayerWhite);
             string nameB = GetPlayerName(PlayerBlack);
             boardUI.DrawPlayerNames(nameW, nameB, PlayerWhite.TimeRemainingMs, PlayerBlack.TimeRemainingMs, isPlaying);
         }
 
-        public void DrawOverlay()
-        {
+        public void DrawOverlay() {
             if (PlayerBlack.IsHuman)
                 BotBrainCapacityUI.Draw(MenuUI.getShortName((int) player1Type), MenuUI.getShortName((int) player2Type),tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2, MaxTokenCount);
-            else {
+            else
                 BotBrainCapacityUI.Draw(MenuUI.getShortName((int) player2Type), MenuUI.getShortName((int) player1Type),tokenCount2, debugTokenCount2, tokenCount1, debugTokenCount1, MaxTokenCount);
-            }
+            
             MenuUI.DrawButtons(this);
             MatchStatsUI.DrawMatchStats(this);
         }
@@ -502,14 +482,12 @@ namespace ChessChallenge.Application {
         static string GetPlayerName(ChessPlayer player) => GetPlayerName(player.PlayerType);
         static string GetPlayerName(PlayerType type) => (type.ToString()).Split("__")[(type.ToString()).Split("__").Length-1];
 
-        public void StartNewBotMatch(PlayerType botTypeA, PlayerType botTypeB)
-        {
+        public void StartNewBotMatch(PlayerType botTypeA, PlayerType botTypeB) {
             EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
             botMatchGameIndex = 0;
             string nameA = GetPlayerName(botTypeA);
             string nameB = GetPlayerName(botTypeB);
-            if (nameA == nameB)
-            {
+            if (nameA == nameB) {
                 nameA += " (A)";
                 nameB += " (B)";
             }
@@ -529,34 +507,23 @@ namespace ChessChallenge.Application {
         public string AllPGNs => pgns.ToString();
 
 
-        bool IsLegal(Move givenMove)
-        {
+        bool IsLegal(Move givenMove) {
             var moves = moveGenerator.GenerateMoves(board);
             foreach (var legalMove in moves)
-            {
                 if (givenMove.Value == legalMove.Value)
-                {
                     return true;
-                }
-            }
 
             return false;
         }
 
-        public class BotMatchStats
-        {
+        public class BotMatchStats {
             public string BotName;
-            public int NumWins;
-            public int NumLosses;
-            public int NumDraws;
-            public int NumTimeouts;
-            public int NumIllegalMoves;
+            public int NumWins, NumLosses, NumDraws, NumTimeouts, NumIllegalMoves;
 
             public BotMatchStats(string name) => BotName = name;
         }
 
-        public void Release()
-        {
+        public void Release() {
             boardUI.Release();
         }
     }
