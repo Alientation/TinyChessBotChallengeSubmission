@@ -357,15 +357,13 @@ namespace ChessChallenge.Application {
                 EndGame(result);
         }
 
-        void EndGame(GameResult result, bool log = true, bool autoStartNextBotMatch = true)
-        {
-            if (isPlaying)
-            {
+        void EndGame(GameResult result, bool log = true, bool autoStartNextBotMatch = true) {
+            if (isPlaying) {
                 isPlaying = false;
                 isWaitingToPlayMove = false;
                 gameID = -1;
 
-                if (log)
+                if (log) 
                     Log("Game Over: " + result, false, ConsoleColor.Blue);
                 
                 if (result != GameResult.VoidResult) {
@@ -374,33 +372,32 @@ namespace ChessChallenge.Application {
                 }
 
                 // If 2 bots playing each other, start next game automatically.
-                if (PlayerWhite.IsBot && PlayerBlack.IsBot) {
-                    if (log && result != GameResult.VoidResult)
-                        UpdateBotMatchStats(result);
+                if (!PlayerWhite.IsBot && !PlayerBlack.IsBot) return;
 
-                    botMatchGameIndex++;
-                    int numGamesToPlay = botMatchStartFens.Length * 2;
+                if (log && result != GameResult.VoidResult) 
+                    UpdateBotMatchStats(result);
 
-                    if (botMatchGameIndex < numGamesToPlay && autoStartNextBotMatch) {
-                        botAPlaysWhite = !botAPlaysWhite;
-                        
-                        if (fastForward) {
-                            StartNewGame(PlayerBlack.PlayerType, PlayerWhite.PlayerType);
-                            return;
-                        }
+                botMatchGameIndex++;
+                int numGamesToPlay = botMatchStartFens.Length * 2;
 
-                        const int startNextGameDelayMs = 600;
-                        System.Timers.Timer autoNextTimer = new(startNextGameDelayMs);
-                        int originalGameID = gameID;
-                        autoNextTimer.Elapsed += (s, e) => AutoStartNextBotMatchGame(originalGameID, autoNextTimer);
-                        autoNextTimer.AutoReset = false;
-                        autoNextTimer.Start();
-
+                if (botMatchGameIndex < numGamesToPlay && autoStartNextBotMatch) {
+                    botAPlaysWhite = !botAPlaysWhite;
+                    
+                    if (fastForward) {
+                        StartNewGame(PlayerBlack.PlayerType, PlayerWhite.PlayerType);
+                        return;
                     }
-                    else if (autoStartNextBotMatch) {
-                        fastForward = false;
-                        Log("Match finished", false, ConsoleColor.Blue);
-                    }
+
+                    const int startNextGameDelayMs = 600;
+                    System.Timers.Timer autoNextTimer = new(startNextGameDelayMs);
+                    int originalGameID = gameID;
+                    autoNextTimer.Elapsed += (s, e) => AutoStartNextBotMatchGame(originalGameID, autoNextTimer);
+                    autoNextTimer.AutoReset = false;
+                    autoNextTimer.Start();
+
+                } else if (autoStartNextBotMatch) {
+                    fastForward = false;
+                    Log("Match finished", false, ConsoleColor.Blue);
                 }
             }
         }
