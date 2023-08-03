@@ -93,13 +93,13 @@ namespace ChessChallenge.Application {
             buttonPos.Y += UIHelper.ScaleInt(45);
             buttonPos.X = UIHelper.ScaleInt(100);
             UIHelper.DrawText("P1 s/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
-            buttonPos.X += UIHelper.ScaleInt(70);
-            var textInput11 = UIHelper.TextInput(timeIncrement1, isTimeIncrement1Active, buttonPos, UIHelper.Scale(new Vector2(130,35)), "infinity");
+            buttonPos.X += UIHelper.ScaleInt(80);
+            var textInput11 = UIHelper.TextInput(timeIncrement1, isTimeIncrement1Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             buttonPos.X = UIHelper.ScaleInt(370);
             UIHelper.DrawText("P2 s/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
-            buttonPos.X += UIHelper.ScaleInt(100);
-            var textInput21 = UIHelper.TextInput(timeIncrement2, isTimeIncrement2Active, buttonPos, UIHelper.Scale(new Vector2(130,35)), "infinity");
+            buttonPos.X += UIHelper.ScaleInt(70);
+            var textInput21 = UIHelper.TextInput(timeIncrement2, isTimeIncrement2Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             //parse time control input.. remove any non digits
             timeControl1Input =  Regex.Replace(textInput1.Item1, "[^0-9]", "");
