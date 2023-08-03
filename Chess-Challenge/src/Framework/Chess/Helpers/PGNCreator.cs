@@ -17,6 +17,7 @@ namespace ChessChallenge.Chess
             return CreatePGN(board.AllGameMoves.ToArray(), result, board.GameStartFen, whiteName, blackName);
         }
 
+        private static int numGames = 0;
         public static string CreatePGN(Move[] moves, GameResult result, string startFen, string whiteName = "", string blackName = "")
         {
             startFen = startFen.Replace("\n", "").Replace("\r", "");
@@ -24,24 +25,26 @@ namespace ChessChallenge.Chess
             StringBuilder pgn = new();
             Board board = new Board();
             board.LoadPosition(startFen);
-            // Headers
-            if (!string.IsNullOrEmpty(whiteName))
-            {
-                pgn.AppendLine($"[White \"{whiteName}\"]");
-            }
-            if (!string.IsNullOrEmpty(blackName))
-            {
-                pgn.AppendLine($"[Black \"{blackName}\"]");
-            }
+            numGames++;
+            pgn.AppendLine($"[Game #" + numGames + "]");
 
+            // Headers
+            if (result is GameResult.WhiteIsMated or GameResult.BlackIsMated)
+                pgn.AppendLine($"[\"{(result == GameResult.WhiteIsMated ? whiteName : blackName)}\" is mated]");
+            if (result is GameResult.WhiteIllegalMove or GameResult.BlackIllegalMove)
+                pgn.AppendLine($"[\"{(result == GameResult.WhiteIsMated ? whiteName : blackName)}\" made an illegal Move]");
+            if (result is GameResult.WhiteTimeout or GameResult.BlackTimeout)
+                pgn.AppendLine($"[\"{(result == GameResult.WhiteIsMated ? whiteName : blackName)}\" had timeout]");
+
+            if (!string.IsNullOrEmpty(whiteName))
+                pgn.AppendLine($"[White \"{whiteName}\"]");
+            if (!string.IsNullOrEmpty(blackName))
+                pgn.AppendLine($"[Black \"{blackName}\"]");
+            
             if (startFen != FenUtility.StartPositionFEN)
-            {
                 pgn.AppendLine($"[FEN \"{startFen}\"]");
-            }
             if (result is not GameResult.NotStarted or GameResult.InProgress)
-            {
                 pgn.AppendLine($"[Result \"{result}\"]");
-            }
 
             for (int plyCount = 0; plyCount < moves.Length; plyCount++)
             {
