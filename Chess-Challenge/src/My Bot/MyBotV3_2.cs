@@ -312,15 +312,19 @@ public class MyBotV3_2 : IChessBot {
                     phase += piecePhase[piece];
 
                     //checking if the square is being attacked
-                    if (board.SquareIsAttackedByOpponent(new Square(sq)))
+                    if (board.SquareIsAttackedByOpponent(new Square(sq))) {
+
+                        //check if the square is being protected?
+                        board.ForceSkipTurn();
+                        if (board.SquareIsAttackedByOpponent(new Square(sq))) {
+                            board.UndoSkipTurn();
+                            continue;
+                        }
+                        board.UndoSkipTurn();
+
                         eval += board.IsWhiteToMove && stm ? -1 : 1;
-
-                    //check if the square is being protected?
-                    board.TrySkipTurn();
-                    if (board.SquareIsAttackedByOpponent(new Square(sq)))
-                        eval += board.IsWhiteToMove && stm ? 1 : -1;
-                    board.UndoSkipTurn();
-
+                        
+                    }
                 }
             }
             mg = -mg;
