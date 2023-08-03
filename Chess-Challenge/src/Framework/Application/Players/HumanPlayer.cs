@@ -17,39 +17,31 @@ namespace ChessChallenge.Application
         bool isTurnToMove;
 
 
-        public HumanPlayer(BoardUI boardUI)
-        {
+        public HumanPlayer(BoardUI boardUI) {
             board = new();
             board.LoadStartPosition();
             this.boardUI = boardUI;
         }
 
-        public void NotifyTurnToMove()
-        {
+        public void NotifyTurnToMove() {
             isTurnToMove = true;
         }
 
-        public void SetPosition(string fen)
-        {
+        public void SetPosition(string fen) {
             board.LoadPosition(fen);
         }
 
-        public void Update()
-        {
+        public void Update() {
             if (!isTurnToMove)
-            {
                 return;
-            }
+            
             Vector2 mouseScreenPos = Raylib.GetMousePosition();
             Vector2 mouseWorldPos = Program.ScreenToWorldPos(mouseScreenPos);
 
-            if (LeftMousePressedThisFrame())
-            {
-                if (boardUI.TryGetSquareAtPoint(mouseWorldPos, out int square))
-                {
+            if (LeftMousePressedThisFrame()) {
+                if (boardUI.TryGetSquareAtPoint(mouseWorldPos, out int square)) {
                     int piece = board.Square[square];
-                    if (PieceHelper.IsColour(piece, board.IsWhiteToMove ? PieceHelper.White : PieceHelper.Black))
-                    {
+                    if (PieceHelper.IsColour(piece, board.IsWhiteToMove ? PieceHelper.White : PieceHelper.Black)) {
                         isDragging = true;
                         selectedSquare = square;
                         boardUI.HighlightLegalMoves(board, square);
@@ -57,52 +49,39 @@ namespace ChessChallenge.Application
                 }
             }
 
-            if (isDragging)
-            {
-                if (LeftMouseReleasedThisFrame())
-                {
+            if (isDragging) {
+                if (LeftMouseReleasedThisFrame()) {
                     CancelDrag();
-                    if (boardUI.TryGetSquareAtPoint(mouseWorldPos, out int square))
-                    {
+                    if (boardUI.TryGetSquareAtPoint(mouseWorldPos, out int square)) {
                         TryMakeMove(selectedSquare, square);
                     }
-                }
-                else if (RightMousePressedThisFrame())
-                {
+                } else if (RightMousePressedThisFrame())
                     CancelDrag();
-                }
                 else
-                {
                     boardUI.DragPiece(selectedSquare, mouseWorldPos);
-                }
             }
         }
 
-        void CancelDrag()
-        {
+        void CancelDrag() {
             isDragging = false;
             boardUI.ResetSquareColours(true);
         }
 
-        void TryMakeMove(int startSquare, int targetSquare)
-        {
+        void TryMakeMove(int startSquare, int targetSquare) {
             bool isLegal = false;
             Move move = Move.NullMove;
 
             MoveGenerator generator = new();
             var legalMoves = generator.GenerateMoves(board);
-            foreach (var legalMove in legalMoves)
-            {
-                if (legalMove.StartSquareIndex == startSquare && legalMove.TargetSquareIndex == targetSquare)
-                {
+            foreach (var legalMove in legalMoves) {
+                if (legalMove.StartSquareIndex == startSquare && legalMove.TargetSquareIndex == targetSquare) {
                     isLegal = true;
                     move = legalMove;
                     break;
                 }
             }
 
-            if (isLegal)
-            {
+            if (isLegal) {
                 isTurnToMove = false;
                 MoveChosen?.Invoke(move);
             }

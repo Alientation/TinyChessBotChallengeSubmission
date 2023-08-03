@@ -102,7 +102,7 @@ namespace ChessChallenge.Application {
                 
                 PlayerType.Enemy__StormwindV2 => new ChessPlayer(new StormwindV2(), type, gameDurationMilliseconds),
                 
-                _ => new ChessPlayer(new HumanPlayer(boardUI), type)
+                _ => new ChessPlayer(new HumanPlayer(boardUI), type, gameDurationMilliseconds)
             };
         }
 
