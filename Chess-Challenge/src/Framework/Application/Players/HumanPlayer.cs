@@ -16,7 +16,6 @@ namespace ChessChallenge.Application
         int selectedSquare;
         bool isTurnToMove;
 
-
         public HumanPlayer(BoardUI boardUI) {
             board = new();
             board.LoadStartPosition();
@@ -30,10 +29,10 @@ namespace ChessChallenge.Application
         public void SetPosition(string fen) {
             board.LoadPosition(fen);
         }
-
         public void Update() {
             if (!isTurnToMove)
                 return;
+
             
             Vector2 mouseScreenPos = Raylib.GetMousePosition();
             Vector2 mouseWorldPos = Program.ScreenToWorldPos(mouseScreenPos);
@@ -52,9 +51,8 @@ namespace ChessChallenge.Application
             if (isDragging) {
                 if (LeftMouseReleasedThisFrame()) {
                     CancelDrag();
-                    if (boardUI.TryGetSquareAtPoint(mouseWorldPos, out int square)) {
+                    if (boardUI.TryGetSquareAtPoint(mouseWorldPos, out int square))
                         TryMakeMove(selectedSquare, square);
-                    }
                 } else if (RightMousePressedThisFrame())
                     CancelDrag();
                 else

@@ -51,7 +51,8 @@ namespace ChessChallenge.Application {
             MoveFrom,
             MoveTo,
             LegalMove,
-            Check
+            Check,
+            Premove,
         }
 
 
@@ -144,6 +145,7 @@ namespace ChessChallenge.Application {
                 HighlightType.MoveTo => isLight ? theme.MoveToLight : theme.MoveToDark,
                 HighlightType.LegalMove => isLight ? theme.LegalLight : theme.LegalDark,
                 HighlightType.Check => isLight ? theme.CheckLight : theme.CheckDark,
+                HighlightType.Premove => isLight ? theme.PremoveLight : theme.PremoveDark,
                 _ => Color.PINK
             };
 

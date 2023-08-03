@@ -26,6 +26,9 @@ namespace ChessChallenge.Application
 
         public Color LightCoordCol = new Color(255, 240, 220, 255);
         public Color DarkCoordCol = new Color(140, 100, 80, 255);
+
+        public Color PremoveLight = new Color(255, 142, 105, 255);
+        public Color PremoveDark = new Color(255, 142, 105, 255);
     }
 }
 
