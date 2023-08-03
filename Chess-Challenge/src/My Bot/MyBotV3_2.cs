@@ -262,13 +262,13 @@ public class MyBotV3_2 : IChessBot {
         #endif
 
         //dont want to reach these states
-        if (board.IsDraw()) return -100;
-        if (board.IsInCheckmate()) return  -30000 + depth;
+        if (board.IsDraw()) return -1000;
+        if (board.IsInCheckmate()) return  -300000 + depth;
 
         int eval = 0;
         //bonus points for having the right to castle
-        if (board.HasKingsideCastleRight(board.IsWhiteToMove)) eval += 10;
-        if (board.HasQueensideCastleRight(board.IsWhiteToMove)) eval += 5;
+        if (board.HasKingsideCastleRight(board.IsWhiteToMove)) eval += 30;
+        if (board.HasQueensideCastleRight(board.IsWhiteToMove)) eval += 15;
 
         //add up score for pieces and their locations at current game stage
         int mg = 0, eg = 0, phase = 0;
@@ -291,6 +291,17 @@ public class MyBotV3_2 : IChessBot {
                     eg += UnpackedPestoTables[sq][piece + 6];
                     // Updating position phase
                     phase += piecePhase[piece];
+
+                    //checking if the square is being attacked
+                    if (board.SquareIsAttackedByOpponent(new Square(sq)))
+                        eval += board.IsWhiteToMove && stm ? -1 : 1;
+
+                    //check if the square is being protected?
+                    board.TrySkipTurn();
+                    if (board.SquareIsAttackedByOpponent(new Square(sq)))
+                        eval += board.IsWhiteToMove && stm ? 1 : -1;
+                    board.UndoSkipTurn();
+
                 }
             }
             mg = -mg;
