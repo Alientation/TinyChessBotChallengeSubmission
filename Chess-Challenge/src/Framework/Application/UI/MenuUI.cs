@@ -18,8 +18,7 @@ namespace ChessChallenge.Application
             return ((playerType + "").Split("__")[(playerType + "").Split("__").Length-1]);
         }
 
-        public static void DrawButtons(ChallengeController controller)
-        {
+        public static void DrawButtons(ChallengeController controller) {
             int initX = 250, initY = 45, initWidth = 420, initHeight = 35;
 
             Vector2 buttonPos = UIHelper.Scale(new Vector2(initX, initY));
@@ -116,9 +115,9 @@ namespace ChessChallenge.Application
                         if (toggle) {
                             itemPos.Y += UIHelper.ScaleInt(45);
                             itemPos.X = initX;
-                        } else {
+                        } else
                             itemPos.X += UIHelper.ScaleInt(250);
-                        }
+                        
                         toggle = !toggle;
                     }
                     if (item == -1) return -2;
