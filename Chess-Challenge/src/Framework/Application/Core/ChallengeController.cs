@@ -11,6 +11,28 @@ using System.Threading.Tasks;
 using static ChessChallenge.Application.Settings;
 using static ChessChallenge.Application.ConsoleHelper;
 
+/*
+    Todo
+    
+    create tournament mode
+    - round robin 2 * ## games per match up (games are a random set ## of FEN starting positions)
+    - calculate elo differentiation between bots, rank the bots
+    - store results/elo in a tournament file
+
+    each game played with a bot will store its respective results into a file for that specific bot
+    stores the game PGN and the enemy bot name in the file
+    stores the results of the game (win/loss/draw/illegal move/timeout) + time left for each bot
+    hashes the bot file and stores the hash in the file under the respective game
+
+    let window be resizable
+
+    create a list view under the dropdown list so more bots can be shown
+    let user input time control per side and time increment per move and rounds to play
+    Allow for multiple games to be played at once (for better speed in tournament mode)
+
+
+*/
+
 namespace ChessChallenge.Application
 {
     public class ChallengeController
@@ -22,7 +44,7 @@ namespace ChessChallenge.Application
             V1__MyBotV1, V1__MyBotV1NoDebug,
             V1__MyBotV1_1, V1__MyBotV1_2, V1__MyBotV1_3, V1__MyBotV1_4,
             V2__MyBotV2, V2__MyBotV2_1, V2__MyBotV2_2,
-            MyBotV3, MyBotV3_1,
+            MyBotV3, MyBotV3_1, MyBotV3_2,
             EvilBot, 
             Enemy__NNBot, Enemy__EloBot0,
             Enemy__EloBot1, Enemy__EloBot2,
@@ -33,7 +55,7 @@ namespace ChessChallenge.Application
 
         public static PlayerType[] ActivePlayers = {
                 PlayerType.Human,           PlayerType.MyBotV3_1,
-                PlayerType.V2__MyBotV2_2,    PlayerType.MyBotV3,
+                PlayerType.V2__MyBotV2_2,    PlayerType.MyBotV3_2,
                 PlayerType.Enemy__EloBot0,  PlayerType.Enemy__SelenautBot,
                 PlayerType.Enemy__EloBot1,  PlayerType.Enemy__HumanBot, 
                 PlayerType.Enemy__EloBot2,  PlayerType.EvilBot,
@@ -60,6 +82,7 @@ namespace ChessChallenge.Application
 
                 PlayerType.MyBotV3 => new ChessPlayer(new MyBotV3(), type, GameDurationMilliseconds),
                 PlayerType.MyBotV3_1 => new ChessPlayer(new MyBotV3_1(), type, GameDurationMilliseconds),
+                PlayerType.MyBotV3_2 => new ChessPlayer(new MyBotV3_2(), type, GameDurationMilliseconds),
 
                 PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
 
@@ -170,8 +193,8 @@ namespace ChessChallenge.Application
             tournamentScores = new int[tournament.Length,5];
         }
 
-        public void EndGame() {
-            EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
+        public void EndGame(bool keepResults) {
+            EndGame(keepResults ? GameResult.DrawByArbiter : GameResult.VoidResult, log: false, autoStartNextBotMatch: false);
             gameID = rng.Next();
 
             // Stop prev task and create a new one
@@ -386,8 +409,7 @@ namespace ChessChallenge.Application
                 isWaitingToPlayMove = false;
                 gameID = -1;
 
-                if (log)
-                {
+                if (log && result != GameResult.VoidResult) {
                     Log("Game Over: " + result, false, ConsoleColor.Blue);
                 }
 
@@ -395,14 +417,15 @@ namespace ChessChallenge.Application
                 pgns.AppendLine(pgn);
 
                 // If 2 bots playing each other, start next game automatically.
-                if (PlayerWhite.IsBot && PlayerBlack.IsBot)
-                {
-                    UpdateBotMatchStats(result);
+                if (PlayerWhite.IsBot && PlayerBlack.IsBot) {
+                    if (log && result != GameResult.VoidResult) {
+                        UpdateBotMatchStats(result);
+                    }
+
                     botMatchGameIndex++;
                     int numGamesToPlay = botMatchStartFens.Length * 2;
 
-                    if (botMatchGameIndex < numGamesToPlay && autoStartNextBotMatch)
-                    {
+                    if (botMatchGameIndex < numGamesToPlay && autoStartNextBotMatch) {
                         botAPlaysWhite = !botAPlaysWhite;
                         const int startNextGameDelayMs = 600;
                         System.Timers.Timer autoNextTimer = new(startNextGameDelayMs);
@@ -412,8 +435,7 @@ namespace ChessChallenge.Application
                         autoNextTimer.Start();
 
                     }
-                    else if (autoStartNextBotMatch)
-                    {
+                    else if (autoStartNextBotMatch) {
                         Log("Match finished", false, ConsoleColor.Blue);
                     }
                 }
@@ -422,8 +444,7 @@ namespace ChessChallenge.Application
 
         private void AutoStartNextBotMatchGame(int originalGameID, System.Timers.Timer timer)
         {
-            if (originalGameID == gameID)
-            {
+            if (originalGameID == gameID) {
                 StartNewGame(PlayerBlack.PlayerType, PlayerWhite.PlayerType);
             }
             timer.Close();

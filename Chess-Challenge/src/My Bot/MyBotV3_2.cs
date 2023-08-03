@@ -56,7 +56,7 @@ using System.Linq;
     Late Move Reductions, History Reductions
     
 */
-public class MyBotV3_1 : IChessBot {
+public class MyBotV3_2 : IChessBot {
 
     //save tokens by storing references here
     Timer timer; Board board;
@@ -332,7 +332,7 @@ public class MyBotV3_1 : IChessBot {
     }
 
     //expands the pesto tables from their compressed versions
-    public MyBotV3_1() {
+    public MyBotV3_2() {
         UnpackedPestoTables = new int[64][];
         UnpackedPestoTables = PackedPestoTables.Select(packedTable =>
         {

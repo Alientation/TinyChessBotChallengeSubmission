@@ -3,6 +3,7 @@ namespace ChessChallenge.Chess
     public enum GameResult
     {
         NotStarted,
+        VoidResult,
         InProgress,
         WhiteIsMated,
         BlackIsMated,
