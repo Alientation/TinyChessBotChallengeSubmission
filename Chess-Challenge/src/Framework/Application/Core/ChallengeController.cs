@@ -63,7 +63,7 @@ namespace ChessChallenge.Application {
                 PlayerType.Enemy__StormwindV2, PlayerType.Enemy__NNBot,
         };
 
-        ChessPlayer CreatePlayer(PlayerType type) {
+        ChessPlayer CreatePlayer(PlayerType type, int gameDurationMilliseconds = DefaultGameDurationMilliseconds) {
             return type switch {
                 PlayerType.V1__MyBotV1 => new ChessPlayer(new MyBotV1(), type, gameDurationMilliseconds),
                 PlayerType.V1__MyBotV1NoDebug => new ChessPlayer(new MyBotV1NoDebug(), type, gameDurationMilliseconds),
@@ -144,8 +144,8 @@ namespace ChessChallenge.Application {
         int tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2;
         public bool fastForward;
         readonly StringBuilder pgns;
-        int gameDurationMilliseconds = Settings.DefaultGameDurationMilliseconds;
-        int incrementMilliseconds = Settings.DefaultIncrementMilliseconds;
+        int gameDuration1Milliseconds = Settings.DefaultGameDurationMilliseconds, gameDuration2Milliseconds = Settings.DefaultGameDurationMilliseconds;
+        int increment1Milliseconds = Settings.DefaultIncrementMilliseconds, increment2Milliseconds = Settings.DefaultIncrementMilliseconds;
 
         public ChallengeController() {
             Log($"Launching Chess-Challenge version {Settings.Version}");
@@ -214,13 +214,19 @@ namespace ChessChallenge.Application {
             }
         }
 
-        public void StartNewGame(PlayerType whiteType, PlayerType blackType, int currentBotMatchStartFensIndex = -1) {
+        public void StartNewGame(PlayerType whiteType, PlayerType blackType, 
+            int timeControl1 = DefaultGameDurationMilliseconds, int timeIncrement1 = DefaultIncrementMilliseconds,
+            int timeControl2 = DefaultGameDurationMilliseconds, int timeIncrement2 = DefaultIncrementMilliseconds,
+            int currentBotMatchStartFensIndex = -1) {
             // End any ongoing game
             EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
             gameID = rng.Next();
 
             player1Type = whiteType;
             player2Type = blackType;
+
+            increment1Milliseconds = timeIncrement1;
+            increment2Milliseconds = timeIncrement2;
 
             // Stop prev task and create a new one
             if (RunBotsOnSeparateThread) {
@@ -243,8 +249,8 @@ namespace ChessChallenge.Application {
             }
 
             // Player Setup
-            PlayerWhite = CreatePlayer(whiteType);
-            PlayerBlack = CreatePlayer(blackType);
+            PlayerWhite = CreatePlayer(whiteType,timeControl1);
+            PlayerBlack = CreatePlayer(blackType,timeControl2);
             PlayerWhite.SubscribeToMoveChosenEventIfHuman(OnMoveChosen);
             PlayerBlack.SubscribeToMoveChosenEventIfHuman(OnMoveChosen);
 
@@ -284,7 +290,7 @@ namespace ChessChallenge.Application {
         Move GetBotMove() {
             API.Board botBoard = new(board);
             try {
-                API.Timer timer = new(PlayerToMove.TimeRemainingMs, PlayerNotOnMove.TimeRemainingMs, gameDurationMilliseconds, incrementMilliseconds);
+                API.Timer timer = new(PlayerToMove.TimeRemainingMs, PlayerNotOnMove.TimeRemainingMs, PlayerToMove.PlayerType == player1Type ? gameDuration1Milliseconds : gameDuration2Milliseconds, PlayerToMove.PlayerType == player1Type ? increment1Milliseconds : increment2Milliseconds);
                 API.Move move = PlayerToMove.Bot.Think(botBoard, timer);
                 return new Move(move.RawValue);
             } catch (Exception e) {
@@ -344,7 +350,7 @@ namespace ChessChallenge.Application {
 
         void OnMoveChosen(Move chosenMove) {
             if (IsLegal(chosenMove)) {
-                PlayerToMove.AddIncrement(incrementMilliseconds);
+                PlayerToMove.AddIncrement(PlayerToMove.PlayerType == player1Type ? increment1Milliseconds : increment2Milliseconds);
 
                 if (PlayerToMove.IsBot) {
                     moveToPlay = chosenMove;
