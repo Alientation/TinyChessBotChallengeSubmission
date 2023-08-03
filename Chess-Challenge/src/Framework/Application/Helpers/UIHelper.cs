@@ -157,7 +157,7 @@ namespace ChessChallenge.Application {
             if (isSelected) col = hoverCol;
 
             Raylib.DrawRectangleRec(rec, col);
-            Color textCol = mouseOver ? Color.WHITE : new Color(180, 180, 180, 255);
+            Color textCol = (mouseOver || isSelected) ? Color.WHITE : new Color(180, 180, 180, 255);
             int fontSize = ScaleInt(32);
 
             DrawText(text, centre, fontSize, 1, textCol, AlignH.Centre);
