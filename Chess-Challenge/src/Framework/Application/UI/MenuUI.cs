@@ -29,24 +29,7 @@ namespace ChessChallenge.Application {
             if (NextButtonInRow("Tournament", ref buttonPos, spacingY, buttonSize))
                 controller.StartTournament();
 
-            buttonPos.Y = UIHelper.ScaleInt(450);
-
-            if (selectedPlayer1 >= 0 && selectedPlayer2 >= 0) {
-                if (NextButtonInRow("Play " + getShortName(selectedPlayer1) + " vs " + getShortName(selectedPlayer2), ref buttonPos, spacingY, buttonSize)) {
-                    if ((ChallengeController.PlayerType) selectedPlayer1 == ChallengeController.PlayerType.Human || 
-                        (ChallengeController.PlayerType) selectedPlayer2 == ChallengeController.PlayerType.Human)
-                        controller.StartNewGame((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
-                    else
-                        controller.StartNewBotMatch((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
-                }
-            }
-
-            if (NextButtonInRow("Fast Forward", ref buttonPos, spacingY, buttonSize))
-                controller.fastForward = !controller.fastForward;
-
-            if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize))
-                controller.EndGame(false);
-
+            buttonPos.Y = UIHelper.ScaleInt(550);
 
             // Page buttons
             buttonPos.Y = UIHelper.ScaleInt(600);
@@ -70,7 +53,29 @@ namespace ChessChallenge.Application {
             if (NextButtonInRow("Exit (ESC)", ref buttonPos, spacingY, buttonSize))
                 Environment.Exit(0);
 
-            // Dropdowns
+            // Game Set up
+            buttonPos.Y = UIHelper.ScaleInt(170) + UIHelper.ScaleInt(initY);
+
+            if (selectedPlayer1 >= 0 && selectedPlayer2 >= 0) {
+                if (NextButtonInRow("Play " + getShortName(selectedPlayer1) + " vs " + getShortName(selectedPlayer2), ref buttonPos, spacingY, buttonSize)) {
+                    if ((ChallengeController.PlayerType) selectedPlayer1 == ChallengeController.PlayerType.Human || 
+                        (ChallengeController.PlayerType) selectedPlayer2 == ChallengeController.PlayerType.Human)
+                        controller.StartNewGame((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
+                    else
+                        controller.StartNewBotMatch((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
+                }
+            }
+
+            if (NextButtonInRow("Fast Forward", ref buttonPos, spacingY, buttonSize))
+                controller.fastForward = !controller.fastForward;
+
+            //time control input here
+            
+
+            if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize))
+                controller.EndGame(false);
+
+
             buttonPos.Y = UIHelper.ScaleInt(110) + UIHelper.ScaleInt(initY);
 
             int temp1 = DropdownList(selectedPlayer1 < 0 ? "Choose" : getShortName(selectedPlayer1), ChallengeController.ActivePlayers, is1Open, new Vector2(130, 160), new Vector2(240,35));
@@ -118,6 +123,11 @@ namespace ChessChallenge.Application {
                     
                     toggle = !toggle;
                 }
+
+                bool mouseOver = UIHelper.MouseInRect(UIHelper.GetRectangle(pos, size));
+                bool pressedNotThisFrame = !mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT);
+                if (pressedNotThisFrame) return -1;
+
                 return -2;
             }
         }
