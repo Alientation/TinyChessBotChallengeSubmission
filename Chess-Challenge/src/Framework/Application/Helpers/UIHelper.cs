@@ -89,13 +89,13 @@ namespace ChessChallenge.Application {
             //mouse over, pretend its like a text input
             Raylib.SetMouseCursor(mouseOver ? MouseCursor.MOUSE_CURSOR_IBEAM : MouseCursor.MOUSE_CURSOR_DEFAULT);
 
-            Color col1 = mouseOver ? (pressed ? pressCol : hoverCol) : normalCol;
-            Color col2 = mouseOver ? (pressed ? insidePressCol : insideHoverCol) : insideCol;
+            Color col1 = isActive ? (pressed ? pressCol : hoverCol) : normalCol;
+            Color col2 = isActive ? (pressed ? insidePressCol : insideHoverCol) : insideCol;
 
             Raylib.DrawRectangleRec(recOutside, col1);
             Raylib.DrawRectangleRec(recInside, col2);
 
-            Color textCol = mouseOver ? Color.WHITE : new Color(180, 180, 180, 255);
+            Color textCol = isActive ? Color.WHITE : new Color(180, 180, 180, 255);
             int fontSize = ScaleInt(32);
 
             //returns current text and closes the text input
@@ -142,7 +142,7 @@ namespace ChessChallenge.Application {
             return new(centre.X - size.X / 2, centre.Y - size.Y / 2, size.X, size.Y);
         }
 
-        public static bool Button(string text, Vector2 centre, Vector2 size) {
+        public static bool Button(string text, Vector2 centre, Vector2 size, bool isSelected = false) {
             Rectangle rec = GetRectangle(centre, size);
 
             Color normalCol = new(40, 40, 40, 255);
@@ -153,6 +153,8 @@ namespace ChessChallenge.Application {
             bool pressed = mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT);
             bool pressedThisFrame = pressed && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT);
             Color col = mouseOver ? (pressed ? pressCol : hoverCol) : normalCol;
+
+            if (isSelected) col = hoverCol;
 
             Raylib.DrawRectangleRec(rec, col);
             Color textCol = mouseOver ? Color.WHITE : new Color(180, 180, 180, 255);
