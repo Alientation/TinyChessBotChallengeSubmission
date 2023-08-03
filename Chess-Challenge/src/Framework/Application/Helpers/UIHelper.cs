@@ -65,7 +65,7 @@ namespace ChessChallenge.Application {
             }
         }
 
-        public static (string, bool) TextInput(string existingText, bool isActive, Vector2 centre, Vector2 size) {
+        public static (string, bool) TextInput(string existingText, bool isActive, Vector2 centre, Vector2 size, string textHint = "input text") {
             //inner and outer rectangles for input
             Rectangle recInside = GetRectangle(centre, size);
 
@@ -83,7 +83,8 @@ namespace ChessChallenge.Application {
             bool mouseOver = MouseInRect(recOutside);
             bool pressed = mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT);
 
-            isActive = (isActive && !(pressed && !mouseOver) || (pressed && mouseOver));
+            if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && !mouseOver) isActive = false;
+            else if (isActive || (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && mouseOver)) isActive = true;
 
             //mouse over, pretend its like a text input
             Raylib.SetMouseCursor(mouseOver ? MouseCursor.MOUSE_CURSOR_IBEAM : MouseCursor.MOUSE_CURSOR_DEFAULT);
@@ -99,12 +100,14 @@ namespace ChessChallenge.Application {
 
             //returns current text and closes the text input
             if (!isActive) {
-                DrawText(existingText, centre, fontSize, 1, textCol, AlignH.Centre);
+                DrawText(existingText.Length == 0 ? textHint : existingText, centre, fontSize, 1, textCol, AlignH.Centre);
                 return (existingText, false);
             } else { //blinking cursor thing
                 bool doBlink = Math.Round(Raylib.GetTime() * textInputBlinkingSpeed) % 2 == 0;
+                string text = existingText;
 
-                string text = existingText + (doBlink ? "|" : "");
+                if (doBlink)
+                    text = " " + existingText + (doBlink ? "|" : "");
                 DrawText(text, centre, fontSize, 1, textCol, AlignH.Centre);
             }            
             
