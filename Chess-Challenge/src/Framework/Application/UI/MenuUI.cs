@@ -8,8 +8,10 @@ namespace ChessChallenge.Application {
         public static int selectedPlayer1 = (int) ChallengeController.player1Type, selectedPlayer2 = (int) ChallengeController.player2Type;
         public static bool is1Open = false, is2Open = false;
         
-        public static string timeControlInput = "";
-        public static bool isTextInput1Active = false;
+        public static string timeControl1Input = "", timeControl2Input = "";
+        public static string timePerMove1Input = "", timePerMove2Input = "";
+        public static bool isTextInput1Active = false, isTextInput2Active;
+        public static bool isTextInput11Active = false, isTextInput21Active;
 
         public static string getShortName(int type) {
             ChallengeController.PlayerType playerType = (ChallengeController.PlayerType) type;
@@ -75,12 +77,34 @@ namespace ChessChallenge.Application {
             //time control input
             buttonPos.X = UIHelper.ScaleInt(90);
             UIHelper.DrawText("P1 Time: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            buttonPos.X += UIHelper.ScaleInt(90);
+            var textInput1 = UIHelper.TextInput(timeControl1Input, isTextInput1Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+
+            buttonPos.X = UIHelper.ScaleInt(350);
+            UIHelper.DrawText("P2 Time: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            buttonPos.X += UIHelper.ScaleInt(90);
+            var textInput2 = UIHelper.TextInput(timeControl2Input, isTextInput2Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+
+            buttonPos.Y += UIHelper.ScaleInt(45);
+            buttonPos.X = UIHelper.ScaleInt(110);
+            UIHelper.DrawText("P1 s/move: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
-            var textInput1 = UIHelper.TextInput(timeControlInput, isTextInput1Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+            var textInput11 = UIHelper.TextInput(timePerMove1Input, isTextInput11Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+
+            buttonPos.X = UIHelper.ScaleInt(370);
+            UIHelper.DrawText("P2 s/move: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            buttonPos.X += UIHelper.ScaleInt(70);
+            var textInput21 = UIHelper.TextInput(timePerMove2Input, isTextInput21Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             //parse time control input.. remove any non digits
-            timeControlInput =  Regex.Replace(textInput1.Item1, "[^0-9]", "");
+            timeControl1Input =  Regex.Replace(textInput1.Item1, "[^0-9]", "");
+            timeControl2Input =  Regex.Replace(textInput2.Item1, "[^0-9]", "");
+            timePerMove1Input =  Regex.Replace(textInput11.Item1, "[^0-9]", "");
+            timePerMove2Input =  Regex.Replace(textInput21.Item1, "[^0-9]", "");
             isTextInput1Active = textInput1.Item2;
+            isTextInput2Active = textInput2.Item2;
+            isTextInput11Active = textInput11.Item2;
+            isTextInput21Active = textInput21.Item2;
 
             
             buttonPos.Y += UIHelper.ScaleInt(200);

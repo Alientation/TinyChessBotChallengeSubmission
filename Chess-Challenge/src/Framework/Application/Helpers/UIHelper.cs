@@ -83,11 +83,13 @@ namespace ChessChallenge.Application {
             bool mouseOver = MouseInRect(recOutside);
             bool pressed = mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT);
 
-            if (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && !mouseOver) isActive = false;
-            else if (isActive || (Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT) && mouseOver)) isActive = true;
-
-            //mouse over, pretend its like a text input
-            Raylib.SetMouseCursor(mouseOver ? MouseCursor.MOUSE_CURSOR_IBEAM : MouseCursor.MOUSE_CURSOR_DEFAULT);
+            if (isActive && !mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT)) {
+                isActive = false;
+                Raylib.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
+            } else if (!isActive && pressed) {
+                isActive = true;
+                Raylib.SetMouseCursor(MouseCursor.MOUSE_CURSOR_IBEAM);
+            }
 
             Color col1 = isActive ? (pressed ? pressCol : hoverCol) : normalCol;
             Color col2 = isActive ? (pressed ? insidePressCol : insideHoverCol) : insideCol;
