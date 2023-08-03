@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 
 /*
-    MyBot V1.0  ~(1008 Brain Power SMH)
+    MyBot V3.1  ~(1008 Brain Power SMH)
 
     Features
     Negamax Alpha Beta Pruning
@@ -13,7 +13,7 @@ using System.Linq;
     Quiescense searching (only applies to moves that result in a capture)
     Move ordering (basic)
 
-    TODO
+    Todo
     History Heuristic (move ordering)
     Null move pruning
     check extensions
@@ -21,14 +21,8 @@ using System.Linq;
     MVV-LVA
     delta pruning
 
-
     NOTES
-    ==============THIS BOT SUCKS DONT USE THIS================
-    LITERALLY WORSE THAN THE PREVIOUS VERSION
     
-
-
-    possibly do killer moves and null move pruning
 */
 
 /*
@@ -46,7 +40,7 @@ using System.Linq;
     Late Move Reductions, History Reductions
     
 */
-public class MyBotV3_2 : IChessBot {
+public class MyBotV3_3 : IChessBot {
 
     //save tokens by storing references here
     Timer timer; Board board;
@@ -111,10 +105,6 @@ public class MyBotV3_2 : IChessBot {
                 bestRootEval = val;
                 #endif
             }
-            
-            //checkmate found
-            if (val > MAX_VALUE >> 1)
-                break;
 
             #if DEBUG
             Console.WriteLine("depth " + depth + " " + bestMove + " (" + val +") | " + "(" + timer.MillisecondsElapsedThisTurn + "ms)");
@@ -159,7 +149,7 @@ public class MyBotV3_2 : IChessBot {
 
         Span<Move> moves = stackalloc Move[128];
         board.GetLegalMovesNonAlloc(ref moves, true);
-        getOrderedMoves(ref moves, Move.NullMove);
+        getOrderedMoves(ref moves, Move.NullMove, depth);
 
         //search ordered moves
         foreach (Move move in moves) {
@@ -176,13 +166,9 @@ public class MyBotV3_2 : IChessBot {
 
     //negamax with alpha beta pruning
     public int negamax(int depthLeft, int depth, int alpha, int beta) {
-        bool root = depth == 0;
-        if (!root && board.IsRepeatedPosition()) return -20;
-
         if (depthLeft < 1) //full search is completed, now search for a quiet position
             return quiesence(depth, alpha, beta);
         
-        //PV Search
         Move prevBestMove = nullMove;
 
         //check caches
@@ -195,7 +181,7 @@ public class MyBotV3_2 : IChessBot {
             tTableCacheCount++;
             #endif
 
-            if (!root && transpositionTableEntry.depthSearchedAfter >= depthLeft)
+            if (depth != 0 && transpositionTableEntry.depthSearchedAfter >= depthLeft)
                 if (transpositionTableEntry.flag == 0 ||
                 transpositionTableEntry.flag == 1 && transpositionTableEntry.eval >= beta ||
                 transpositionTableEntry.flag == 2 && transpositionTableEntry.eval <= alpha)
@@ -213,7 +199,7 @@ public class MyBotV3_2 : IChessBot {
         
         Span<Move> moves = stackalloc Move[128];
         board.GetLegalMovesNonAlloc(ref moves);
-        getOrderedMoves(ref moves, prevBestMove);
+        getOrderedMoves(ref moves, prevBestMove, depth);
 
         //no possible moves (which means checkmate/stalemate/draw)
         if (moves.Length == 0)
@@ -234,7 +220,7 @@ public class MyBotV3_2 : IChessBot {
                 highestEval = eval;
                 highestMove = move;
 
-                if (root) {
+                if (depth == 0) {
                     bestMove = move;
                     bestEval = highestEval;
                 }
@@ -260,15 +246,13 @@ public class MyBotV3_2 : IChessBot {
         #endif
 
         //dont want to reach these states
-        if (board.IsDraw()) return -1000;
-        if (board.IsInCheckmate()) return  MIN_VALUE + depth;
+        if (board.IsDraw()) return -100;
+        if (board.IsInCheckmate()) return  -30000 + depth;
 
-        //tempo bonus
-        int eval = 14;
-
+        int eval = 0;
         //bonus points for having the right to castle
-        if (board.HasKingsideCastleRight(board.IsWhiteToMove)) eval += 30;
-        if (board.HasQueensideCastleRight(board.IsWhiteToMove)) eval += 15;
+        if (board.HasKingsideCastleRight(board.IsWhiteToMove)) eval += 10;
+        if (board.HasQueensideCastleRight(board.IsWhiteToMove)) eval += 5;
 
         //add up score for pieces and their locations at current game stage
         int mg = 0, eg = 0, phase = 0;
@@ -291,21 +275,6 @@ public class MyBotV3_2 : IChessBot {
                     eg += UnpackedPestoTables[sq][piece + 6];
                     // Updating position phase
                     phase += piecePhase[piece];
-
-                    //checking if the square is being attacked
-                    if (board.SquareIsAttackedByOpponent(new Square(sq))) {
-
-                        //check if the square is being protected?
-                        board.ForceSkipTurn();
-                        if (board.SquareIsAttackedByOpponent(new Square(sq))) {
-                            board.UndoSkipTurn();
-                            continue;
-                        }
-                        board.UndoSkipTurn();
-
-                        eval += board.IsWhiteToMove && stm ? -1 : 1;
-                        
-                    }
                 }
             }
             mg = -mg;
@@ -320,7 +289,7 @@ public class MyBotV3_2 : IChessBot {
     }
 
     //todo add move ordering
-    public void getOrderedMoves(ref Span<Move> moves, Move prevBestMove) {
+    public void getOrderedMoves(ref Span<Move> moves, Move prevBestMove, int depth) {
         //use pv (principal variation) as first move in array
         //use stack alloc to store array (order by captures then non captures)
         Span<int> priorities = stackalloc int[moves.Length];
@@ -347,7 +316,7 @@ public class MyBotV3_2 : IChessBot {
     }
 
     //expands the pesto tables from their compressed versions
-    public MyBotV3_2() {
+    public MyBotV3_3() {
         UnpackedPestoTables = new int[64][];
         UnpackedPestoTables = PackedPestoTables.Select(packedTable =>
         {
