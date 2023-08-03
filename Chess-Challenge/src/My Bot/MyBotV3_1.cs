@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 
 /*
-    MyBot V1.0  ~(1008 Brain Power SMH)
+    MyBot V3.1  ~(1008 Brain Power SMH)
 
     Features
     Negamax Alpha Beta Pruning
@@ -21,7 +21,7 @@ using System.Linq;
     11 / 14/ -25
     0 time outs, 0 illegal moves
     win rate: 21.92%
-    -90 +/- 83 elo different
+    -90 +/- 83 elo difference
     
 
     Against EloBot1
@@ -34,6 +34,17 @@ using System.Linq;
     1 / 2 / -17
     0 time outs, 0 illegal moves
     win rate: 5%
+
+
+    Against LiteBlueEngine1
+    16 / 4 / -2
+    0 time outs, 0 illegal moves
+    win rate: 73.9%
+
+    270 +/- 194 elo difference
+    
+
+    Against LiteBlueEngine2
     
 
 
