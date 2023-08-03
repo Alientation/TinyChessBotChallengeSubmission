@@ -225,6 +225,8 @@ namespace ChessChallenge.Application {
             player1Type = whiteType;
             player2Type = blackType;
 
+            gameDuration1Milliseconds = timeControl1;
+            gameDuration2Milliseconds = timeControl2;
             increment1Milliseconds = timeIncrement1;
             increment2Milliseconds = timeIncrement2;
 
