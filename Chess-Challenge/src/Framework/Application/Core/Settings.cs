@@ -1,9 +1,7 @@
 ﻿using System.Numerics;
 
-namespace ChessChallenge.Application
-{
-    public static class Settings
-    {
+namespace ChessChallenge.Application {
+    public static class Settings {
         public const string Version = "1.19";
 
         // Game settings
@@ -21,8 +19,7 @@ namespace ChessChallenge.Application
         public const int MaxTokenCount = 1024;
         public const LogType MessagesToLog = LogType.All;
 
-        public enum LogType
-        {
+        public enum LogType {
             None,
             ErrorOnly,
             All

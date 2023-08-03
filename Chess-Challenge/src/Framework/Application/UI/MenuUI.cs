@@ -3,10 +3,8 @@ using System.Numerics;
 using System;
 using System.IO;
 
-namespace ChessChallenge.Application
-{
-    public static class MenuUI
-    {
+namespace ChessChallenge.Application {
+    public static class MenuUI {
         public static int selectedPlayer1 = -1;
         public static bool is1Open = false;
         public static int selectedPlayer2 = -1;
@@ -98,31 +96,29 @@ namespace ChessChallenge.Application
                 bool pressed = UIHelper.Button(text.Replace("__",""), pos, size);
                 if (pressed) isOpen = !isOpen;
 
-                int item = -1;
-                if (isOpen) {
-                    is1Open = false;
-                    is2Open = false;
-                    Vector2 itemPos = new Vector2(pos.X, pos.Y + UIHelper.ScaleInt(45));
-                    float initX = itemPos.X;
-                    Vector2 itemSize = UIHelper.Scale(new Vector2(250, 50));
-                    bool toggle = false;
-                    foreach (ChallengeController.PlayerType option in options) {
-                        bool itemPressed = UIHelper.Button(getShortName((int) option), itemPos, itemSize);
+                if (!isOpen) return -1;
 
-                        if (itemPressed)
-                            item = (int) option;
-                        
-                        if (toggle) {
-                            itemPos.Y += UIHelper.ScaleInt(45);
-                            itemPos.X = initX;
-                        } else
-                            itemPos.X += UIHelper.ScaleInt(250);
-                        
-                        toggle = !toggle;
-                    }
-                    if (item == -1) return -2;
+                is1Open = false;
+                is2Open = false;
+                Vector2 itemPos = new Vector2(pos.X, pos.Y + UIHelper.ScaleInt(45));
+                float initX = itemPos.X;
+                Vector2 itemSize = UIHelper.Scale(new Vector2(250, 50));
+                bool toggle = false;
+                foreach (ChallengeController.PlayerType option in options) {
+                    bool itemPressed = UIHelper.Button(getShortName((int) option), itemPos, itemSize);
+
+                    if (itemPressed)
+                        return (int) option;
+                    
+                    if (toggle) {
+                        itemPos.Y += UIHelper.ScaleInt(45);
+                        itemPos.X = initX;
+                    } else
+                        itemPos.X += UIHelper.ScaleInt(250);
+                    
+                    toggle = !toggle;
                 }
-                return item;
+                return -2;
             }
         }
     }
