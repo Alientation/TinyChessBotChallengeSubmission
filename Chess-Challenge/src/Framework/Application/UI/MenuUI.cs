@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace ChessChallenge.Application {
     public static class MenuUI {
-        public static int selectedPlayer1 = -1, selectedPlayer2 = -1;
+        public static int selectedPlayer1 = (int) ChallengeController.player1Type, selectedPlayer2 = (int) ChallengeController.player2Type;
         public static bool is1Open = false, is2Open = false;
         
         public static string timeControlInput = "";
@@ -21,6 +21,7 @@ namespace ChessChallenge.Application {
 
             Vector2 buttonPos = UIHelper.Scale(new Vector2(initX, initY));
             Vector2 buttonSize = UIHelper.Scale(new Vector2(initWidth, initHeight));
+            Vector2 buttonSizeSmall = UIHelper.Scale(new Vector2(240,35));
             float spacingY = buttonSize.Y * 1.3f;
             float spacingX = buttonSize.X * 1.4f;
             float breakSpacing = UIHelper.ScaleInt(50);
@@ -54,25 +55,28 @@ namespace ChessChallenge.Application {
                 Environment.Exit(0);
 
             // Game Set up
+            buttonPos.X = UIHelper.ScaleInt(130);
             buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
 
-            if (selectedPlayer1 >= 0 && selectedPlayer2 >= 0) {
-                if (NextButtonInRow("Play " + getShortName(selectedPlayer1) + " vs " + getShortName(selectedPlayer2), ref buttonPos, spacingY, buttonSize)) {
-                    if ((ChallengeController.PlayerType) selectedPlayer1 == ChallengeController.PlayerType.Human || 
-                        (ChallengeController.PlayerType) selectedPlayer2 == ChallengeController.PlayerType.Human)
-                        controller.StartNewGame((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
-                    else
-                        controller.StartNewBotMatch((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
-                }
+            if (NextButtonInRow("Play", ref buttonPos, spacingY, buttonSizeSmall)) {
+                if ((ChallengeController.PlayerType) selectedPlayer1 == ChallengeController.PlayerType.Human || 
+                    (ChallengeController.PlayerType) selectedPlayer2 == ChallengeController.PlayerType.Human)
+                    controller.StartNewGame((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
+                else
+                    controller.StartNewBotMatch((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
             }
 
-            if (NextButtonInRow("Fast Forward", ref buttonPos, spacingY, buttonSize, controller.fastForward))
+            buttonPos.X = UIHelper.ScaleInt(400);
+            buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
+            if (NextButtonInRow("Fast Forward", ref buttonPos, spacingY, buttonSizeSmall, controller.fastForward))
                 controller.fastForward = !controller.fastForward;
+            
 
-            //time control input here
-            UIHelper.DrawText("Player 1 Game Time: ", buttonPos, 20, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
-            buttonPos.X += UIHelper.ScaleInt(60);
-            var textInput1 = UIHelper.TextInput(timeControlInput, isTextInput1Active, buttonPos, UIHelper.Scale(new Vector2(100,35)), "infinity");
+            //time control input
+            buttonPos.X = UIHelper.ScaleInt(90);
+            UIHelper.DrawText("P1 Time: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            buttonPos.X += UIHelper.ScaleInt(70);
+            var textInput1 = UIHelper.TextInput(timeControlInput, isTextInput1Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             //parse time control input.. remove any non digits
             timeControlInput =  Regex.Replace(textInput1.Item1, "[^0-9]", "");
