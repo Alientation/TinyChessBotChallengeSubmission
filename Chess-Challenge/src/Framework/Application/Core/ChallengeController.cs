@@ -24,10 +24,7 @@ using static ChessChallenge.Application.ConsoleHelper;
     stores the results of the game (win/loss/draw/illegal move/timeout) + time left for each bot
     hashes the bot file and stores the hash in the file under the respective game
 
-    let window be resizable
-
     create a list view under the dropdown list so more bots can be shown
-    let user input time control per side and time increment per move and rounds to play
     Allow for multiple games to be played at once (for better speed in tournament mode)
 
 
