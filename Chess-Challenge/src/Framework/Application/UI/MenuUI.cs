@@ -61,6 +61,8 @@ namespace ChessChallenge.Application {
             buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
 
             if (NextButtonInRow("Play", ref buttonPos, spacingY, buttonSizeSmall)) {
+                int timeControl1 = timeControl1Input == "" ? Settings.DefaultIncrementMilliseconds : int.Parse(timeControl1Input);
+
                 if ((ChallengeController.PlayerType) selectedPlayer1 == ChallengeController.PlayerType.Human || 
                     (ChallengeController.PlayerType) selectedPlayer2 == ChallengeController.PlayerType.Human)
                     controller.StartNewGame((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
