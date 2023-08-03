@@ -13,6 +13,15 @@ using System.Linq;
     Quiescense searching (only applies to moves that result in a capture)
     Move ordering (basic)
 
+    TODO
+    History Heuristic (move ordering)
+    Null move pruning
+    check extensions
+    RFP
+    MVV-LVA
+    delta pruning
+
+
     NOTES
     When its end game, it incorrectly values moving the king as winning the game instead of promoting pawns and checkmating with queens.. this does not make sense. might be a problem with the Ttables
 
@@ -121,6 +130,10 @@ public class MyBotV3_2 : IChessBot {
                 bestRootEval = val;
                 #endif
             }
+            
+            //checkmate found
+            if (val > MAX_VALUE >> 1)
+                break;
 
             #if DEBUG
             Console.WriteLine("depth " + depth + " " + bestMove + " (" + val +") | " + "(" + timer.MillisecondsElapsedThisTurn + "ms)");
@@ -165,7 +178,7 @@ public class MyBotV3_2 : IChessBot {
 
         Span<Move> moves = stackalloc Move[128];
         board.GetLegalMovesNonAlloc(ref moves, true);
-        getOrderedMoves(ref moves, Move.NullMove, depth);
+        getOrderedMoves(ref moves, Move.NullMove);
 
         //search ordered moves
         foreach (Move move in moves) {
@@ -182,9 +195,13 @@ public class MyBotV3_2 : IChessBot {
 
     //negamax with alpha beta pruning
     public int negamax(int depthLeft, int depth, int alpha, int beta) {
+        bool root = depth == 0;
+        if (!root && board.IsRepeatedPosition()) return -20;
+
         if (depthLeft < 1) //full search is completed, now search for a quiet position
             return quiesence(depth, alpha, beta);
         
+        //PV Search
         Move prevBestMove = nullMove;
 
         //check caches
@@ -197,7 +214,7 @@ public class MyBotV3_2 : IChessBot {
             tTableCacheCount++;
             #endif
 
-            if (depth != 0 && transpositionTableEntry.depthSearchedAfter >= depthLeft)
+            if (!root && transpositionTableEntry.depthSearchedAfter >= depthLeft)
                 if (transpositionTableEntry.flag == 0 ||
                 transpositionTableEntry.flag == 1 && transpositionTableEntry.eval >= beta ||
                 transpositionTableEntry.flag == 2 && transpositionTableEntry.eval <= alpha)
@@ -215,7 +232,7 @@ public class MyBotV3_2 : IChessBot {
         
         Span<Move> moves = stackalloc Move[128];
         board.GetLegalMovesNonAlloc(ref moves);
-        getOrderedMoves(ref moves, prevBestMove, depth);
+        getOrderedMoves(ref moves, prevBestMove);
 
         //no possible moves (which means checkmate/stalemate/draw)
         if (moves.Length == 0)
@@ -236,7 +253,7 @@ public class MyBotV3_2 : IChessBot {
                 highestEval = eval;
                 highestMove = move;
 
-                if (depth == 0) {
+                if (root) {
                     bestMove = move;
                     bestEval = highestEval;
                 }
@@ -263,9 +280,11 @@ public class MyBotV3_2 : IChessBot {
 
         //dont want to reach these states
         if (board.IsDraw()) return -1000;
-        if (board.IsInCheckmate()) return  -300000 + depth;
+        if (board.IsInCheckmate()) return  MIN_VALUE + depth;
 
-        int eval = 0;
+        //tempo bonus
+        int eval = 14;
+
         //bonus points for having the right to castle
         if (board.HasKingsideCastleRight(board.IsWhiteToMove)) eval += 30;
         if (board.HasQueensideCastleRight(board.IsWhiteToMove)) eval += 15;
@@ -316,7 +335,7 @@ public class MyBotV3_2 : IChessBot {
     }
 
     //todo add move ordering
-    public void getOrderedMoves(ref Span<Move> moves, Move prevBestMove, int depth) {
+    public void getOrderedMoves(ref Span<Move> moves, Move prevBestMove) {
         //use pv (principal variation) as first move in array
         //use stack alloc to store array (order by captures then non captures)
         Span<int> priorities = stackalloc int[moves.Length];

@@ -56,6 +56,7 @@ namespace ChessChallenge.Application
         public static PlayerType[] ActivePlayers = {
                 PlayerType.Human,           PlayerType.MyBotV3_1,
                 PlayerType.V2__MyBotV2_2,    PlayerType.MyBotV3_2,
+                PlayerType.V1__MyBotV1,    PlayerType.V1__MyBotV1_4,
                 PlayerType.Enemy__EloBot0,  PlayerType.Enemy__SelenautBot,
                 PlayerType.Enemy__EloBot1,  PlayerType.Enemy__HumanBot, 
                 PlayerType.Enemy__EloBot2,  PlayerType.EvilBot,

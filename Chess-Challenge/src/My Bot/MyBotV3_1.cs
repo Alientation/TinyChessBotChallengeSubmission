@@ -53,7 +53,10 @@ using System.Linq;
 
 
     Against LiteBlueEngine3
-    
+    7 / 11 / -17
+    0 time outs, 0 illegal moves
+    win rate: 20%
+    -113 +/- 103 elo difference
 
 
 
