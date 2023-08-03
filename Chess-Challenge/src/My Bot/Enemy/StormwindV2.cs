@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ChessChallenge.Example;
 public class StormwindV2 : IChessBot
 {
     struct TTEntry
@@ -20,15 +19,17 @@ public class StormwindV2 : IChessBot
     const int entries = (1 << 20);
     TTEntry[] tt = new TTEntry[entries];
 
+    public int movesSearched;
+
     public Move Think(Board board, Timer timer)
     {
         Move[] moves = board.GetLegalMoves();
         Random rng = new Random();
         Move bestMove = moves[rng.Next(moves.Length)];
-        int alpha = -99999;
-        int beta = 99999;
+        int alpha = -99999, beta = 99999, depth;
+        movesSearched = 0;
 
-        for (int depth = 1; depth <= 42; depth++)
+        for (depth = 1; depth <= 99; depth++)
         {
             var results = Negamax(board, timer, depth, 0, alpha, beta, bestMove);
 
@@ -38,7 +39,8 @@ public class StormwindV2 : IChessBot
 
             bestMove = results.bestMove;
         }
-
+        Console.WriteLine("Depth: " + depth);
+        Console.WriteLine("Moves: " + movesSearched);
         return bestMove;
     }
 
@@ -54,20 +56,13 @@ public class StormwindV2 : IChessBot
 
     static int EvaluatePosition(Board board)
     {
-        if (board.IsDraw())
-            return 0;
+        if (board.IsDraw()) return 0;
 
-        if (board.IsInCheckmate())
-            return -99999 + board.PlyCount;
+        if (board.IsInCheckmate()) return -99999 + board.PlyCount;
 
         bool isWhite = board.IsWhiteToMove;
-        int myMaterial;
-        int opMaterial;
-
-        myMaterial = GetMaterial(board, isWhite);
-        opMaterial = GetMaterial(board, !isWhite);
-        Square myKing = board.GetKingSquare(isWhite);
-        Square opKing = board.GetKingSquare(!isWhite);
+        int myMaterial = GetMaterial(board, isWhite), opMaterial = GetMaterial(board, !isWhite);
+        Square myKing = board.GetKingSquare(isWhite), opKing = board.GetKingSquare(!isWhite);
         PieceList pawns = board.GetPieceList(PieceType.Pawn, isWhite);
 
         //Sets current value to the material value of opponent, minus material value of player. 
@@ -111,27 +106,18 @@ public class StormwindV2 : IChessBot
 
     public (int alpha, Move bestMove) Negamax(Board board, Timer timer, int depth, int ply, int alpha, int beta, Move move)
     {
-        Move[] moves = board.GetLegalMoves();
-        List<int> scoresList = new();
-        List<int> valueList = new();
-        bool notRoot = ply > 0;
-        int maxEval = -99999;
-        int origAlpha = alpha;
+        List<int> scoresList = new(), 
+        valueList = new();
+        bool notRoot = ply > 0, 
+        qSearch = depth <= 0;
+        Move[] moves = board.GetLegalMoves(qSearch);
+        int maxEval = -99999, 
+        origAlpha = alpha;
         ulong key = board.ZobristKey;
-
+        int eval = EvaluatePosition(board);
+        movesSearched += moves.Length;
+        
         TTEntry entry = tt[key % entries];
-
-        if (notRoot && board.IsDraw())
-            return (0, move);
-
-        if (notRoot && board.IsInCheckmate())
-            return (-99999 + board.PlyCount, move);
-
-        if (depth == 0)
-        {
-            int leafResult = EvaluatePosition(board);
-            return (leafResult, move);
-        }
 
         // TT cutoffs
         if (notRoot && entry.key == key && entry.depth >= depth && (
@@ -140,10 +126,23 @@ public class StormwindV2 : IChessBot
                 || entry.bound == 1 && entry.score <= alpha // upper bound, fail low
         )) return (entry.score, entry.move);
 
+        if (board.IsInCheckmate()) return (-99999 + ply, move);
+
+        if (board.IsDraw()) return (0, move);
+
+        if (qSearch)
+        {
+            if (eval >= beta) { return (beta, move); }
+            alpha = Math.Max(alpha, eval);
+        }
+
+
         foreach (Move scoreMove in moves)
         {
             int currentValue = (int)scoreMove.CapturePieceType * 10 - (int)scoreMove.MovePieceType;
             currentValue += scoreMove.IsPromotion ? (int)scoreMove.PromotionPieceType : 0;
+            currentValue += board.IsInCheck() ? (move.IsCapture ? 200 : 400) : 0;
+
             if (scoreMove == entry.move) currentValue = 99999;
 
             scoresList.Add(currentValue);
@@ -155,7 +154,7 @@ public class StormwindV2 : IChessBot
         foreach (Move searchMove in moves)
         {
             // Out of time
-            if (timer.MillisecondsElapsedThisTurn >= timer.MillisecondsRemaining / 30) return (-99999, searchMove);
+            if (timer.MillisecondsElapsedThisTurn >= timer.MillisecondsRemaining / 30) return (99999, moves.First());
 
             board.MakeMove(searchMove);
             var callResults = -Negamax(board, timer, depth - 1, ply + 1, -beta, -alpha, move).alpha;
@@ -165,15 +164,13 @@ public class StormwindV2 : IChessBot
             maxEval = Math.Max(maxEval, callResults);
             alpha = Math.Max(alpha, maxEval);
 
-
-
             if (alpha >= beta)
                 break;
         }
 
         // Did we fail high/low or get an exact score?
         int bound = maxEval >= beta ? 2 : maxEval > origAlpha ? 3 : 1;
-        Move bestMove = moves[valueList.IndexOf(valueList.Max())];
+        Move bestMove = (moves.Length > 0) ? moves[valueList.IndexOf(valueList.Max())] : move;
 
         // Push to TT
         tt[key % entries] = new TTEntry(key, bestMove, depth, maxEval, bound);
