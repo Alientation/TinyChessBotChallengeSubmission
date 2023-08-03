@@ -508,7 +508,10 @@ namespace ChessChallenge.Application {
         static string GetPlayerName(ChessPlayer player) => GetPlayerName(player.PlayerType);
         static string GetPlayerName(PlayerType type) => (type.ToString()).Split("__")[(type.ToString()).Split("__").Length-1];
 
-        public void StartNewBotMatch(PlayerType botTypeA, PlayerType botTypeB) {
+        public void StartNewBotMatch(PlayerType botTypeA, PlayerType botTypeB,
+            int timeControl1 = DefaultGameDurationMilliseconds, int timeIncrement1 = DefaultIncrementMilliseconds,
+            int timeControl2 = DefaultGameDurationMilliseconds, int timeIncrement2 = DefaultIncrementMilliseconds,
+            int currentBotMatchStartFensIndex = -1) {
             EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
             botMatchGameIndex = 0;
             string nameA = GetPlayerName(botTypeA);
@@ -521,7 +524,7 @@ namespace ChessChallenge.Application {
             BotStatsB = new BotMatchStats(nameB);
             botAPlaysWhite = true;
             Log($"Starting new match: {nameA} vs {nameB}", false, ConsoleColor.Blue);
-            StartNewGame(botTypeA, botTypeB);
+            StartNewGame(botTypeA, botTypeB, timeControl1, timeIncrement1, timeControl2, timeIncrement2, currentBotMatchStartFensIndex);
         }
 
 

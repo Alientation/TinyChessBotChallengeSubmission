@@ -68,9 +68,9 @@ namespace ChessChallenge.Application {
 
                 if ((ChallengeController.PlayerType) selectedPlayer1 == ChallengeController.PlayerType.Human || 
                     (ChallengeController.PlayerType) selectedPlayer2 == ChallengeController.PlayerType.Human)
-                    controller.StartNewGame((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
+                    controller.StartNewGame((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2, timeControl1, timeControl2, timeIncrement1, timeIncrement2);
                 else
-                    controller.StartNewBotMatch((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2);
+                    controller.StartNewBotMatch((ChallengeController.PlayerType) selectedPlayer1, (ChallengeController.PlayerType) selectedPlayer2, timeControl1, timeControl2, timeIncrement1, timeIncrement2);
             }
 
             buttonPos.X = UIHelper.ScaleInt(400);
