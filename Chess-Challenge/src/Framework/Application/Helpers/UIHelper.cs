@@ -65,7 +65,7 @@ namespace ChessChallenge.Application {
             }
         }
 
-        public static (string, bool) TextInput(string existingText, bool isActive, Vector2 centre, Vector2 size, string textHint = "input text") {
+        public static (string, bool, bool) TextInput(string existingText, bool isActive, Vector2 centre, Vector2 size, string textHint = "input text") {
             //inner and outer rectangles for input
             Rectangle recInside = GetRectangle(centre, size);
 
@@ -83,13 +83,10 @@ namespace ChessChallenge.Application {
             bool mouseOver = MouseInRect(recOutside);
             bool pressed = mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT);
 
-            if (isActive && !mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT)) {
+            if (isActive && !mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT))
                 isActive = false;
-                Raylib.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
-            } else if (!isActive && pressed) {
+            else if (!isActive && pressed)
                 isActive = true;
-                Raylib.SetMouseCursor(MouseCursor.MOUSE_CURSOR_IBEAM);
-            }
 
             Color col1 = isActive ? (pressed ? pressCol : hoverCol) : normalCol;
             Color col2 = isActive ? (pressed ? insidePressCol : insideHoverCol) : insideCol;
@@ -103,7 +100,7 @@ namespace ChessChallenge.Application {
             //returns current text and closes the text input
             if (!isActive) {
                 DrawText(existingText.Length == 0 ? textHint : existingText, centre, fontSize, 1, textCol, AlignH.Centre);
-                return (existingText, false);
+                return (existingText, false, mouseOver);
             } else { //blinking cursor thing
                 bool doBlink = Math.Round(Raylib.GetTime() * textInputBlinkingSpeed) % 2 == 0;
                 string text = existingText;
@@ -128,7 +125,7 @@ namespace ChessChallenge.Application {
                         }
 
                         Raylib.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
-                        return (existingText, false);
+                        return (existingText, false, mouseOver);
                     }
 
                     existingText += (char) key;
@@ -137,7 +134,7 @@ namespace ChessChallenge.Application {
             }
 
             //keep it open if not escaped
-            return (existingText, true);
+            return (existingText, true, mouseOver);
         }
 
         public static Rectangle GetRectangle(Vector2 centre, Vector2 size) {

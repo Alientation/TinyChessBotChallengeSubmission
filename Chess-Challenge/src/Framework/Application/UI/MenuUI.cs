@@ -106,6 +106,9 @@ namespace ChessChallenge.Application {
             isTextInput11Active = textInput11.Item2;
             isTextInput21Active = textInput21.Item2;
 
+            //update cursor (IK THIS IS BAD CODE ^^^^^)
+            Raylib.SetMouseCursor((textInput1.Item3 || textInput2.Item3 || textInput11.Item3 || textInput21.Item3) ? MouseCursor.MOUSE_CURSOR_IBEAM : MouseCursor.MOUSE_CURSOR_DEFAULT);
+
             
             buttonPos.Y += UIHelper.ScaleInt(200);
             buttonPos.X = UIHelper.ScaleInt(initX);
