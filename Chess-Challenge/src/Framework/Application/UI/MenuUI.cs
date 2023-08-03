@@ -49,17 +49,6 @@ namespace ChessChallenge.Application
                 controller.EndGame(false);
             }
 
-            buttonPos.Y = UIHelper.ScaleInt(110) + UIHelper.ScaleInt(initY);
-
-            int temp1 = DropdownList(selectedPlayer1 < 0 ? "Choose" : getShortName(selectedPlayer1), ChallengeController.ActivePlayers, is1Open, new Vector2(130, 160), new Vector2(240,35));
-            is1Open = temp1 == -2;
-            if (temp1 >= 0) selectedPlayer1 = temp1;
-
-
-            int temp2 = DropdownList(selectedPlayer2 < 0 ? "Choose" : getShortName(selectedPlayer2), ChallengeController.ActivePlayers, is2Open, new Vector2(400, 160), new Vector2(240,35));
-            is2Open = temp2 == -2;
-            if (temp2 >= 0) selectedPlayer2 = temp2;
-
 
             // Page buttons
             buttonPos.Y = UIHelper.ScaleInt(600);
@@ -100,6 +89,19 @@ namespace ChessChallenge.Application
             {
                 Environment.Exit(0);
             }
+
+            // Dropdowns
+            buttonPos.Y = UIHelper.ScaleInt(110) + UIHelper.ScaleInt(initY);
+
+            int temp1 = DropdownList(selectedPlayer1 < 0 ? "Choose" : getShortName(selectedPlayer1), ChallengeController.ActivePlayers, is1Open, new Vector2(130, 160), new Vector2(240,35));
+            is1Open = temp1 == -2;
+            if (temp1 >= 0) selectedPlayer1 = temp1;
+
+
+            int temp2 = DropdownList(selectedPlayer2 < 0 ? "Choose" : getShortName(selectedPlayer2), ChallengeController.ActivePlayers, is2Open, new Vector2(400, 160), new Vector2(240,35));
+            is2Open = temp2 == -2;
+            if (temp2 >= 0) selectedPlayer2 = temp2;
+            
 
             bool NextButtonInRow(string name, ref Vector2 pos, float spacingY, Vector2 size)
             {
