@@ -81,23 +81,23 @@ namespace ChessChallenge.Application {
 
             //time control input
             buttonPos.X = UIHelper.ScaleInt(90);
-            UIHelper.DrawText("P1 Time: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            UIHelper.DrawText("P1 Time: ", buttonPos, UIHelper.ScaleInt(16), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(90);
             var textInput1 = UIHelper.TextInput(timeControl1Input, isTimeControl1InputActive, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             buttonPos.X = UIHelper.ScaleInt(350);
-            UIHelper.DrawText("P2 Time: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            UIHelper.DrawText("P2 Time: ", buttonPos, UIHelper.ScaleInt(16), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(90);
             var textInput2 = UIHelper.TextInput(timeControl2Input, isTimeControl2Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             buttonPos.Y += UIHelper.ScaleInt(45);
             buttonPos.X = UIHelper.ScaleInt(110);
-            UIHelper.DrawText("P1 s/move: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            UIHelper.DrawText("P1 s/move: ", buttonPos, UIHelper.ScaleInt(16), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
             var textInput11 = UIHelper.TextInput(timeIncrement1, isTimeIncrement1Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             buttonPos.X = UIHelper.ScaleInt(370);
-            UIHelper.DrawText("P2 s/move: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            UIHelper.DrawText("P2 s/move: ", buttonPos, UIHelper.ScaleInt(16), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
             var textInput21 = UIHelper.TextInput(timeIncrement2, isTimeIncrement2Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
