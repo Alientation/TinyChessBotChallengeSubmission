@@ -45,6 +45,10 @@ namespace ChessChallenge.Application
                 }
             }
 
+            if (NextButtonInRow("Fast Forward", ref buttonPos, spacingY, buttonSize)) {
+                controller.fastForward = !controller.fastForward;
+            }
+
             if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize)) {
                 controller.EndGame(false);
             }

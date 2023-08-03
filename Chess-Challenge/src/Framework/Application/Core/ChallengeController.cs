@@ -150,7 +150,7 @@ namespace ChessChallenge.Application
         int debugTokenCount1;
         int tokenCount2;
         int debugTokenCount2;
-        
+        public bool fastForward;
         readonly StringBuilder pgns;
 
         public ChallengeController()
@@ -165,6 +165,7 @@ namespace ChessChallenge.Application
             boardUI = new BoardUI();
             board = new Board();
             pgns = new();
+            fastForward = false;
 
             BotStatsA = new BotMatchStats(botToTest1.ToString());
             BotStatsB = new BotMatchStats(botToTest2.ToString());
@@ -429,6 +430,12 @@ namespace ChessChallenge.Application
 
                     if (botMatchGameIndex < numGamesToPlay && autoStartNextBotMatch) {
                         botAPlaysWhite = !botAPlaysWhite;
+                        
+                        if (fastForward) {
+                            StartNewGame(PlayerBlack.PlayerType, PlayerWhite.PlayerType);
+                            return;
+                        }
+
                         const int startNextGameDelayMs = 600;
                         System.Timers.Timer autoNextTimer = new(startNextGameDelayMs);
                         int originalGameID = gameID;
@@ -438,6 +445,7 @@ namespace ChessChallenge.Application
 
                     }
                     else if (autoStartNextBotMatch) {
+                        fastForward = false;
                         Log("Match finished", false, ConsoleColor.Blue);
                     }
                 }
