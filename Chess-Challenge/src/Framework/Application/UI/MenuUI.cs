@@ -29,9 +29,8 @@ namespace ChessChallenge.Application
             float breakSpacing = UIHelper.ScaleInt(50);
 
 
-            if (NextButtonInRow("Tournament", ref buttonPos, spacingY, buttonSize)) {
+            if (NextButtonInRow("Tournament", ref buttonPos, spacingY, buttonSize))
                 controller.StartTournament();
-            }
 
             buttonPos.Y = UIHelper.ScaleInt(450);
 
@@ -45,40 +44,24 @@ namespace ChessChallenge.Application
                 }
             }
 
-            if (NextButtonInRow("Fast Forward", ref buttonPos, spacingY, buttonSize)) {
+            if (NextButtonInRow("Fast Forward", ref buttonPos, spacingY, buttonSize))
                 controller.fastForward = !controller.fastForward;
-            }
 
-            if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize)) {
+            if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize))
                 controller.EndGame(false);
-            }
 
 
             // Page buttons
             buttonPos.Y = UIHelper.ScaleInt(600);
 
             if (NextButtonInRow("Save Games", ref buttonPos, spacingY, buttonSize))
-            {
-                string pgns = controller.AllPGNs;
-                string directoryPath = Path.Combine(FileHelper.AppDataPath, "Games");
-                Directory.CreateDirectory(directoryPath);
-                string fileName = FileHelper.GetUniqueFileName(directoryPath, "games", ".txt");
-                string fullPath = Path.Combine(directoryPath, fileName);
-                File.WriteAllText(fullPath, pgns);
-                ConsoleHelper.Log("Saved games to " + fullPath, false, ConsoleColor.Blue);
-            }
+                controller.saveGames();
             if (NextButtonInRow("Rules & Help", ref buttonPos, spacingY, buttonSize))
-            {
                 FileHelper.OpenUrl("https://github.com/SebLague/Chess-Challenge");
-            }
             if (NextButtonInRow("Documentation", ref buttonPos, spacingY, buttonSize))
-            {
                 FileHelper.OpenUrl("https://seblague.github.io/chess-coding-challenge/documentation/");
-            }
             if (NextButtonInRow("Submission Page", ref buttonPos, spacingY, buttonSize))
-            {
                 FileHelper.OpenUrl("https://forms.gle/6jjj8jxNQ5Ln53ie6");
-            }
 
             // Window and quit buttons
             buttonPos.Y += breakSpacing;
@@ -86,13 +69,9 @@ namespace ChessChallenge.Application
             bool isBigWindow = Raylib.GetScreenWidth() > Settings.ScreenSizeSmall.X;
             string windowButtonName = isBigWindow ? "Smaller Window" : "Bigger Window";
             if (NextButtonInRow(windowButtonName, ref buttonPos, spacingY, buttonSize))
-            {
                 Program.SetWindowSize(isBigWindow ? Settings.ScreenSizeSmall : Settings.ScreenSizeBig);
-            }
             if (NextButtonInRow("Exit (ESC)", ref buttonPos, spacingY, buttonSize))
-            {
                 Environment.Exit(0);
-            }
 
             // Dropdowns
             buttonPos.Y = UIHelper.ScaleInt(110) + UIHelper.ScaleInt(initY);
@@ -107,8 +86,7 @@ namespace ChessChallenge.Application
             if (temp2 >= 0) selectedPlayer2 = temp2;
             
 
-            bool NextButtonInRow(string name, ref Vector2 pos, float spacingY, Vector2 size)
-            {
+            bool NextButtonInRow(string name, ref Vector2 pos, float spacingY, Vector2 size) {
                 bool pressed = UIHelper.Button(name.Replace("__",""), pos, size);
                 pos.Y += spacingY;
                 return pressed;
