@@ -33,13 +33,10 @@ using static ChessChallenge.Application.ConsoleHelper;
 
 */
 
-namespace ChessChallenge.Application
-{
-    public class ChallengeController
-    {
+namespace ChessChallenge.Application {
+    public class ChallengeController {
         
-        public enum PlayerType
-        {
+        public enum PlayerType {
             Human,
             V1__MyBotV1, V1__MyBotV1NoDebug,
             V1__MyBotV1_1, V1__MyBotV1_2, V1__MyBotV1_3, V1__MyBotV1_4,
@@ -66,55 +63,51 @@ namespace ChessChallenge.Application
                 PlayerType.Enemy__StormwindV2, PlayerType.Enemy__NNBot,
         };
 
-        ChessPlayer CreatePlayer(PlayerType type)
-        {
-            return type switch
-            {
-                PlayerType.V1__MyBotV1 => new ChessPlayer(new MyBotV1(), type, GameDurationMilliseconds),
-                PlayerType.V1__MyBotV1NoDebug => new ChessPlayer(new MyBotV1NoDebug(), type, GameDurationMilliseconds),
-                PlayerType.V1__MyBotV1_1 => new ChessPlayer(new MyBotV1_1(), type, GameDurationMilliseconds),
-                PlayerType.V1__MyBotV1_2 => new ChessPlayer(new MyBotV1_2(), type, GameDurationMilliseconds),
-                PlayerType.V1__MyBotV1_3 => new ChessPlayer(new MyBotV1_3(), type, GameDurationMilliseconds),
-                PlayerType.V1__MyBotV1_4 => new ChessPlayer(new MyBotV1_4(), type, GameDurationMilliseconds),
+        ChessPlayer CreatePlayer(PlayerType type) {
+            return type switch {
+                PlayerType.V1__MyBotV1 => new ChessPlayer(new MyBotV1(), type, gameDurationMilliseconds),
+                PlayerType.V1__MyBotV1NoDebug => new ChessPlayer(new MyBotV1NoDebug(), type, gameDurationMilliseconds),
+                PlayerType.V1__MyBotV1_1 => new ChessPlayer(new MyBotV1_1(), type, gameDurationMilliseconds),
+                PlayerType.V1__MyBotV1_2 => new ChessPlayer(new MyBotV1_2(), type, gameDurationMilliseconds),
+                PlayerType.V1__MyBotV1_3 => new ChessPlayer(new MyBotV1_3(), type, gameDurationMilliseconds),
+                PlayerType.V1__MyBotV1_4 => new ChessPlayer(new MyBotV1_4(), type, gameDurationMilliseconds),
 
-                PlayerType.V2__MyBotV2 => new ChessPlayer(new MyBotV2(), type, GameDurationMilliseconds),
-                PlayerType.V2__MyBotV2_1 => new ChessPlayer(new MyBotV2_1(), type, GameDurationMilliseconds),
-                PlayerType.V2__MyBotV2_2 => new ChessPlayer(new MyBotV2_2(), type, GameDurationMilliseconds),
+                PlayerType.V2__MyBotV2 => new ChessPlayer(new MyBotV2(), type, gameDurationMilliseconds),
+                PlayerType.V2__MyBotV2_1 => new ChessPlayer(new MyBotV2_1(), type, gameDurationMilliseconds),
+                PlayerType.V2__MyBotV2_2 => new ChessPlayer(new MyBotV2_2(), type, gameDurationMilliseconds),
 
-                PlayerType.MyBotV3 => new ChessPlayer(new MyBotV3(), type, GameDurationMilliseconds),
-                PlayerType.MyBotV3_1 => new ChessPlayer(new MyBotV3_1(), type, GameDurationMilliseconds),
-                PlayerType.MyBotV3_2 => new ChessPlayer(new MyBotV3_2(), type, GameDurationMilliseconds),
-                PlayerType.MyBotV3_3 => new ChessPlayer(new MyBotV3_3(), type, GameDurationMilliseconds),
+                PlayerType.MyBotV3 => new ChessPlayer(new MyBotV3(), type, gameDurationMilliseconds),
+                PlayerType.MyBotV3_1 => new ChessPlayer(new MyBotV3_1(), type, gameDurationMilliseconds),
+                PlayerType.MyBotV3_2 => new ChessPlayer(new MyBotV3_2(), type, gameDurationMilliseconds),
+                PlayerType.MyBotV3_3 => new ChessPlayer(new MyBotV3_3(), type, gameDurationMilliseconds),
 
-                PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, GameDurationMilliseconds),
+                PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, gameDurationMilliseconds),
 
-                PlayerType.Enemy__NNBot => new ChessPlayer(new NNBot(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__NNBot => new ChessPlayer(new NNBot(), type, gameDurationMilliseconds),
 
-                PlayerType.Enemy__EloBot0 => new ChessPlayer(new EloBot0(), type, GameDurationMilliseconds),
-                PlayerType.Enemy__EloBot1 => new ChessPlayer(new EloBot1(), type, GameDurationMilliseconds),
-                PlayerType.Enemy__EloBot2 => new ChessPlayer(new EloBot2(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__EloBot0 => new ChessPlayer(new EloBot0(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__EloBot1 => new ChessPlayer(new EloBot1(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__EloBot2 => new ChessPlayer(new EloBot2(), type, gameDurationMilliseconds),
 
-                PlayerType.Enemy__HumanBot => new ChessPlayer(new HumanBot(), type, GameDurationMilliseconds),
-                PlayerType.Enemy__SelenautBot => new ChessPlayer(new SelenautBot(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__HumanBot => new ChessPlayer(new HumanBot(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__SelenautBot => new ChessPlayer(new SelenautBot(), type, gameDurationMilliseconds),
 
-                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine1 => new ChessPlayer(new LiteBlueEngine1(), type, GameDurationMilliseconds),
-                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine2 => new ChessPlayer(new LiteBlueEngine2(), type, GameDurationMilliseconds),
-                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine3 => new ChessPlayer(new LiteBlueEngine3(), type, GameDurationMilliseconds),
-                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine4 => new ChessPlayer(new LiteBlueEngine4(), type, GameDurationMilliseconds),
-                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine5 => new ChessPlayer(new LiteBlueEngine5(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine1 => new ChessPlayer(new LiteBlueEngine1(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine2 => new ChessPlayer(new LiteBlueEngine2(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine3 => new ChessPlayer(new LiteBlueEngine3(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine4 => new ChessPlayer(new LiteBlueEngine4(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine5 => new ChessPlayer(new LiteBlueEngine5(), type, gameDurationMilliseconds),
 
-                PlayerType.Enemy__MagnusCarlBot => new ChessPlayer(new MagnusCarlBot(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__MagnusCarlBot => new ChessPlayer(new MagnusCarlBot(), type, gameDurationMilliseconds),
                 
-                PlayerType.Enemy__StormwindV2 => new ChessPlayer(new StormwindV2(), type, GameDurationMilliseconds),
+                PlayerType.Enemy__StormwindV2 => new ChessPlayer(new StormwindV2(), type, gameDurationMilliseconds),
                 
                 _ => new ChessPlayer(new HumanPlayer(boardUI), type)
             };
         }
 
-        public static PlayerType player1Type = PlayerType.Human;
-        public static PlayerType player2Type = PlayerType.Human;
-        public static PlayerType botToTest1 = PlayerType.MyBotV3_1;
-        public static PlayerType botToTest2 = PlayerType.Enemy__EloBot1;
+        public static PlayerType player1Type = PlayerType.Human, player2Type = PlayerType.Human;
+        public static PlayerType botToTest1 = PlayerType.MyBotV3_1, botToTest2 = PlayerType.Enemy__EloBot1;
 
         // Game state
         readonly Random rng;
@@ -146,15 +139,13 @@ namespace ChessChallenge.Application
         // Other
         readonly BoardUI boardUI;
         readonly MoveGenerator moveGenerator;
-        int tokenCount1;
-        int debugTokenCount1;
-        int tokenCount2;
-        int debugTokenCount2;
+        int tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2;
         public bool fastForward;
         readonly StringBuilder pgns;
+        int gameDurationMilliseconds = Settings.DefaultGameDurationMilliseconds;
+        int incrementMilliseconds = Settings.DefaultIncrementMilliseconds;
 
-        public ChallengeController()
-        {
+        public ChallengeController() {
             Log($"Launching Chess-Challenge version {Settings.Version}");
             (tokenCount1, debugTokenCount1) = GetTokenCount(botToTest1);
             (tokenCount2, debugTokenCount2) = GetTokenCount(botToTest2);
@@ -207,8 +198,7 @@ namespace ChessChallenge.Application
             }
         }
 
-        public void StartNewGame(PlayerType whiteType, PlayerType blackType)
-        {
+        public void StartNewGame(PlayerType whiteType, PlayerType blackType) {
             // End any ongoing game
             EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
             gameID = rng.Next();
@@ -217,8 +207,7 @@ namespace ChessChallenge.Application
             player2Type = blackType;
 
             // Stop prev task and create a new one
-            if (RunBotsOnSeparateThread)
-            {
+            if (RunBotsOnSeparateThread) {
                 // Allow task to terminate
                 botTaskWaitHandle.Set();
                 // Create new task
@@ -249,99 +238,74 @@ namespace ChessChallenge.Application
             NotifyTurnToMove();
         }
 
-        void BotThinkerThread()
-        {
+        void BotThinkerThread() {
             int threadID = gameID;
             //Console.WriteLine("Starting thread: " + threadID);
 
-            while (true)
-            {
+            while (true) {
                 // Sleep thread until notified
                 botTaskWaitHandle.WaitOne();
                 // Get bot move
-                if (threadID == gameID)
-                {
+                if (threadID == gameID) {
                     var move = GetBotMove();
 
                     if (threadID == gameID)
-                    {
                         OnMoveChosen(move);
-                    }
                 }
                 // Terminate if no longer playing this game
                 if (threadID != gameID)
-                {
                     break;
-                }
             }
             //Console.WriteLine("Exitting thread: " + threadID);
         }
 
-        Move GetBotMove()
-        {
+        Move GetBotMove() {
             API.Board botBoard = new(board);
-            try
-            {
-                API.Timer timer = new(PlayerToMove.TimeRemainingMs, PlayerNotOnMove.TimeRemainingMs, GameDurationMilliseconds, IncrementMilliseconds);
+            try {
+                API.Timer timer = new(PlayerToMove.TimeRemainingMs, PlayerNotOnMove.TimeRemainingMs, gameDurationMilliseconds, incrementMilliseconds);
                 API.Move move = PlayerToMove.Bot.Think(botBoard, timer);
                 return new Move(move.RawValue);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 Log("An error occurred while bot was thinking.\n" + e.ToString(), true, ConsoleColor.Red);
                 hasBotTaskException = true;
                 botExInfo = ExceptionDispatchInfo.Capture(e);
             }
+
             return Move.NullMove;
         }
 
 
 
-        void NotifyTurnToMove()
-        {
-            //playerToMove.NotifyTurnToMove(board);
-            if (PlayerToMove.IsHuman)
-            {
+        void NotifyTurnToMove() {
+            if (PlayerToMove.IsHuman) {
                 PlayerToMove.Human.SetPosition(FenUtility.CurrentFen(board));
                 PlayerToMove.Human.NotifyTurnToMove();
+                return;
             }
-            else
-            {
-                if (RunBotsOnSeparateThread)
-                {
-                    botTaskWaitHandle.Set();
-                }
-                else
-                {
-                    double startThinkTime = Raylib.GetTime();
-                    var move = GetBotMove();
-                    double thinkDuration = Raylib.GetTime() - startThinkTime;
-                    PlayerToMove.UpdateClock(thinkDuration);
-                    OnMoveChosen(move);
-                }
+
+            if (RunBotsOnSeparateThread) {
+                botTaskWaitHandle.Set();
+            } else {
+                double startThinkTime = Raylib.GetTime();
+                var move = GetBotMove();
+                double thinkDuration = Raylib.GetTime() - startThinkTime;
+                PlayerToMove.UpdateClock(thinkDuration);
+                OnMoveChosen(move);
             }
         }
 
-        void SetBoardPerspective()
-        {
+        void SetBoardPerspective() {
             // Board perspective
-            if (PlayerWhite.IsHuman || PlayerBlack.IsHuman)
-            {
+            if (PlayerWhite.IsHuman || PlayerBlack.IsHuman) {
                 boardUI.SetPerspective(PlayerWhite.IsHuman);
                 HumanWasWhiteLastGame = PlayerWhite.IsHuman;
-            }
-            else if (PlayerWhite.Bot is not EvilBot && PlayerWhite.Bot is not HumanPlayer && PlayerBlack.Bot is not EvilBot && PlayerBlack.Bot is not HumanPlayer)
-            {
+            } else if (PlayerWhite.Bot is not EvilBot && PlayerWhite.Bot is not HumanPlayer && PlayerBlack.Bot is not EvilBot && PlayerBlack.Bot is not HumanPlayer)
                 boardUI.SetPerspective(true);
-            }
             else
-            {
                 boardUI.SetPerspective(PlayerWhite.Bot is not EvilBot && PlayerWhite.Bot is not HumanPlayer);
-            }
         }
 
-        static (int totalTokenCount, int debugTokenCount) GetTokenCount(PlayerType botType)
-        {   
+        static (int totalTokenCount, int debugTokenCount) GetTokenCount(PlayerType botType) {   
             if (botType == PlayerType.Human) return (0,0);
 
             string path = Path.Combine(Directory.GetCurrentDirectory(), "src", "My Bot");
@@ -356,24 +320,19 @@ namespace ChessChallenge.Application
             return TokenCounter.CountTokens(txt);
         }
 
-        void OnMoveChosen(Move chosenMove)
-        {
-            if (IsLegal(chosenMove))
-            {
-                PlayerToMove.AddIncrement(IncrementMilliseconds);
-                if (PlayerToMove.IsBot)
-                {
+        void OnMoveChosen(Move chosenMove) {
+            if (IsLegal(chosenMove)) {
+                PlayerToMove.AddIncrement(incrementMilliseconds);
+
+                if (PlayerToMove.IsBot) {
                     moveToPlay = chosenMove;
                     isWaitingToPlayMove = true;
                     playMoveTime = lastMoveMadeTime + MinMoveDelay;
+                    return;
                 }
-                else
-                {
-                    PlayMove(chosenMove);
-                }
-            }
-            else
-            {
+                
+                PlayMove(chosenMove);
+            } else {
                 string moveName = MoveUtility.GetMoveNameUCI(chosenMove);
                 string log = $"Illegal move: {moveName} in position: {FenUtility.CurrentFen(board)}";
                 Log(log, true, ConsoleColor.Red);
@@ -382,26 +341,20 @@ namespace ChessChallenge.Application
             }
         }
 
-        void PlayMove(Move move)
-        {
-            if (isPlaying)
-            {
-                bool animate = PlayerToMove.IsBot;
-                lastMoveMadeTime = (float)Raylib.GetTime();
+        void PlayMove(Move move) {
+            if (!isPlaying) return;
 
-                board.MakeMove(move, false);
-                boardUI.UpdatePosition(board, move, animate);
+            bool animate = PlayerToMove.IsBot;
+            lastMoveMadeTime = (float)Raylib.GetTime();
 
-                GameResult result = Arbiter.GetGameState(board);
-                if (result == GameResult.InProgress)
-                {
-                    NotifyTurnToMove();
-                }
-                else
-                {
-                    EndGame(result);
-                }
-            }
+            board.MakeMove(move, false);
+            boardUI.UpdatePosition(board, move, animate);
+
+            GameResult result = Arbiter.GetGameState(board);
+            if (result == GameResult.InProgress)
+                NotifyTurnToMove();
+            else
+                EndGame(result);
         }
 
         void EndGame(GameResult result, bool log = true, bool autoStartNextBotMatch = true)
