@@ -304,8 +304,6 @@ namespace ChessChallenge.Application {
             return Move.NullMove;
         }
 
-
-
         void NotifyTurnToMove() {
             if (PlayerToMove.IsHuman) {
                 PlayerToMove.Human.SetPosition(FenUtility.CurrentFen(board));
@@ -397,7 +395,7 @@ namespace ChessChallenge.Application {
             if (log) 
                 Log("Game Over: " + result, false, ConsoleColor.Blue);
             
-            if (result != GameResult.VoidResult) {
+            if (result != GameResult.VoidResult && result != GameResult.DrawByArbiter) {
                 string pgn = PGNCreator.CreatePGN(board, result, GetPlayerName(PlayerWhite), GetPlayerName(PlayerBlack));
                 pgns.AppendLine(pgn);
             }
