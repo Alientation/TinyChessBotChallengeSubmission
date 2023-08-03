@@ -264,9 +264,9 @@ namespace ChessChallenge.Application {
                 UIHelper.DrawText($"{colName}: {name}", namePos, fontSize, fontSpacing, nameCol);
                 var timePos = new Vector2(boardStartX + squareSize * 8, y);
                 string timeText;
-                if (timeMs == int.MaxValue) {
+                if (timeMs == Settings.MAX_TIME)
                     timeText = "Time: Unlimited";
-                } else {
+                else {
                     double secondsRemaining = timeMs / 1000.0;
                     int numMinutes = (int)(secondsRemaining / 60);
                     int numSeconds = (int)(secondsRemaining - numMinutes * 60);

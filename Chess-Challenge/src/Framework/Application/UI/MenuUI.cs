@@ -9,9 +9,9 @@ namespace ChessChallenge.Application {
         public static bool is1Open = false, is2Open = false;
         
         public static string timeControl1Input = "", timeControl2Input = "";
-        public static string timePerMove1Input = "", timePerMove2Input = "";
-        public static bool isTextInput1Active = false, isTextInput2Active;
-        public static bool isTextInput11Active = false, isTextInput21Active;
+        public static string timeIncrement1 = "", timeIncrement2 = "";
+        public static bool isTimeControl1InputActive = false, isTimeControl2Active;
+        public static bool isTimeIncrement1Active = false, isTimeIncrement2Active;
 
         public static string getShortName(int type) {
             ChallengeController.PlayerType playerType = (ChallengeController.PlayerType) type;
@@ -61,7 +61,10 @@ namespace ChessChallenge.Application {
             buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
 
             if (NextButtonInRow("Play", ref buttonPos, spacingY, buttonSizeSmall)) {
-                int timeControl1 = timeControl1Input == "" ? Settings.DefaultIncrementMilliseconds : int.Parse(timeControl1Input);
+                int timeControl1 = timeControl1Input == "" ? Settings.MAX_TIME : int.Parse(timeControl1Input);
+                int timeControl2 = timeControl2Input == "" ? Settings.MAX_TIME : int.Parse(timeControl2Input);
+                int timeIncrement1 = MenuUI.timeIncrement1 == "" ? Settings.MAX_TIME : int.Parse(MenuUI.timeIncrement1);
+                int timeIncrement2 = MenuUI.timeIncrement2 == "" ? Settings.MAX_TIME : int.Parse(MenuUI.timeIncrement2);
 
                 if ((ChallengeController.PlayerType) selectedPlayer1 == ChallengeController.PlayerType.Human || 
                     (ChallengeController.PlayerType) selectedPlayer2 == ChallengeController.PlayerType.Human)
@@ -80,33 +83,33 @@ namespace ChessChallenge.Application {
             buttonPos.X = UIHelper.ScaleInt(90);
             UIHelper.DrawText("P1 Time: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(90);
-            var textInput1 = UIHelper.TextInput(timeControl1Input, isTextInput1Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+            var textInput1 = UIHelper.TextInput(timeControl1Input, isTimeControl1InputActive, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             buttonPos.X = UIHelper.ScaleInt(350);
             UIHelper.DrawText("P2 Time: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(90);
-            var textInput2 = UIHelper.TextInput(timeControl2Input, isTextInput2Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+            var textInput2 = UIHelper.TextInput(timeControl2Input, isTimeControl2Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             buttonPos.Y += UIHelper.ScaleInt(45);
             buttonPos.X = UIHelper.ScaleInt(110);
             UIHelper.DrawText("P1 s/move: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
-            var textInput11 = UIHelper.TextInput(timePerMove1Input, isTextInput11Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+            var textInput11 = UIHelper.TextInput(timeIncrement1, isTimeIncrement1Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             buttonPos.X = UIHelper.ScaleInt(370);
             UIHelper.DrawText("P2 s/move: ", buttonPos, 16, 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
-            var textInput21 = UIHelper.TextInput(timePerMove2Input, isTextInput21Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+            var textInput21 = UIHelper.TextInput(timeIncrement2, isTimeIncrement2Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             //parse time control input.. remove any non digits
             timeControl1Input =  Regex.Replace(textInput1.Item1, "[^0-9]", "");
             timeControl2Input =  Regex.Replace(textInput2.Item1, "[^0-9]", "");
-            timePerMove1Input =  Regex.Replace(textInput11.Item1, "[^0-9]", "");
-            timePerMove2Input =  Regex.Replace(textInput21.Item1, "[^0-9]", "");
-            isTextInput1Active = textInput1.Item2;
-            isTextInput2Active = textInput2.Item2;
-            isTextInput11Active = textInput11.Item2;
-            isTextInput21Active = textInput21.Item2;
+            timeIncrement1 =  Regex.Replace(textInput11.Item1, "[^0-9]", "");
+            timeIncrement2 =  Regex.Replace(textInput21.Item1, "[^0-9]", "");
+            isTimeControl1InputActive = textInput1.Item2;
+            isTimeControl2Active = textInput2.Item2;
+            isTimeIncrement1Active = textInput11.Item2;
+            isTimeIncrement2Active = textInput21.Item2;
 
             //update cursor (IK THIS IS BAD CODE ^^^^^)
             Raylib.SetMouseCursor((textInput1.Item3 || textInput2.Item3 || textInput11.Item3 || textInput21.Item3) ? MouseCursor.MOUSE_CURSOR_IBEAM : MouseCursor.MOUSE_CURSOR_DEFAULT);

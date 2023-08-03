@@ -7,6 +7,7 @@ namespace ChessChallenge.Application {
         // Game settings
         public const int DefaultGameDurationMilliseconds = 60 * 1000;
         public const int DefaultIncrementMilliseconds = 0 * 1000;
+        public const int MAX_TIME = 60 * 1000 * 60;
         public const float MinMoveDelay = 0;
         public static readonly bool RunBotsOnSeparateThread = true;
 
