@@ -412,18 +412,18 @@ namespace ChessChallenge.Application
                 isWaitingToPlayMove = false;
                 gameID = -1;
 
-                if (log && result != GameResult.VoidResult) {
+                if (log)
                     Log("Game Over: " + result, false, ConsoleColor.Blue);
+                
+                if (result != GameResult.VoidResult) {
+                    string pgn = PGNCreator.CreatePGN(board, result, GetPlayerName(PlayerWhite), GetPlayerName(PlayerBlack));
+                    pgns.AppendLine(pgn);
                 }
-
-                string pgn = PGNCreator.CreatePGN(board, result, GetPlayerName(PlayerWhite), GetPlayerName(PlayerBlack));
-                pgns.AppendLine(pgn);
 
                 // If 2 bots playing each other, start next game automatically.
                 if (PlayerWhite.IsBot && PlayerBlack.IsBot) {
-                    if (log && result != GameResult.VoidResult) {
+                    if (log && result != GameResult.VoidResult)
                         UpdateBotMatchStats(result);
-                    }
 
                     botMatchGameIndex++;
                     int numGamesToPlay = botMatchStartFens.Length * 2;
@@ -450,6 +450,16 @@ namespace ChessChallenge.Application
                     }
                 }
             }
+        }
+        
+        public void saveGames() {
+            string pgns = AllPGNs;
+            string directoryPath = Path.Combine(FileHelper.AppDataPath, "Games");
+            Directory.CreateDirectory(directoryPath);
+            string fileName = FileHelper.GetUniqueFileName(directoryPath, "games", ".txt");
+            string fullPath = Path.Combine(directoryPath, fileName);
+            File.WriteAllText(fullPath, pgns);
+            ConsoleHelper.Log("Saved games to " + fullPath, false, ConsoleColor.Blue);
         }
 
         private void AutoStartNextBotMatchGame(int originalGameID, System.Timers.Timer timer)
