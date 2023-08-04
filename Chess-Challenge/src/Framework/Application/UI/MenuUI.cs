@@ -112,9 +112,9 @@ namespace ChessChallenge.Application {
             var textInput2 = UIHelper.TextInput(timeControl2Input, isTimeControlInput2Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
 
             buttonPos.Y += UIHelper.ScaleInt(45);
-            buttonPos.X = UIHelper.ScaleInt(100);
+            buttonPos.X = UIHelper.ScaleInt(110);
             UIHelper.DrawText("P1 t/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
-            buttonPos.X += UIHelper.ScaleInt(80);
+            buttonPos.X += UIHelper.ScaleInt(70);
             var textInput11 = UIHelper.TextInput(timeIncrement1Input, isTimeIncrement1InputActive, buttonPos, UIHelper.Scale(new Vector2(140,35)), "0");
 
             buttonPos.X = UIHelper.ScaleInt(370);
@@ -142,15 +142,6 @@ namespace ChessChallenge.Application {
             Raylib.SetMouseCursor((textInput1.Item3 || textInput2.Item3 || textInput11.Item3 || textInput21.Item3) ? MouseCursor.MOUSE_CURSOR_IBEAM : MouseCursor.MOUSE_CURSOR_DEFAULT);
 
             
-            /*buttonPos.Y += UIHelper.ScaleInt(200);
-            buttonPos.X = UIHelper.ScaleInt(initX);
-            if (NextButtonInRow("End Game", ref buttonPos, spacingY, buttonSize))
-                controller.EndGame(false);*/
-
-
-            buttonPos.Y = UIHelper.ScaleInt(110) + UIHelper.ScaleInt(initY);
-
-
             //player selection
             var player1Selection = DropdownListSelectPlayersHelper(ChallengeController.ActivePlayers, isPlayer1SelectionOpen, UIHelper.Scale(new Vector2(130, 100)), UIHelper.Scale(new Vector2(240,35)), selectedPlayer1);
             isPlayer1SelectionOpen = player1Selection.Item2;
