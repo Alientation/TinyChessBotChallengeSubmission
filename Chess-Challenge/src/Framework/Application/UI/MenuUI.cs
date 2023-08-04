@@ -38,7 +38,7 @@ namespace ChessChallenge.Application {
             buttonPos.Y = UIHelper.ScaleInt(600);
 
             if (NextButtonInRow("Save Games", ref buttonPos, spacingY, buttonSize))
-                controller.saveGames();
+                controller.SaveGames();
             if (NextButtonInRow("Rules & Help", ref buttonPos, spacingY, buttonSize))
                 FileHelper.OpenUrl("https://github.com/SebLague/Chess-Challenge");
             if (NextButtonInRow("Documentation", ref buttonPos, spacingY, buttonSize))
@@ -87,8 +87,12 @@ namespace ChessChallenge.Application {
 
             buttonPos.X = UIHelper.ScaleInt(336);
             buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
-            if (NextButtonInRow("Paused", ref buttonPos, spacingY, buttonSizeXSmall, controller.paused))
-                controller.paused = !controller.paused;
+            if (NextButtonInRow("Paused", ref buttonPos, spacingY, buttonSizeXSmall, controller.IsPaused())) {
+                if (controller.IsPaused())
+                    controller.ResumeGame();
+                else
+                    controller.PauseGame();
+            }
 
             buttonPos.X = UIHelper.ScaleInt(465);
             buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);

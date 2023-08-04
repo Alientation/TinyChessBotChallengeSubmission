@@ -141,7 +141,7 @@ namespace ChessChallenge.Application {
         readonly MoveGenerator moveGenerator;
         int tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2;
         public bool fastForward;
-        public bool paused;
+        bool paused;
         readonly StringBuilder pgns;
         int gameDuration1Milliseconds = Settings.DefaultGameDurationMilliseconds, gameDuration2Milliseconds = Settings.DefaultGameDurationMilliseconds;
         int increment1Milliseconds = Settings.DefaultIncrementMilliseconds, increment2Milliseconds = Settings.DefaultIncrementMilliseconds;
@@ -212,6 +212,22 @@ namespace ChessChallenge.Application {
                 // Allow task to terminate
                 botTaskWaitHandle.Set();
             }
+        }
+
+        public void PauseGame() {
+            paused = true;
+        }
+
+        public void ResumeGame() {
+            if (paused && isPlaying) {
+                paused = false;
+                NotifyTurnToMove();
+            }
+            paused = false;
+        }
+
+        public bool IsPaused() {
+            return paused;
         }
 
         public void StartNewGame(PlayerType whiteType, PlayerType blackType, 
@@ -303,8 +319,12 @@ namespace ChessChallenge.Application {
 
             return Move.NullMove;
         }
-
+        
         void NotifyTurnToMove() {
+            if (paused) return;
+
+            Console.WriteLine("Turn to move: " + PlayerToMove.PlayerType + " " + PlayerToMove.TimeRemainingMs + "ms");
+
             if (PlayerToMove.IsHuman) {
                 PlayerToMove.Human.SetPosition(FenUtility.CurrentFen(board));
                 PlayerToMove.Human.NotifyTurnToMove();
@@ -316,6 +336,10 @@ namespace ChessChallenge.Application {
             } else {
                 double startThinkTime = Raylib.GetTime();
                 var move = GetBotMove();
+                
+                //paused, dont make move
+                if (paused) return;
+
                 double thinkDuration = Raylib.GetTime() - startThinkTime;
                 PlayerToMove.UpdateClock(thinkDuration);
                 OnMoveChosen(move);
@@ -349,6 +373,8 @@ namespace ChessChallenge.Application {
         }
 
         void OnMoveChosen(Move chosenMove) {
+            if (paused) return;
+
             if (IsLegal(chosenMove)) {
                 PlayerToMove.AddIncrement(PlayerToMove.PlayerType == player1Type ? increment1Milliseconds : increment2Milliseconds);
 
@@ -388,6 +414,7 @@ namespace ChessChallenge.Application {
         public bool IsGameInProgress() => isPlaying;
 
         void EndGame(GameResult result, bool log = true, bool autoStartNextBotMatch = true) {
+            paused = false;
             if (!isPlaying) return;
 
             isPlaying = false;
@@ -433,7 +460,7 @@ namespace ChessChallenge.Application {
             
         }
         
-        public void saveGames() {
+        public void SaveGames() {
             string pgns = AllPGNs;
             string directoryPath = Path.Combine(FileHelper.AppDataPath, "Games");
             Directory.CreateDirectory(directoryPath);
@@ -471,7 +498,7 @@ namespace ChessChallenge.Application {
         }
 
         public void Update() {
-            if (isPlaying) {
+            if (isPlaying && !paused) {
                 PlayerWhite.Update();
                 PlayerBlack.Update();
 

@@ -25,8 +25,7 @@ namespace ChessChallenge.Application {
         public bool IsBot => Bot != null;
 
         public void Update() {
-            if (Human != null)
-                Human.Update();
+            Human?.Update();
         }
 
         public void UpdateClock(double dt) {
