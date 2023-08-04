@@ -26,6 +26,7 @@ using static ChessChallenge.Application.ConsoleHelper;
 
     create a list view under the dropdown list so more bots can be shown
     Allow for multiple games to be played at once (for better speed in tournament mode)
+    Allow for choosing fens to play from
     Add premoving (lol)
 
 
