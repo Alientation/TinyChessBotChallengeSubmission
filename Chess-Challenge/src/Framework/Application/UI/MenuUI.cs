@@ -13,9 +13,9 @@ namespace ChessChallenge.Application {
         public static bool isTimeControl1InputActive = false, isTimeControlInput2Active;
         public static bool isTimeIncrement1InputActive = false, isTimeIncrement2InputActive;
 
-        public static string getShortName(int type) {
+        public static string GetShortName(int type) {
             ChallengeController.PlayerType playerType = (ChallengeController.PlayerType) type;
-            return ((playerType + "").Split("__")[(playerType + "").Split("__").Length-1]);
+            return (playerType + "").Split("__")[^1];
         }
 
         public static void DrawButtons(ChallengeController controller) {
@@ -25,7 +25,6 @@ namespace ChessChallenge.Application {
             Vector2 buttonSize = UIHelper.Scale(new Vector2(initWidth, initHeight));
             Vector2 buttonSizeSmall = UIHelper.Scale(new Vector2(240,35));
             float spacingY = buttonSize.Y * 1.3f;
-            float spacingX = buttonSize.X * 1.4f;
             float breakSpacing = UIHelper.ScaleInt(50);
 
 
@@ -94,14 +93,14 @@ namespace ChessChallenge.Application {
 
             buttonPos.Y += UIHelper.ScaleInt(45);
             buttonPos.X = UIHelper.ScaleInt(100);
-            UIHelper.DrawText("P1 s/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            UIHelper.DrawText("P1 t/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(80);
-            var textInput11 = UIHelper.TextInput(timeIncrement1Input, isTimeIncrement1InputActive, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+            var textInput11 = UIHelper.TextInput(timeIncrement1Input, isTimeIncrement1InputActive, buttonPos, UIHelper.Scale(new Vector2(140,35)), "0");
 
             buttonPos.X = UIHelper.ScaleInt(370);
-            UIHelper.DrawText("P2 s/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            UIHelper.DrawText("P2 t/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
-            var textInput21 = UIHelper.TextInput(timeIncrement2Input, isTimeIncrement2InputActive, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+            var textInput21 = UIHelper.TextInput(timeIncrement2Input, isTimeIncrement2InputActive, buttonPos, UIHelper.Scale(new Vector2(140,35)), "0");
 
             //parse time control input.. remove any non digits
             timeControl1Input =  Regex.Replace(textInput1.Item1, "[^0-9]", "");
@@ -125,12 +124,12 @@ namespace ChessChallenge.Application {
 
             buttonPos.Y = UIHelper.ScaleInt(110) + UIHelper.ScaleInt(initY);
 
-            int temp1 = DropdownList(selectedPlayer1 < 0 ? "Choose" : getShortName(selectedPlayer1), ChallengeController.ActivePlayers, is1Open, new Vector2(130, 100), new Vector2(240,35), selectedPlayer1);
+            int temp1 = DropdownList(selectedPlayer1 < 0 ? "Choose" : GetShortName(selectedPlayer1), ChallengeController.ActivePlayers, is1Open, new Vector2(130, 100), new Vector2(240,35), selectedPlayer1);
             is1Open = temp1 == -2;
             if (temp1 >= 0) selectedPlayer1 = temp1;
 
 
-            int temp2 = DropdownList(selectedPlayer2 < 0 ? "Choose" : getShortName(selectedPlayer2), ChallengeController.ActivePlayers, is2Open, new Vector2(400, 100), new Vector2(240,35), selectedPlayer2);
+            int temp2 = DropdownList(selectedPlayer2 < 0 ? "Choose" : GetShortName(selectedPlayer2), ChallengeController.ActivePlayers, is2Open, new Vector2(400, 100), new Vector2(240,35), selectedPlayer2);
             is2Open = temp2 == -2;
             if (temp2 >= 0) selectedPlayer2 = temp2;
             
@@ -152,12 +151,12 @@ namespace ChessChallenge.Application {
 
                 is1Open = false;
                 is2Open = false;
-                Vector2 itemPos = new Vector2(pos.X, pos.Y + UIHelper.ScaleInt(45));
+                Vector2 itemPos = new(pos.X, pos.Y + UIHelper.ScaleInt(45));
                 float initX = itemPos.X;
                 Vector2 itemSize = UIHelper.Scale(new Vector2(250, 50));
                 bool toggle = false;
                 foreach (ChallengeController.PlayerType option in options) {
-                    bool itemPressed = UIHelper.Button(getShortName((int) option), itemPos, itemSize, (int) option == selectedOption);
+                    bool itemPressed = UIHelper.Button(GetShortName((int) option), itemPos, itemSize, (int) option == selectedOption);
 
                     if (itemPressed)
                         return (int) option;

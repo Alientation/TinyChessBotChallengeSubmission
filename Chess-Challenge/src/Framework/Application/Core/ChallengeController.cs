@@ -495,9 +495,9 @@ namespace ChessChallenge.Application {
 
         public void DrawOverlay() {
             if (PlayerBlack.IsHuman)
-                BotBrainCapacityUI.Draw(MenuUI.getShortName((int) player1Type), MenuUI.getShortName((int) player2Type),tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2, MaxTokenCount);
+                BotBrainCapacityUI.Draw(MenuUI.GetShortName((int) player1Type), MenuUI.GetShortName((int) player2Type),tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2, MaxTokenCount);
             else
-                BotBrainCapacityUI.Draw(MenuUI.getShortName((int) player2Type), MenuUI.getShortName((int) player1Type),tokenCount2, debugTokenCount2, tokenCount1, debugTokenCount1, MaxTokenCount);
+                BotBrainCapacityUI.Draw(MenuUI.GetShortName((int) player2Type), MenuUI.GetShortName((int) player1Type),tokenCount2, debugTokenCount2, tokenCount1, debugTokenCount1, MaxTokenCount);
             
             MenuUI.DrawButtons(this);
             MatchStatsUI.DrawMatchStats(this);
