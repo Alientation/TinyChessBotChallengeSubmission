@@ -328,8 +328,6 @@ namespace ChessChallenge.Application {
         }
         
         void NotifyTurnToMove() {
-            Console.WriteLine("Turn to move: " + PlayerToMove.PlayerType + " " + PlayerToMove.TimeRemainingMs + "ms");
-
             if (PlayerToMove.IsHuman) {
                 PlayerToMove.Human.SetPosition(FenUtility.CurrentFen(board));
                 PlayerToMove.Human.NotifyTurnToMove();
