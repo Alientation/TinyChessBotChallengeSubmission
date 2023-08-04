@@ -110,6 +110,7 @@ namespace ChessChallenge.Application {
         // Game state
         readonly Random rng;
         int gameID;
+        int pauseID;
         bool isPlaying;
         Board board;
         public ChessPlayer PlayerWhite { get; private set; }
@@ -215,14 +216,15 @@ namespace ChessChallenge.Application {
         }
 
         public void PauseGame() {
-            paused = true;
+            if (!paused) {
+                pauseID = rng.Next();
+                paused = true;
+            }
         }
 
         public void ResumeGame() {
-            if (paused && isPlaying) {
-                paused = false;
+            if (paused && isPlaying)
                 NotifyTurnToMove();
-            }
             paused = false;
         }
 
@@ -237,9 +239,11 @@ namespace ChessChallenge.Application {
             // End any ongoing game
             EndGame(GameResult.DrawByArbiter, log: false, autoStartNextBotMatch: false);
             gameID = rng.Next();
+            pauseID = rng.Next();
 
             player1Type = whiteType;
             player2Type = blackType;
+            
 
             gameDuration1Milliseconds = timeControl1;
             gameDuration2Milliseconds = timeControl2;
@@ -284,6 +288,7 @@ namespace ChessChallenge.Application {
             NotifyTurnToMove();
         }
 
+
         void BotThinkerThread() {
             int threadID = gameID;
             //Console.WriteLine("Starting thread: " + threadID);
@@ -291,11 +296,12 @@ namespace ChessChallenge.Application {
             while (true) {
                 // Sleep thread until notified
                 botTaskWaitHandle.WaitOne();
+                int threadPauseID = pauseID;
                 // Get bot move
-                if (threadID == gameID) {
+                if (threadID == gameID && pauseID == threadPauseID) {
                     var move = GetBotMove();
 
-                    if (threadID == gameID)
+                    if (threadID == gameID && pauseID == threadPauseID)
                         OnMoveChosen(move);
                 }
                 // Terminate if no longer playing this game
@@ -309,6 +315,7 @@ namespace ChessChallenge.Application {
             API.Board botBoard = new(board);
             try {
                 API.Timer timer = new(PlayerToMove.TimeRemainingMs, PlayerNotOnMove.TimeRemainingMs, PlayerToMove.PlayerType == player1Type ? gameDuration1Milliseconds : gameDuration2Milliseconds, PlayerToMove.PlayerType == player1Type ? increment1Milliseconds : increment2Milliseconds);
+
                 API.Move move = PlayerToMove.Bot.Think(botBoard, timer);
                 return new Move(move.RawValue);
             } catch (Exception e) {
@@ -321,8 +328,6 @@ namespace ChessChallenge.Application {
         }
         
         void NotifyTurnToMove() {
-            if (paused) return;
-
             Console.WriteLine("Turn to move: " + PlayerToMove.PlayerType + " " + PlayerToMove.TimeRemainingMs + "ms");
 
             if (PlayerToMove.IsHuman) {

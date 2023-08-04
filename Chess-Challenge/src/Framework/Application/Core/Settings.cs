@@ -5,7 +5,7 @@ namespace ChessChallenge.Application {
         public const string Version = "1.19";
 
         // Game settings
-        public const int DefaultGameDurationMilliseconds = 120 * 1000;
+        public const int DefaultGameDurationMilliseconds = 360 * 1000;
         public const int DefaultIncrementMilliseconds = 0;
         public const int MAX_TIME = 60 * 60 * 1000;
         public const float MinMoveDelay = 0;
