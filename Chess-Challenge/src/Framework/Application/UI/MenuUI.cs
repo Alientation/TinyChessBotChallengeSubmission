@@ -38,6 +38,58 @@ namespace ChessChallenge.Application {
             
             
             //Middle Buttons
+            buttonPos.X = buttonSizeXSmallPositionX1;
+            buttonPos.Y = UIHelper.ScaleInt(900);
+            
+            /*
+            -engine
+                conf
+            -each
+                
+            -concurrency 
+                N
+            -maxmoves 
+                N
+            -tournament 
+                TYPE {"guantlet","round-robin","knockout","pyramid"}
+            -games 
+                N
+            -rounds 
+                N
+            -sprt 
+                elo0=ELO0 
+                elo1=ELO1 
+                alpha=ALPHA 
+                beta=BETA
+            -ratingsinterval 
+                N
+            -outcomeinterval 
+                N
+            -debug
+            -openings 
+                file=FILE 
+                format=FORMAT {"epd","pgn"} 
+                order=ORDER {"random","sequential"} 
+                plies=N 
+                start=N 
+                policy=POLICY {"encounter","round","default"}
+            -pgnout 
+                FILE [min][fi]
+            -epdout 
+                FILE
+            -recover
+            -repeat 
+                [N]
+            -noswap
+            -wait 
+                N
+            -resultformat 
+                FORMAT
+
+
+
+            */
+
 
 
 
