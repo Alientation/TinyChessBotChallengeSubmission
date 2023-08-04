@@ -69,7 +69,7 @@ namespace ChessChallenge.Application {
         public static double lastTimeBackspace = 0;
         public static double firstTimeBackspace = 0;
         public const double initalBackspaceDelay = .5;
-        public const double backspaceDelay = .1;
+        public const double backspaceDelay = .02;
         public static (string, bool, bool) TextInput(string existingText, bool isActive, Vector2 centre, Vector2 size, string textHint = "input text", int borderThickness = 5) {
             //inner and outer rectangles for input
             Rectangle recInside = GetRectangle(centre, size);
