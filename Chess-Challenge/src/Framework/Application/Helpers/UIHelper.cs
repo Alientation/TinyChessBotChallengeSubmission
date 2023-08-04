@@ -126,17 +126,18 @@ namespace ChessChallenge.Application {
                         firstTimeBackspace = Raylib.GetTime();
                         lastTimeBackspace = firstTimeBackspace;
                     }
-                } else {
+                } else if (key == (int)KeyboardKey.KEY_ENTER) {
                     //entered, so return what we have and close the window
-                    if (key == (int)KeyboardKey.KEY_ENTER) {
-                        while (Raylib.GetKeyPressed() != 0) {
-                            //get rid of all keys in queue
-                        }
-
-                        Raylib.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
-                        return (existingText, false, mouseOver);
+                    while (Raylib.GetKeyPressed() != 0) {
+                        //get rid of all keys in queue
                     }
 
+                    Raylib.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
+                    return (existingText, false, mouseOver);
+                } else if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_CONTROL)) {
+                    if (key == (int) KeyboardKey.KEY_V)
+                        existingText += Raylib.GetClipboardText_();
+                } else {
                     existingText += (char) key;
                 }
                 key = Raylib.GetKeyPressed();
