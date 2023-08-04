@@ -143,8 +143,8 @@ namespace ChessChallenge.Application {
         public bool fastForward;
         bool paused;
         readonly StringBuilder pgns;
-        int gameDuration1Milliseconds = Settings.DefaultGameDurationMilliseconds, gameDuration2Milliseconds = Settings.DefaultGameDurationMilliseconds;
-        int increment1Milliseconds = Settings.DefaultIncrementMilliseconds, increment2Milliseconds = Settings.DefaultIncrementMilliseconds;
+        int gameDuration1Milliseconds = DefaultGameDurationMilliseconds, gameDuration2Milliseconds = DefaultGameDurationMilliseconds;
+        int increment1Milliseconds = DefaultIncrementMilliseconds, increment2Milliseconds = DefaultIncrementMilliseconds;
 
         public ChallengeController() {
             Log($"Launching Chess-Challenge version {Settings.Version}");
