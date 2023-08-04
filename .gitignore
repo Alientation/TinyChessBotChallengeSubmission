@@ -399,3 +399,14 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+Chess-Challenge.Uci/Chess-Challenge.Cli.csproj
+Chess-Challenge.Uci/Program.cs
+Chess-Challenge.Uci/Uci.cs
+Chess-Challenge.Uci/BotTesting/CuteChessCLI.txt
+Chess-Challenge.Uci/BotTesting/UHO_XXL_+0.90_+1.19.pgn
+Chess-Challenge.Uci/BotTesting/UHO_XXL_+1.00_+1.29.epd
+Chess-Challenge.Uci/BotTesting/EloBot0/Chess-Challenge.Cli.exe
+Chess-Challenge.Uci/BotTesting/EloBot1/Chess-Challenge.Cli.exe
+Chess-Challenge.Uci/BotTesting/EloBot2/Chess-Challenge.Cli.exe
+Chess-Challenge.Uci/BotTesting/MyBotV3_3/Chess-Challenge.Cli.exe
+Chess-Challenge.Uci/src/My Bot/MyBot.cs

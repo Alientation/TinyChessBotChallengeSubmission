@@ -171,7 +171,7 @@ public class MyBotV3_3 : IChessBot {
 
         //dont want to reach these states
         if (board.IsDraw()) return 0;
-        if (board.IsInCheckmate()) return  -30000 + depth;
+        if (board.IsInCheckmate()) return  MIN_VALUE + depth;
         
         Move prevBestMove = nullMove;
 
