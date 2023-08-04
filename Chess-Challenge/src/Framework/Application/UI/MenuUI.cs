@@ -16,51 +16,58 @@ namespace ChessChallenge.Application {
         public static bool isTimeIncrement1InputActive = false, isTimeIncrement2InputActive;
 
         public static int initX = 260, initY = 45, initWidth = 450, initHeight = 35;
-        public static Vector2 buttonSize = UIHelper.Scale(new Vector2(initWidth, initHeight)); 
-        public static Vector2 buttonSizeSmall = UIHelper.Scale(new Vector2(240,35));
-        public static Vector2 buttonSizeXSmall = UIHelper.Scale(new Vector2(110,35));
-
-        public static float spacingY = buttonSize.Y * 1.3f, breakSpacing = UIHelper.ScaleInt(50);
 
         public static string GetShortName(ChallengeController.PlayerType playerType) {
             return (playerType + "").Split("__")[^1];
         }
 
         public static void DrawButtons(ChallengeController controller) {
+            Vector2 buttonSize = UIHelper.Scale(new Vector2(initWidth, initHeight)); 
+            Vector2 buttonSizeSmall = UIHelper.Scale(new Vector2(240,35));
+            int buttonSizeXSmallPositionX1 = UIHelper.ScaleInt(130);
+            int buttonSizeXSmallPositionX2 = UIHelper.ScaleInt(400);
+            Vector2 buttonSizeXSmall = UIHelper.Scale(new Vector2(110,35));
+
+            float spacingY = buttonSize.Y * 1.3f;
+
             Vector2 buttonPos = UIHelper.Scale(new Vector2(initX, initY));
 
             if (NextButtonInRow("Tournament", ref buttonPos, spacingY, buttonSize))
                 controller.StartTournament();
 
-            buttonPos.Y = UIHelper.ScaleInt(550);
-
             // Page buttons
-            buttonPos.Y = UIHelper.ScaleInt(600);
+            buttonPos.X = buttonSizeXSmallPositionX1;
+            buttonPos.Y = UIHelper.ScaleInt(900);
 
-            if (NextButtonInRow("Save Games", ref buttonPos, spacingY, buttonSize))
+            if (NextButtonInRow("Save Games", ref buttonPos, spacingY, buttonSizeSmall, shiftDown: false))
                 controller.SaveGames();
-            if (NextButtonInRow("Rules & Help", ref buttonPos, spacingY, buttonSize))
+            buttonPos.X = buttonSizeXSmallPositionX2;
+            if (NextButtonInRow("Rules & Help", ref buttonPos, spacingY, buttonSizeSmall))
                 FileHelper.OpenUrl("https://github.com/SebLague/Chess-Challenge");
-            if (NextButtonInRow("Documentation", ref buttonPos, spacingY, buttonSize))
+            buttonPos.X = buttonSizeXSmallPositionX1;
+            if (NextButtonInRow("Documentation", ref buttonPos, spacingY, buttonSizeSmall, shiftDown: false))
                 FileHelper.OpenUrl("https://seblague.github.io/chess-coding-challenge/documentation/");
-            if (NextButtonInRow("Submission Page", ref buttonPos, spacingY, buttonSize))
+            buttonPos.X = buttonSizeXSmallPositionX2;
+            if (NextButtonInRow("Submission Page", ref buttonPos, spacingY, buttonSizeSmall))
                 FileHelper.OpenUrl("https://forms.gle/6jjj8jxNQ5Ln53ie6");
 
             // Window and quit buttons
-            buttonPos.Y += breakSpacing;
+            buttonPos.X = buttonSizeXSmallPositionX1;
+            buttonPos.Y = UIHelper.ScaleInt(1030);
 
             bool isBigWindow = Raylib.GetScreenWidth() > Settings.ScreenSizeSmall.X;
             string windowButtonName = isBigWindow ? "Smaller Window" : "Bigger Window";
-            if (NextButtonInRow(windowButtonName, ref buttonPos, spacingY, buttonSize))
+            if (NextButtonInRow(windowButtonName, ref buttonPos, spacingY, buttonSizeSmall, shiftDown: false))
                 Program.SetWindowSize(isBigWindow ? Settings.ScreenSizeSmall : Settings.ScreenSizeBig);
-            if (NextButtonInRow("Exit (ESC)", ref buttonPos, spacingY, buttonSize))
+            buttonPos.X = buttonSizeXSmallPositionX2;
+            if (NextButtonInRow("Exit (ESC)", ref buttonPos, spacingY, buttonSizeSmall))
                 Environment.Exit(0);
 
             // Game Set up
             buttonPos.X = UIHelper.ScaleInt(66);
             buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
 
-            if (NextButtonInRow("Play", ref buttonPos, spacingY, buttonSizeXSmall, controller.IsGameInProgress())) {
+            if (NextButtonInRow("Play", ref buttonPos, spacingY, buttonSizeXSmall, controller.IsGameInProgress(), shiftDown: false)) {
                 int timeControl1 = timeControl1Input == "" ? Settings.MAX_TIME : int.Parse(timeControl1Input);
                 if (timeControl1 == 0) timeControl1 = Settings.MAX_TIME;
                 int timeControl2 = timeControl2Input == "" ? Settings.MAX_TIME : int.Parse(timeControl2Input);
@@ -80,14 +87,12 @@ namespace ChessChallenge.Application {
             }
 
             buttonPos.X = UIHelper.ScaleInt(195);
-            buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
 
-            if (NextButtonInRow("End", ref buttonPos, spacingY, buttonSizeXSmall))
+            if (NextButtonInRow("End", ref buttonPos, spacingY, buttonSizeXSmall, shiftDown: false))
                 controller.EndGame(false);
 
             buttonPos.X = UIHelper.ScaleInt(336);
-            buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
-            if (NextButtonInRow("Paused", ref buttonPos, spacingY, buttonSizeXSmall, controller.IsPaused())) {
+            if (NextButtonInRow("Paused", ref buttonPos, spacingY, buttonSizeXSmall, controller.IsPaused(), shiftDown: false)) {
                 if (controller.IsPaused())
                     controller.ResumeGame();
                 else
@@ -95,7 +100,6 @@ namespace ChessChallenge.Application {
             }
 
             buttonPos.X = UIHelper.ScaleInt(465);
-            buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
             if (NextButtonInRow(">>", ref buttonPos, spacingY, buttonSizeXSmall, controller.fastForward))
                 controller.fastForward = !controller.fastForward;
             
@@ -163,9 +167,10 @@ namespace ChessChallenge.Application {
             }
             
             //universal button
-            bool NextButtonInRow(string name, ref Vector2 pos, float spacingY, Vector2 size, bool selected = false) {
+            bool NextButtonInRow(string name, ref Vector2 pos, float spacingY, Vector2 size, bool selected = false, bool shiftDown = true) {
                 bool pressed = UIHelper.Button(name, pos, size, selected);
-                pos.Y += spacingY;
+                if (shiftDown)
+                    pos.Y += spacingY;
                 return pressed;
             }
 
