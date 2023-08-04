@@ -65,12 +65,17 @@ namespace ChessChallenge.Application {
             }
         }
 
-        public static (string, bool, bool) TextInput(string existingText, bool isActive, Vector2 centre, Vector2 size, string textHint = "input text") {
+
+        public static double lastTimeBackspace = 0;
+        public static double firstTimeBackspace = 0;
+        public const double initalBackspaceDelay = .5;
+        public const double backspaceDelay = .1;
+        public static (string, bool, bool) TextInput(string existingText, bool isActive, Vector2 centre, Vector2 size, string textHint = "input text", int borderThickness = 5) {
             //inner and outer rectangles for input
             Rectangle recInside = GetRectangle(centre, size);
 
-            size.X += UIHelper.ScaleInt(5);
-            size.Y += UIHelper.ScaleInt(5);
+            size.X += ScaleInt(borderThickness);
+            size.Y += ScaleInt(borderThickness);
             Rectangle recOutside = GetRectangle(centre, size);
 
             Color normalCol = new(40, 40, 40, 255);
@@ -105,19 +110,23 @@ namespace ChessChallenge.Application {
                 bool doBlink = Math.Round(Raylib.GetTime() * textInputBlinkingSpeed) % 2 == 0;
                 string text = existingText;
 
-                if (doBlink)
-                    text = " " + existingText + (doBlink ? "|" : "");
                 DrawText(text, centre, fontSize, 1, textCol, AlignH.Centre);
+
+                if (doBlink)
+                    Raylib.DrawRectangleRec(new Rectangle(centre.X + Raylib.MeasureTextEx(font, text, fontSize, 1).X / 2 + ScaleInt(5), centre.Y - fontSize / 2, ScaleInt(2), fontSize), textCol);
             }            
             
             //get keys pressed since last frame
             int key = Raylib.GetKeyPressed();
             while (key != 0) {
                 if (key == (int)KeyboardKey.KEY_BACKSPACE) {
-                    if (existingText.Length > 0)
-                        existingText = existingText.Substring(0, existingText.Length - 1);
+                    if (existingText.Length > 0) {
+                        existingText = existingText[..^1];
+
+                        firstTimeBackspace = Raylib.GetTime();
+                        lastTimeBackspace = firstTimeBackspace;
+                    }
                 } else {
-                
                     //entered, so return what we have and close the window
                     if (key == (int)KeyboardKey.KEY_ENTER) {
                         while (Raylib.GetKeyPressed() != 0) {
@@ -131,6 +140,15 @@ namespace ChessChallenge.Application {
                     existingText += (char) key;
                 }
                 key = Raylib.GetKeyPressed();
+            }
+
+            if (Raylib.GetTime() - firstTimeBackspace > initalBackspaceDelay && 
+                Raylib.GetTime() - lastTimeBackspace > backspaceDelay && 
+                Raylib.IsKeyDown(KeyboardKey.KEY_BACKSPACE)) {
+                if (existingText.Length > 0) {
+                    existingText = existingText[..^1];
+                    lastTimeBackspace = Raylib.GetTime();
+                }
             }
 
             //keep it open if not escaped

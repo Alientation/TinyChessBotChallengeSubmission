@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 
 namespace ChessChallenge.Application {
     public static class MenuUI {
+        public const int MAX_INPUT_LENGTH = 8;
+
         public static int selectedPlayer1 = (int) ChallengeController.player1Type, selectedPlayer2 = (int) ChallengeController.player2Type;
         public static bool is1Open = false, is2Open = false;
         
@@ -13,20 +15,17 @@ namespace ChessChallenge.Application {
         public static bool isTimeControl1InputActive = false, isTimeControlInput2Active;
         public static bool isTimeIncrement1InputActive = false, isTimeIncrement2InputActive;
 
+        public static int initX = 260, initY = 45, initWidth = 450, initHeight = 35;
+        public static Vector2 buttonSize = UIHelper.Scale(new Vector2(initWidth, initHeight)), buttonSizeSmall = UIHelper.Scale(new Vector2(240,35));
+        public static float spacingY = buttonSize.Y * 1.3f, breakSpacing = UIHelper.ScaleInt(50);
+
         public static string GetShortName(int type) {
             ChallengeController.PlayerType playerType = (ChallengeController.PlayerType) type;
             return (playerType + "").Split("__")[^1];
         }
 
         public static void DrawButtons(ChallengeController controller) {
-            int initX = 260, initY = 45, initWidth = 450, initHeight = 35;
-
             Vector2 buttonPos = UIHelper.Scale(new Vector2(initX, initY));
-            Vector2 buttonSize = UIHelper.Scale(new Vector2(initWidth, initHeight));
-            Vector2 buttonSizeSmall = UIHelper.Scale(new Vector2(240,35));
-            float spacingY = buttonSize.Y * 1.3f;
-            float breakSpacing = UIHelper.ScaleInt(50);
-
 
             if (NextButtonInRow("Tournament", ref buttonPos, spacingY, buttonSize))
                 controller.StartTournament();
@@ -107,6 +106,12 @@ namespace ChessChallenge.Application {
             timeControl2Input =  Regex.Replace(textInput2.Item1, "[^0-9]", "");
             timeIncrement1Input =  Regex.Replace(textInput11.Item1, "[^0-9]", "");
             timeIncrement2Input =  Regex.Replace(textInput21.Item1, "[^0-9]", "");
+
+            if (timeControl1Input.Length > MAX_INPUT_LENGTH) timeControl1Input = timeControl1Input[..MAX_INPUT_LENGTH];
+            if (timeControl2Input.Length > MAX_INPUT_LENGTH) timeControl2Input = timeControl2Input[..MAX_INPUT_LENGTH];
+            if (timeIncrement1Input.Length > MAX_INPUT_LENGTH) timeIncrement1Input = timeIncrement1Input[..MAX_INPUT_LENGTH];
+            if (timeIncrement2Input.Length > MAX_INPUT_LENGTH) timeIncrement2Input = timeIncrement2Input[..MAX_INPUT_LENGTH];
+
             isTimeControl1InputActive = textInput1.Item2;
             isTimeControlInput2Active = textInput2.Item2;
             isTimeIncrement1InputActive = textInput11.Item2;
