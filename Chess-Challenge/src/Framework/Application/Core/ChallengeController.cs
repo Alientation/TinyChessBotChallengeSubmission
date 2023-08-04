@@ -486,7 +486,7 @@ namespace ChessChallenge.Application {
                 botAPlaysWhite = !botAPlaysWhite;
                 
                 if (fastForward) {
-                    StartNewGame(PlayerBlack.PlayerType, PlayerWhite.PlayerType);
+                    StartNewGame(PlayerBlack.PlayerType, PlayerWhite.PlayerType, gameDuration2Milliseconds, increment2Milliseconds, gameDuration1Milliseconds, increment1Milliseconds, botMatchStartFensIndex);
                     return;
                 }
 
@@ -516,7 +516,7 @@ namespace ChessChallenge.Application {
 
         private void AutoStartNextBotMatchGame(int originalGameID, System.Timers.Timer timer) {
             if (originalGameID == gameID)
-                StartNewGame(PlayerBlack.PlayerType, PlayerWhite.PlayerType);
+                StartNewGame(PlayerBlack.PlayerType, PlayerWhite.PlayerType, gameDuration2Milliseconds, increment2Milliseconds, gameDuration1Milliseconds, increment1Milliseconds);
             timer.Close();
         }
 
