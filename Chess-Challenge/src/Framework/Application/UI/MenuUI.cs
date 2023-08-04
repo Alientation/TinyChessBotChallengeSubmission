@@ -27,15 +27,21 @@ namespace ChessChallenge.Application {
             int buttonSizeXSmallPositionX1 = UIHelper.ScaleInt(130);
             int buttonSizeXSmallPositionX2 = UIHelper.ScaleInt(400);
             Vector2 buttonSizeXSmall = UIHelper.Scale(new Vector2(110,35));
-
             float spacingY = buttonSize.Y * 1.3f;
-
             Vector2 buttonPos = UIHelper.Scale(new Vector2(initX, initY));
 
+
+            // Top buttons
             if (NextButtonInRow("Tournament", ref buttonPos, spacingY, buttonSize))
                 controller.StartTournament();
 
-            // Page buttons
+            
+            
+            //Middle Buttons
+
+
+
+            // Quick links/random buttons
             buttonPos.X = buttonSizeXSmallPositionX1;
             buttonPos.Y = UIHelper.ScaleInt(900);
 
@@ -63,7 +69,8 @@ namespace ChessChallenge.Application {
             if (NextButtonInRow("Exit (ESC)", ref buttonPos, spacingY, buttonSizeSmall))
                 Environment.Exit(0);
 
-            // Game Set up
+            
+            // Game Control
             buttonPos.X = UIHelper.ScaleInt(66);
             buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
 
@@ -126,6 +133,7 @@ namespace ChessChallenge.Application {
             buttonPos.X += UIHelper.ScaleInt(70);
             var textInput21 = UIHelper.TextInput(timeIncrement2Input, isTimeIncrement2InputActive, buttonPos, UIHelper.Scale(new Vector2(140,35)), "0");
 
+
             //parse time control input.. remove any non digits
             timeControl1Input =  Regex.Replace(textInput1.Item1, "[^0-9]", "");
             timeControl2Input =  Regex.Replace(textInput2.Item1, "[^0-9]", "");
@@ -158,6 +166,7 @@ namespace ChessChallenge.Application {
             if (player2Selection.Item1 >= 0) selectedPlayer2 = player2Selection.Item1;
 
 
+            //helper methods
             (int, bool) DropdownListSelectPlayersHelper(ChallengeController.PlayerType[] playerChoices, bool isOpen, Vector2 pos, Vector2 size, int selectedPlayer = -1) {
                 string[] options = new string[playerChoices.Length];
                 for (int i = 0; i < playerChoices.Length; i++)
