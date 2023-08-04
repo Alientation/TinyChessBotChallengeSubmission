@@ -29,6 +29,8 @@ using static ChessChallenge.Application.ConsoleHelper;
     Allow for choosing fens to play from
     Add premoving (lol)
 
+    Add UCI support
+
 
 */
 
@@ -62,47 +64,53 @@ namespace ChessChallenge.Application {
                 PlayerType.Enemy__Stormwind, PlayerType.Enemy__NNBot,
         };
 
-        ChessPlayer CreatePlayer(PlayerType type, int gameDurationMilliseconds = DefaultGameDurationMilliseconds) {
+        public static API.IChessBot? CreateBot(PlayerType type) {
             return type switch {
-                PlayerType.V1__MyBotV1 => new ChessPlayer(new MyBotV1(), type, gameDurationMilliseconds),
-                PlayerType.V1__MyBotV1NoDebug => new ChessPlayer(new MyBotV1NoDebug(), type, gameDurationMilliseconds),
-                PlayerType.V1__MyBotV1_1 => new ChessPlayer(new MyBotV1_1(), type, gameDurationMilliseconds),
-                PlayerType.V1__MyBotV1_2 => new ChessPlayer(new MyBotV1_2(), type, gameDurationMilliseconds),
-                PlayerType.V1__MyBotV1_3 => new ChessPlayer(new MyBotV1_3(), type, gameDurationMilliseconds),
-                PlayerType.V1__MyBotV1_4 => new ChessPlayer(new MyBotV1_4(), type, gameDurationMilliseconds),
+                PlayerType.V1__MyBotV1 => new MyBotV1(),
+                PlayerType.V1__MyBotV1NoDebug => new MyBotV1NoDebug(),
+                PlayerType.V1__MyBotV1_1 => new MyBotV1_1(),
+                PlayerType.V1__MyBotV1_2 => new MyBotV1_2(),
+                PlayerType.V1__MyBotV1_3 => new MyBotV1_3(),
+                PlayerType.V1__MyBotV1_4 => new MyBotV1_4(),
 
-                PlayerType.V2__MyBotV2 => new ChessPlayer(new MyBotV2(), type, gameDurationMilliseconds),
-                PlayerType.V2__MyBotV2_1 => new ChessPlayer(new MyBotV2_1(), type, gameDurationMilliseconds),
-                PlayerType.V2__MyBotV2_2 => new ChessPlayer(new MyBotV2_2(), type, gameDurationMilliseconds),
+                PlayerType.V2__MyBotV2 => new MyBotV2(),
+                PlayerType.V2__MyBotV2_1 => new MyBotV2_1(),
+                PlayerType.V2__MyBotV2_2 => new MyBotV2_2(),
 
-                PlayerType.MyBotV3 => new ChessPlayer(new MyBotV3(), type, gameDurationMilliseconds),
-                PlayerType.MyBotV3_1 => new ChessPlayer(new MyBotV3_1(), type, gameDurationMilliseconds),
-                PlayerType.MyBotV3_2 => new ChessPlayer(new MyBotV3_2(), type, gameDurationMilliseconds),
-                PlayerType.MyBotV3_3 => new ChessPlayer(new MyBotV3_3(), type, gameDurationMilliseconds),
+                PlayerType.MyBotV3 => new MyBotV3(),
+                PlayerType.MyBotV3_1 => new MyBotV3_1(),
+                PlayerType.MyBotV3_2 => new MyBotV3_2(),
+                PlayerType.MyBotV3_3 => new MyBotV3_3(),
 
-                PlayerType.EvilBot => new ChessPlayer(new EvilBot(), type, gameDurationMilliseconds),
+                PlayerType.EvilBot => new EvilBot(),
 
-                PlayerType.Enemy__NNBot => new ChessPlayer(new NNBot(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__NNBot => new NNBot(),
 
-                PlayerType.Enemy__EloBot0 => new ChessPlayer(new EloBot0(), type, gameDurationMilliseconds),
-                PlayerType.Enemy__EloBot1 => new ChessPlayer(new EloBot1(), type, gameDurationMilliseconds),
-                PlayerType.Enemy__EloBot2 => new ChessPlayer(new EloBot2(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__EloBot0 => new EloBot0(),
+                PlayerType.Enemy__EloBot1 => new EloBot1(),
+                PlayerType.Enemy__EloBot2 => new EloBot2(),
 
-                PlayerType.Enemy__HumanBot => new ChessPlayer(new HumanBot(), type, gameDurationMilliseconds),
-                PlayerType.Enemy__SelenautBot => new ChessPlayer(new SelenautBot(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__HumanBot => new HumanBot(),
+                PlayerType.Enemy__SelenautBot => new SelenautBot(),
 
-                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine1 => new ChessPlayer(new LiteBlueEngine1(), type, gameDurationMilliseconds),
-                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine2 => new ChessPlayer(new LiteBlueEngine2(), type, gameDurationMilliseconds),
-                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine3 => new ChessPlayer(new LiteBlueEngine3(), type, gameDurationMilliseconds),
-                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine4 => new ChessPlayer(new LiteBlueEngine4(), type, gameDurationMilliseconds),
-                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine5 => new ChessPlayer(new LiteBlueEngine5(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine1 => new LiteBlueEngine1(),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine2 => new LiteBlueEngine2(),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine3 => new LiteBlueEngine3(),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine4 => new LiteBlueEngine4(),
+                PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine5 => new LiteBlueEngine5(),
 
-                PlayerType.Enemy__MagnusCarlBot => new ChessPlayer(new MagnusCarlBot(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__MagnusCarlBot => new MagnusCarlBot(),
                 
-                PlayerType.Enemy__Stormwind => new ChessPlayer(new Stormwind(), type, gameDurationMilliseconds),
+                PlayerType.Enemy__Stormwind => new Stormwind(),
                 
-                _ => new ChessPlayer(new HumanPlayer(boardUI), type, gameDurationMilliseconds)
+                _ => null
             };
+        }
+
+        ChessPlayer CreatePlayer(PlayerType type, int gameDurationMilliseconds = DefaultGameDurationMilliseconds) {
+            API.IChessBot? bot = CreateBot(type);
+            if (bot == null) return new ChessPlayer(new HumanPlayer(boardUI), type, gameDurationMilliseconds);
+            return new ChessPlayer(bot, type, gameDurationMilliseconds);
         }
 
         public static PlayerType player1Type = PlayerType.Human, player2Type = PlayerType.Human;
