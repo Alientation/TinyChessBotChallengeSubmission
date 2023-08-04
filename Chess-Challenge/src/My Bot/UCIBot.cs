@@ -26,12 +26,12 @@ namespace ChessChallenge.UCI {
                 if (args[1] == "startpos")
                     board.LoadStartPosition();
                 else
-                    board.LoadPosition(String.Join(" ", args.AsSpan(1, args.Length - 1).ToArray()));
+                    board.LoadPosition(string.Join(" ", args.AsSpan(1, args.Length - 1).ToArray()));
             } else {
                 if (args[1] == "startpos")
 					board.LoadStartPosition();
 				else 
-					board.LoadPosition(String.Join(" ", args.AsSpan(1, idx - 1).ToArray()));
+					board.LoadPosition(string.Join(" ", args.AsSpan(1, idx - 1).ToArray()));
 
                 for (int i = idx + 1; i < args.Length; i++) {
                     // this is such a hack

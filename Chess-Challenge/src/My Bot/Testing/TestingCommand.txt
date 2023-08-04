@@ -1,0 +1,34 @@
+C:\Users\mcpir\Downloads\cutechess-1.3.1-win64\cutechess-1.3.1-win64\cutechess-cli.exe ^
+-engine name="[BOT NAME]" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="[BOT NAME]" ^
+-engine name="[BOT NAME]" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="[BOT NAME]" ^
+-each tc=0/5+0.05 ^
+-maxmoves 1000 ^
+-games 2 ^
+-repeat ^
+-resultformat wide2 ^
+-ratinginterval 10 ^
+-rounds 50000 ^
+-concurrency 8 ^
+-tournament gauntlet ^
+-pgnout "C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\src\My Bot\Testing\out.pgn" ^
+-openings file="[FEN OPENINGS FILE]" format=[FORMAT TYPE] ^
+
+
+C:\Users\mcpir\Downloads\cutechess-1.3.1-win64\cutechess-1.3.1-win64\cutechess-cli.exe ^
+-engine name="MyBotV3_3" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="MyBotV3_3" ^
+-engine name="EloBot1" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="Enemy__EloBot1" ^
+-each proto="uci" tc=0/5+0.05 ^
+-maxmoves 1000 ^
+-games 2 ^
+-repeat ^
+-resultformat wide2 ^
+-ratinginterval 10 ^
+-rounds 50000 ^
+-concurrency 8 ^
+-tournament gauntlet ^
+-pgnout "C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\src\My Bot\Testing\out.pgn" ^
+-openings file="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\src\My Bot\Testing\UHO_XXL_+0.90_+1.19.epd" format=epd
+
+C:\Users\mcpir\Downloads\cutechess-1.3.1-win64\cutechess-1.3.1-win64\cutechess-cli.exe -engine name="MyBotV3_3" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="MyBotV3_3" -engine name="EloBot1" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="Enemy__EloBot1" -each tc=0/5+0.05 -maxmoves 1000 -games 2 -repeat -resultformat wide2 -ratinginterval 10 -rounds 50000 -concurrency 8 -tournament gauntlet -pgnout C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\src\My Bot\Testing\out.pgn -openings file="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\src\My Bot\Testing\UHO_XXL_+0.90_+1.19.epd" format=epd ^
+
+

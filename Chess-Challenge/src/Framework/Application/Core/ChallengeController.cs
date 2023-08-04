@@ -29,7 +29,7 @@ using static ChessChallenge.Application.ConsoleHelper;
     Allow for choosing fens to play from
     Add premoving (lol)
 
-    Add UCI support
+    Add UCI support - todo add uci command generator
 
 
 */
