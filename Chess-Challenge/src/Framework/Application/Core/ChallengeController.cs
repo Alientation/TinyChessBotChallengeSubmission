@@ -141,6 +141,7 @@ namespace ChessChallenge.Application {
         readonly MoveGenerator moveGenerator;
         int tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2;
         public bool fastForward;
+        public bool paused;
         readonly StringBuilder pgns;
         int gameDuration1Milliseconds = Settings.DefaultGameDurationMilliseconds, gameDuration2Milliseconds = Settings.DefaultGameDurationMilliseconds;
         int increment1Milliseconds = Settings.DefaultIncrementMilliseconds, increment2Milliseconds = Settings.DefaultIncrementMilliseconds;
@@ -157,6 +158,7 @@ namespace ChessChallenge.Application {
             board = new Board();
             pgns = new();
             fastForward = false;
+            paused = false;
 
             BotStatsA = new BotMatchStats(botToTest1.ToString());
             BotStatsB = new BotMatchStats(botToTest2.ToString());
@@ -383,6 +385,8 @@ namespace ChessChallenge.Application {
                 EndGame(result);
         }
 
+        public bool IsGameInProgress() => isPlaying;
+
         void EndGame(GameResult result, bool log = true, bool autoStartNextBotMatch = true) {
             if (!isPlaying) return;
 
@@ -495,9 +499,9 @@ namespace ChessChallenge.Application {
 
         public void DrawOverlay() {
             if (PlayerBlack.IsHuman)
-                BotBrainCapacityUI.Draw(MenuUI.GetShortName((int) player1Type), MenuUI.GetShortName((int) player2Type),tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2, MaxTokenCount);
+                BotBrainCapacityUI.Draw(MenuUI.GetShortName(player1Type), MenuUI.GetShortName(player2Type),tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2, MaxTokenCount);
             else
-                BotBrainCapacityUI.Draw(MenuUI.GetShortName((int) player2Type), MenuUI.GetShortName((int) player1Type),tokenCount2, debugTokenCount2, tokenCount1, debugTokenCount1, MaxTokenCount);
+                BotBrainCapacityUI.Draw(MenuUI.GetShortName(player2Type), MenuUI.GetShortName(player1Type),tokenCount2, debugTokenCount2, tokenCount1, debugTokenCount1, MaxTokenCount);
             
             MenuUI.DrawButtons(this);
             MatchStatsUI.DrawMatchStats(this);
