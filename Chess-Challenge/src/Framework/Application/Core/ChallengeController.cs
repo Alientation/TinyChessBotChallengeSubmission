@@ -27,6 +27,7 @@ using static ChessChallenge.Application.ConsoleHelper;
     create a list view under the dropdown list so more bots can be shown
     Allow for multiple games to be played at once (for better speed in tournament mode)
     Allow for choosing fens to play from
+    Allow for typing in fens to play on
     Add premoving (lol)
 
     Add UCI support - todo add uci command generator
@@ -604,7 +605,7 @@ namespace ChessChallenge.Application {
         ChessPlayer PlayerToMove => board.IsWhiteToMove ? PlayerWhite : PlayerBlack;
         ChessPlayer PlayerNotOnMove => board.IsWhiteToMove ? PlayerBlack : PlayerWhite;
 
-        public int TotalGameCount => botMatchStartFens[botMatchGameIndex].Length * 2;
+        public int TotalGameCount => botMatchStartFens[botMatchStartFensIndex].Length * 2;
         public int CurrGameNumber => Math.Min(TotalGameCount, botMatchGameIndex + 1);
         public string AllPGNs => pgns.ToString();
 
