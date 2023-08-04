@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 
 /*
-    MyBot V3.1  ~(1008 Brain Power SMH)
+    MyBot V3.3  ~(1008 Brain Power SMH)
 
     Features
     Negamax Alpha Beta Pruning
@@ -40,7 +40,7 @@ using System.Linq;
     Late Move Reductions, History Reductions
     
 */
-public class MyBotV3_3 : IChessBot {
+public class MyBot : IChessBot {
 
     //save tokens by storing references here
     Timer timer; Board board;
@@ -168,10 +168,6 @@ public class MyBotV3_3 : IChessBot {
     public int negamax(int depthLeft, int depth, int alpha, int beta) {
         if (depthLeft < 1) //full search is completed, now search for a quiet position
             return quiesence(depth, alpha, beta);
-
-        //dont want to reach these states
-        if (board.IsDraw()) return 0;
-        if (board.IsInCheckmate()) return  -30000 + depth;
         
         Move prevBestMove = nullMove;
 
@@ -249,6 +245,10 @@ public class MyBotV3_3 : IChessBot {
         boardEvalCount++;
         #endif
 
+        //dont want to reach these states
+        if (board.IsDraw()) return -100;
+        if (board.IsInCheckmate()) return  -30000 + depth;
+
         int eval = 0;
         //bonus points for having the right to castle
         if (board.HasKingsideCastleRight(board.IsWhiteToMove)) eval += 10;
@@ -316,7 +316,7 @@ public class MyBotV3_3 : IChessBot {
     }
 
     //expands the pesto tables from their compressed versions
-    public MyBotV3_3() {
+    public MyBot() {
         UnpackedPestoTables = new int[64][];
         UnpackedPestoTables = PackedPestoTables.Select(packedTable =>
         {
