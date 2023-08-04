@@ -7,9 +7,9 @@ using System;
 namespace ChessChallenge.UCI {
     class UCIBot {
         IChessBot bot;
-        ChallengeController.PlayerType type;
-        Chess.Board board;
-        APIMoveGen moveGen;
+        readonly ChallengeController.PlayerType type;
+        readonly Chess.Board board;
+        readonly APIMoveGen moveGen;
 
         static readonly string defaultFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -99,6 +99,8 @@ namespace ChessChallenge.UCI {
         public void Run() {
             while (true) {
                 string line = Console.ReadLine();
+                if (line == null)
+                    continue;
 
                 if (line == "quit" || line == "exit")
                     return;
