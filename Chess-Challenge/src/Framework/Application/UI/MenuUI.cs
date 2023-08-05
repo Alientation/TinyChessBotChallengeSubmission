@@ -17,8 +17,16 @@ namespace ChessChallenge.Application {
 
         public static int initX = 260, initY = 45, initWidth = 450, initHeight = 35;
 
-        public static string GetShortName(ChallengeController.PlayerType playerType) {
-            return (playerType + "").Split("__")[^1];
+        public static string GetShortName(ChallengeController.PlayerType playerType, int sizeLimit = 100) {
+            string shortName = (playerType + "").Split("__")[^1];
+
+            if (shortName.Length > sizeLimit) {
+                int beginLength = sizeLimit / 2;
+                int endLength = (sizeLimit + 1) / 2;
+                return shortName[..beginLength] + ".." + shortName.Substring(shortName.Length - endLength, endLength);
+            }
+
+            return shortName;
         }
 
         public static void DrawButtons(ChallengeController controller) {
@@ -234,9 +242,9 @@ namespace ChessChallenge.Application {
             (int, bool) DropdownListSelectPlayersHelper(ChallengeController.PlayerType[] playerChoices, bool isOpen, Vector2 pos, Vector2 size, int selectedPlayer = -1) {
                 string[] options = new string[playerChoices.Length];
                 for (int i = 0; i < playerChoices.Length; i++)
-                    options[i] = GetShortName(playerChoices[i]);
+                    options[i] = GetShortName(playerChoices[i],16);
 
-                return DropdownList(selectedPlayer < 0 ? "Choose" : GetShortName(playerChoices[selectedPlayer]), options, isOpen, pos, size, selectedPlayer);
+                return DropdownList(selectedPlayer < 0 ? "Choose" : options[selectedPlayer], options, isOpen, pos, size, selectedPlayer);
             }
             
             //universal button
