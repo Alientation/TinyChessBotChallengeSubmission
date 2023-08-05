@@ -18,6 +18,13 @@ namespace ChessChallenge.Application {
         public static bool isTimeIncrement1InputActive = false, isTimeIncrement2InputActive;
 
         public static int initX = 260, initY = 45, initWidth = 450, initHeight = 35;
+        public static Vector2 ButtonSize => UIHelper.Scale(new Vector2(initWidth, initHeight));
+        public static Vector2 ButtonSizeSmall => UIHelper.Scale(new Vector2(240,35));
+        public static Vector2 ButtonSizeXSmall => UIHelper.Scale(new Vector2(110,35));
+        public static int ButtonSizeNormalPositionX => UIHelper.ScaleInt(initX);
+        public static int ButtonSizeSmallPositionX1 => UIHelper.ScaleInt(130);
+        public static int ButtonSizeSmallPositionX2 => UIHelper.ScaleInt(400);
+        public static float SpacingY => ButtonSize.Y * 1.3f;
 
         public static string GetShortName(ChallengeController.PlayerType playerType, int sizeLimit = 100) {
             string shortName = (playerType + "").Split("__")[^1];
@@ -32,13 +39,18 @@ namespace ChessChallenge.Application {
         }
 
         public static void DrawButtons(ChallengeController controller) {
-            Vector2 buttonSize = UIHelper.Scale(new Vector2(initWidth, initHeight)); 
-            Vector2 buttonSizeSmall = UIHelper.Scale(new Vector2(240,35));
-            int buttonSizeXSmallPositionX1 = UIHelper.ScaleInt(130);
-            int buttonSizeXSmallPositionX2 = UIHelper.ScaleInt(400);
-            Vector2 buttonSizeXSmall = UIHelper.Scale(new Vector2(110,35));
-            float spacingY = buttonSize.Y * 1.3f;
-            Vector2 buttonPos = UIHelper.Scale(new Vector2(initX, initY));
+            Vector2 buttonSize = ButtonSize;
+            Vector2 buttonSizeSmall = ButtonSizeSmall;
+            Vector2 buttonSizeXSmall = ButtonSizeXSmall;
+
+            int buttonSizeNormalPositionX = ButtonSizeNormalPositionX;
+
+            int buttonSizeSmallPositionX1 = ButtonSizeSmallPositionX1;
+            int buttonSizeSmallPositionX2 = ButtonSizeSmallPositionX2;
+
+            float spacingY = SpacingY;
+            Vector2 buttonPos = new(buttonSizeNormalPositionX, UIHelper.ScaleInt(initY));
+            bool isMouseOverTextInput = false;
 
 
             // Top buttons
@@ -48,14 +60,14 @@ namespace ChessChallenge.Application {
             
             
             //Middle Buttons
-            buttonPos.X = buttonSizeXSmallPositionX1;
+            buttonPos.X = buttonSizeSmallPositionX1;
             buttonPos.Y = UIHelper.ScaleInt(300);
 
-            if (NextButtonInRow("UCI Cmd Gen", ref buttonPos, spacingY, buttonSizeSmall, selected: isUCICommandUIOpen, shiftDown: false))
+            if (NextButtonInRow("UCI Cmd Gen", ref buttonPos, 0, buttonSizeSmall, selected: isUCICommandUIOpen))
                 isUCICommandUIOpen = !isUCICommandUIOpen;
 
             if (isUCICommandUIOpen) {
-
+                
 
 
             }
@@ -118,30 +130,30 @@ namespace ChessChallenge.Application {
 
 
             // Quick links/random buttons
-            buttonPos.X = buttonSizeXSmallPositionX1;
+            buttonPos.X = buttonSizeSmallPositionX1;
             buttonPos.Y = UIHelper.ScaleInt(900);
 
-            if (NextButtonInRow("Save Games", ref buttonPos, spacingY, buttonSizeSmall, shiftDown: false))
+            if (NextButtonInRow("Save Games", ref buttonPos, 0, buttonSizeSmall))
                 controller.SaveGames();
-            buttonPos.X = buttonSizeXSmallPositionX2;
+            buttonPos.X = buttonSizeSmallPositionX2;
             if (NextButtonInRow("Rules & Help", ref buttonPos, spacingY, buttonSizeSmall))
                 FileHelper.OpenUrl("https://github.com/SebLague/Chess-Challenge");
-            buttonPos.X = buttonSizeXSmallPositionX1;
-            if (NextButtonInRow("Documentation", ref buttonPos, spacingY, buttonSizeSmall, shiftDown: false))
+            buttonPos.X = buttonSizeSmallPositionX1;
+            if (NextButtonInRow("Documentation", ref buttonPos, 0, buttonSizeSmall))
                 FileHelper.OpenUrl("https://seblague.github.io/chess-coding-challenge/documentation/");
-            buttonPos.X = buttonSizeXSmallPositionX2;
+            buttonPos.X = buttonSizeSmallPositionX2;
             if (NextButtonInRow("Submission Page", ref buttonPos, spacingY, buttonSizeSmall))
                 FileHelper.OpenUrl("https://forms.gle/6jjj8jxNQ5Ln53ie6");
 
             // Window and quit buttons
-            buttonPos.X = buttonSizeXSmallPositionX1;
+            buttonPos.X = buttonSizeSmallPositionX1;
             buttonPos.Y = UIHelper.ScaleInt(1030);
 
             bool isBigWindow = Raylib.GetScreenWidth() > Settings.ScreenSizeSmall.X;
             string windowButtonName = isBigWindow ? "Smaller Window" : "Bigger Window";
-            if (NextButtonInRow(windowButtonName, ref buttonPos, spacingY, buttonSizeSmall, shiftDown: false))
+            if (NextButtonInRow(windowButtonName, ref buttonPos, 0, buttonSizeSmall))
                 Program.SetWindowSize(isBigWindow ? Settings.ScreenSizeSmall : Settings.ScreenSizeBig);
-            buttonPos.X = buttonSizeXSmallPositionX2;
+            buttonPos.X = buttonSizeSmallPositionX2;
             if (NextButtonInRow("Exit (ESC)", ref buttonPos, spacingY, buttonSizeSmall))
                 Environment.Exit(0);
 
@@ -149,18 +161,16 @@ namespace ChessChallenge.Application {
             // Game Control
 
             //Swap players
-            buttonPos.X = UIHelper.ScaleInt(265);
-            buttonPos.Y = UIHelper.ScaleInt(100);
-            if (NextButtonInRow("<>", ref buttonPos, spacingY, UIHelper.Scale(new Vector2(25,25)), shiftDown: false)) {
+            buttonPos = ScaleVector(265, 100);
+            if (NextButtonInRow("<>", ref buttonPos, 0, UIHelper.Scale(new Vector2(25,25)))) {
                 (selectedPlayer2, selectedPlayer1) = (selectedPlayer1, selectedPlayer2);
                 (timeControl2Input, timeControl1Input) = (timeControl1Input, timeControl2Input);
                 (timeIncrement2Input, timeIncrement1Input) = (timeIncrement1Input, timeIncrement2Input);
             }
 
             //Play game
-            buttonPos.X = UIHelper.ScaleInt(66);
-            buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
-            if (NextButtonInRow("Play", ref buttonPos, spacingY, buttonSizeXSmall, controller.IsGameInProgress(), shiftDown: false)) {
+            buttonPos = ScaleVector(66, 100 + initY);
+            if (NextButtonInRow("Play", ref buttonPos, 0, buttonSizeXSmall, controller.IsGameInProgress())) {
                 int timeControl1 = timeControl1Input == "" ? Settings.MAX_TIME : int.Parse(timeControl1Input);
                 if (timeControl1 == 0) timeControl1 = Settings.MAX_TIME;
                 int timeControl2 = timeControl2Input == "" ? Settings.MAX_TIME : int.Parse(timeControl2Input);
@@ -181,12 +191,12 @@ namespace ChessChallenge.Application {
             
             //End game
             buttonPos.X = UIHelper.ScaleInt(195);
-            if (NextButtonInRow("End", ref buttonPos, spacingY, buttonSizeXSmall, shiftDown: false))
+            if (NextButtonInRow("End", ref buttonPos, 0, buttonSizeXSmall))
                 controller.EndGame(false);
 
             //Toggle Pause game
             buttonPos.X = UIHelper.ScaleInt(336);
-            if (NextButtonInRow("Paused", ref buttonPos, spacingY, buttonSizeXSmall, controller.IsPaused(), shiftDown: false)) {
+            if (NextButtonInRow("Paused", ref buttonPos, 0, buttonSizeXSmall, controller.IsPaused())) {
                 if (controller.IsPaused())
                     controller.ResumeGame();
                 else
@@ -203,110 +213,97 @@ namespace ChessChallenge.Application {
             buttonPos.X = UIHelper.ScaleInt(90);
             UIHelper.DrawText("P1 Time: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(90);
-            var textInput1 = UIHelper.TextInput(timeControl1Input, isTimeControl1InputActive, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+            UIHelper.TextInput(ref timeControl1Input, ref isTimeControl1InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), "infinity", MAX_INPUT_LENGTH);
 
             buttonPos.X = UIHelper.ScaleInt(350);
             UIHelper.DrawText("P2 Time: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(90);
-            var textInput2 = UIHelper.TextInput(timeControl2Input, isTimeControlInput2Active, buttonPos, UIHelper.Scale(new Vector2(140,35)), "infinity");
+            UIHelper.TextInput(ref timeControl2Input, ref isTimeControlInput2Active, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), "infinity", MAX_INPUT_LENGTH);
 
             buttonPos.Y += UIHelper.ScaleInt(45);
             buttonPos.X = UIHelper.ScaleInt(110);
             UIHelper.DrawText("P1 t/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
-            var textInput11 = UIHelper.TextInput(timeIncrement1Input, isTimeIncrement1InputActive, buttonPos, UIHelper.Scale(new Vector2(140,35)), "0");
+            UIHelper.TextInput(ref timeIncrement1Input, ref isTimeIncrement1InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), "0", MAX_INPUT_LENGTH);
 
             buttonPos.X = UIHelper.ScaleInt(370);
             UIHelper.DrawText("P2 t/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
-            var textInput21 = UIHelper.TextInput(timeIncrement2Input, isTimeIncrement2InputActive, buttonPos, UIHelper.Scale(new Vector2(140,35)), "0");
-
-
-            //parse time control input.. remove any non digits
-            timeControl1Input =  Regex.Replace(textInput1.Item1, "[^0-9]", "");
-            timeControl2Input =  Regex.Replace(textInput2.Item1, "[^0-9]", "");
-            timeIncrement1Input =  Regex.Replace(textInput11.Item1, "[^0-9]", "");
-            timeIncrement2Input =  Regex.Replace(textInput21.Item1, "[^0-9]", "");
-
-            if (timeControl1Input.Length > MAX_INPUT_LENGTH) timeControl1Input = timeControl1Input[..MAX_INPUT_LENGTH];
-            if (timeControl2Input.Length > MAX_INPUT_LENGTH) timeControl2Input = timeControl2Input[..MAX_INPUT_LENGTH];
-            if (timeIncrement1Input.Length > MAX_INPUT_LENGTH) timeIncrement1Input = timeIncrement1Input[..MAX_INPUT_LENGTH];
-            if (timeIncrement2Input.Length > MAX_INPUT_LENGTH) timeIncrement2Input = timeIncrement2Input[..MAX_INPUT_LENGTH];
-
-            isTimeControl1InputActive = textInput1.Item2;
-            isTimeControlInput2Active = textInput2.Item2;
-            isTimeIncrement1InputActive = textInput11.Item2;
-            isTimeIncrement2InputActive = textInput21.Item2;
-
-            //update cursor (IK THIS IS BAD CODE ^^^^^)
-            Raylib.SetMouseCursor((textInput1.Item3 || textInput2.Item3 || textInput11.Item3 || textInput21.Item3) ? MouseCursor.MOUSE_CURSOR_IBEAM : MouseCursor.MOUSE_CURSOR_DEFAULT);
+            UIHelper.TextInput(ref timeIncrement2Input, ref isTimeIncrement2InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), "0", MAX_INPUT_LENGTH);
 
             
             //player selection
-            var player1Selection = DropdownListSelectPlayersHelper(ChallengeController.ActivePlayers, isPlayer1SelectionOpen, UIHelper.Scale(new Vector2(130, 100)), UIHelper.Scale(new Vector2(240,35)), selectedPlayer1);
-            isPlayer1SelectionOpen = player1Selection.Item2;
+            DropdownListSelectPlayersHelper(ChallengeController.ActivePlayers, ref isPlayer1SelectionOpen, ScaleVector(130, 100), ScaleVector(240,35), ref selectedPlayer1);
             if (isPlayer1SelectionOpen) isPlayer2SelectionOpen = false;
-            if (player1Selection.Item1 >= 0) selectedPlayer1 = player1Selection.Item1;
 
-            var player2Selection = DropdownListSelectPlayersHelper(ChallengeController.ActivePlayers, isPlayer2SelectionOpen, UIHelper.Scale(new Vector2(400, 100)), UIHelper.Scale(new Vector2(240,35)), selectedPlayer2);
-            isPlayer2SelectionOpen = player2Selection.Item2;
+            DropdownListSelectPlayersHelper(ChallengeController.ActivePlayers, ref isPlayer2SelectionOpen, ScaleVector(400, 100), ScaleVector(240,35), ref selectedPlayer2);
             if (isPlayer2SelectionOpen) isPlayer1SelectionOpen = false;
-            if (player2Selection.Item1 >= 0) selectedPlayer2 = player2Selection.Item1;
+
+            //update cursor
+            Raylib.SetMouseCursor(isMouseOverTextInput ? MouseCursor.MOUSE_CURSOR_IBEAM : MouseCursor.MOUSE_CURSOR_DEFAULT);
+        }
+
+        public static Vector2 ScaleVector(float x, float y) {
+            return UIHelper.Scale(new Vector2(x, y));
+        }
+
+        //helper methods
+        public static void DropdownListSelectPlayersHelper(ChallengeController.PlayerType[] playerChoices, ref bool isOpen, Vector2 pos, Vector2 size, ref int selectedPlayer) {
+            string[] options = new string[playerChoices.Length];
+            for (int i = 0; i < playerChoices.Length; i++)
+                options[i] = GetShortName(playerChoices[i],16);
+
+            DropdownList(selectedPlayer < 0 ? "Choose" : options[selectedPlayer], options, ref isOpen, pos, size, ref selectedPlayer);
 
 
-            //helper methods
-            (int, bool) DropdownListSelectPlayersHelper(ChallengeController.PlayerType[] playerChoices, bool isOpen, Vector2 pos, Vector2 size, int selectedPlayer = -1) {
-                string[] options = new string[playerChoices.Length];
-                for (int i = 0; i < playerChoices.Length; i++)
-                    options[i] = GetShortName(playerChoices[i],16);
+        }
+        
+        //universal button
+        public static bool NextButtonInRow(string name, ref Vector2 pos, float spacingY, Vector2 size, bool selected = false) {
+            bool pressed = UIHelper.Button(name, pos, size, selected);
+            pos.Y += spacingY;
+            return pressed;
+        }
 
-                return DropdownList(selectedPlayer < 0 ? "Choose" : options[selectedPlayer], options, isOpen, pos, size, selectedPlayer);
-            }
-            
-            //universal button
-            bool NextButtonInRow(string name, ref Vector2 pos, float spacingY, Vector2 size, bool selected = false, bool shiftDown = true) {
-                bool pressed = UIHelper.Button(name, pos, size, selected);
-                if (shiftDown)
-                    pos.Y += spacingY;
-                return pressed;
-            }
+        //universal dropdown list
+        public static void DropdownList(string text, string[] options, ref bool isOpen, Vector2 pos, Vector2 size, ref int selectedOption) {
+            //create button for dropdown list
+            bool pressed = UIHelper.Button(text, pos, size, isOpen);
+            if (pressed) isOpen = !isOpen;
 
-            //universal dropdown list
-            (int, bool) DropdownList(string text, string[] options, bool isOpen, Vector2 pos, Vector2 size, int selectedOption = -1) {
-                //create button for dropdown list
-                bool pressed = UIHelper.Button(text, pos, size, isOpen);
-                if (pressed) isOpen = !isOpen;
+            //if it is not open, return
+            if (!isOpen) return;
 
-                //if it is not open, return
-                if (!isOpen) return (-1, false);
+            //create list beneath button
+            Vector2 itemPos = new(pos.X, pos.Y + UIHelper.ScaleInt(45));
+            float initX = itemPos.X;
+            Vector2 itemSize = UIHelper.Scale(new Vector2(250, 50));
+            bool toggle = false; //two columns of buttons
+            for (int i = 0; i < options.Length; i++) {
+                bool itemPressed = UIHelper.Button(options[i], itemPos, itemSize, i == selectedOption);
 
-                //create list beneath button
-                Vector2 itemPos = new(pos.X, pos.Y + UIHelper.ScaleInt(45));
-                float initX = itemPos.X;
-                Vector2 itemSize = UIHelper.Scale(new Vector2(250, 50));
-                bool toggle = false; //two columns of buttons
-                for (int i = 0; i < options.Length; i++) {
-                    bool itemPressed = UIHelper.Button(options[i], itemPos, itemSize, i == selectedOption);
-
-                    //item is pressed, return the item and close the list
-                    if (itemPressed) return (i, false);
-                    
-                    //build row
-                    if (toggle) {
-                        itemPos.Y += UIHelper.ScaleInt(45);
-                        itemPos.X = initX;
-                    } else
-                        itemPos.X += UIHelper.ScaleInt(250);
-                    
-                    toggle = !toggle;
+                //item is pressed, return the item and close the list
+                if (itemPressed) {
+                    selectedOption = i;
+                    isOpen = false;
+                    return;
                 }
-
-                //detect if mouse has been pressed in some other frame
-                bool mouseOver = UIHelper.MouseInRect(UIHelper.GetRectangle(pos, size));
-                bool pressedNotThisFrame = !mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT);
-
-                return (selectedOption, !pressedNotThisFrame);
+                
+                //build row
+                if (toggle) {
+                    itemPos.Y += UIHelper.ScaleInt(45);
+                    itemPos.X = initX;
+                } else
+                    itemPos.X += UIHelper.ScaleInt(250);
+                
+                toggle = !toggle;
             }
+
+            //detect if mouse has been pressed in some other frame
+            bool mouseOver = UIHelper.MouseInRect(UIHelper.GetRectangle(pos, size));
+            bool pressedNotThisFrame = !mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT);
+
+            isOpen = !pressedNotThisFrame;
         }
     }
 }

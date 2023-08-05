@@ -1,6 +1,7 @@
 ﻿using Raylib_cs;
 using System;
 using System.Numerics;
+using System.Text.RegularExpressions;
 using static ChessChallenge.Application.FileHelper;
 
 namespace ChessChallenge.Application {
@@ -77,11 +78,17 @@ namespace ChessChallenge.Application {
             }
         }
 
+
+        public static void NumberInput(ref string existingText, ref bool isActive, ref bool isMouseOver, Vector2 centre, Vector2 size, string textHint = "input text", int maxInputLength = 1000, int borderThickness = 5, AlignH alignH = AlignH.Centre, AlignV alignV = AlignV.Centre) {
+            TextInput(ref existingText, ref isActive, ref isMouseOver, centre, size, textHint, maxInputLength, borderThickness, alignH, alignV);
+            existingText = Regex.Replace(existingText, "[^0-9]", "");
+        }
+
         //draws text input box and returns the text inside the box after user input is processed, if it is open (active) and 
         //if mouse is hovering over it (for mouse cursor effect)
         //
         //supports pasting in text, backspace, enter (to escape the text), clicking on the text to move the cursor, and of course typing in text
-        public static (string, bool, bool) TextInput(string existingText, bool isActive, Vector2 centre, Vector2 size, string textHint = "input text", int borderThickness = 5, AlignH alignH = AlignH.Centre, AlignV alignV = AlignV.Centre) {
+        public static void TextInput(ref string existingText, ref bool isActive, ref bool isMouseOver, Vector2 centre, Vector2 size, string textHint = "input text", int maxInputLength = 1000, int borderThickness = 5, AlignH alignH = AlignH.Centre, AlignV alignV = AlignV.Centre) {
             //inner and outer rectangles for input
             Rectangle recInside = GetRectangle(centre, size);
 
@@ -102,6 +109,7 @@ namespace ChessChallenge.Application {
 
             //check for mouse inputs
             bool mouseOver = MouseInRect(recOutside);
+            isMouseOver = mouseOver || isMouseOver;
             bool pressed = mouseOver && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT);
             if (pressed) lastMousePressedPos = Raylib.GetMousePosition();
 
@@ -147,7 +155,7 @@ namespace ChessChallenge.Application {
             //returns current text and closes the text input
             if (!isActive) {
                 DrawText(existingText.Length == 0 ? textHint : existingText, centre, fontSize, 1, textCol, alignH, alignV);
-                return (existingText, false, mouseOver);
+                return;
             } else { //blinking cursor when active and at the cursor location
                 bool doBlink = Math.Round(Raylib.GetTime() * textInputBlinkingSpeed) % 2 == 0;
                 string text = existingText;
@@ -178,13 +186,17 @@ namespace ChessChallenge.Application {
 
                     //reset cursor icon
                     Raylib.SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT);
-                    return (existingText, false, mouseOver);
+                    isActive = false;
+                    return;
                 } else if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT_CONTROL)) { //left control
                     if (key == (int) KeyboardKey.KEY_V) //check for pasting and add to text at cursor location
                         existingText = existingText[..(existingText.Length - cursorAtTextLocationFromEnd)] + Raylib.GetClipboardText_() + existingText[(existingText.Length - cursorAtTextLocationFromEnd)..];
                 } else { //normal key pressed, add to text at cursor location
                     existingText = existingText[..(existingText.Length - cursorAtTextLocationFromEnd)] + (char) key + existingText[(existingText.Length - cursorAtTextLocationFromEnd)..];
                 }
+
+                //trim to max length
+                if (existingText.Length > maxInputLength) existingText = existingText[..maxInputLength];
                 
                 //get next key in queue
                 key = Raylib.GetKeyPressed();
@@ -201,7 +213,7 @@ namespace ChessChallenge.Application {
             }
 
             //keep it open if not escaped
-            return (existingText, true, mouseOver);
+            return;
         }
 
         public static Rectangle GetRectangle(Vector2 centre, Vector2 size) {
