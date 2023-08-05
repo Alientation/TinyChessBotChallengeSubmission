@@ -123,9 +123,19 @@ namespace ChessChallenge.Application {
 
             
             // Game Control
+
+            //Swap players
+            buttonPos.X = UIHelper.ScaleInt(265);
+            buttonPos.Y = UIHelper.ScaleInt(100);
+            if (NextButtonInRow("<>", ref buttonPos, spacingY, UIHelper.Scale(new Vector2(25,25)), shiftDown: false)) {
+                (selectedPlayer2, selectedPlayer1) = (selectedPlayer1, selectedPlayer2);
+                (timeControl2Input, timeControl1Input) = (timeControl1Input, timeControl2Input);
+                (timeIncrement2Input, timeIncrement1Input) = (timeIncrement1Input, timeIncrement2Input);
+            }
+
+            //Play game
             buttonPos.X = UIHelper.ScaleInt(66);
             buttonPos.Y = UIHelper.ScaleInt(100) + UIHelper.ScaleInt(initY);
-
             if (NextButtonInRow("Play", ref buttonPos, spacingY, buttonSizeXSmall, controller.IsGameInProgress(), shiftDown: false)) {
                 int timeControl1 = timeControl1Input == "" ? Settings.MAX_TIME : int.Parse(timeControl1Input);
                 if (timeControl1 == 0) timeControl1 = Settings.MAX_TIME;
@@ -144,12 +154,13 @@ namespace ChessChallenge.Application {
                 else
                     controller.StartNewBotMatch(player1, player2, timeControl1, timeIncrement1, timeControl2, timeIncrement2);
             }
-
+            
+            //End game
             buttonPos.X = UIHelper.ScaleInt(195);
-
             if (NextButtonInRow("End", ref buttonPos, spacingY, buttonSizeXSmall, shiftDown: false))
                 controller.EndGame(false);
 
+            //Toggle Pause game
             buttonPos.X = UIHelper.ScaleInt(336);
             if (NextButtonInRow("Paused", ref buttonPos, spacingY, buttonSizeXSmall, controller.IsPaused(), shiftDown: false)) {
                 if (controller.IsPaused())
@@ -158,6 +169,7 @@ namespace ChessChallenge.Application {
                     controller.PauseGame();
             }
 
+            //Toggle fast forward
             buttonPos.X = UIHelper.ScaleInt(465);
             if (NextButtonInRow(">>", ref buttonPos, spacingY, buttonSizeXSmall, controller.fastForward))
                 controller.fastForward = !controller.fastForward;

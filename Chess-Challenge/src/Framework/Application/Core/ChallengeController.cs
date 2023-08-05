@@ -29,7 +29,6 @@ using static ChessChallenge.Application.ConsoleHelper;
     Allow for choosing fens to play from
     Allow for typing in fens to play on
     Add premoving (lol)
-    add switching sides
 
     Add UCI support - todo add uci command generator
     todo perhaps add z indexing to ui to fix overlaying ui components conflicting with each other
