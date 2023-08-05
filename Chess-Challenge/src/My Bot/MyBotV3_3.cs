@@ -85,7 +85,8 @@ public class MyBotV3_3 : IChessBot {
         timePerMove = timer.MillisecondsRemaining / 40;
         
         //reset best moves
-        bestMove = bestRootMove = nullMove;
+        Move[] moves = cBoard.GetLegalMoves();
+        bestMove = bestRootMove = moves[0];
 
         #if DEBUG
         Console.WriteLine("eval " + Evaluate(0));
@@ -111,10 +112,10 @@ public class MyBotV3_3 : IChessBot {
             #endif
         }
 
-        //best root move is null, so set it to the best move ever found
+        //best root move is default move, so set it to the best move ever found
         //should only ever occur if the bot runs out of time at the first depth search which means this is useless then
         //check to see if we can just set it to a random move
-        if (bestRootMove == nullMove) {
+        if (bestRootMove == moves[0]) {
             bestRootMove = bestMove;
 
             #if DEBUG

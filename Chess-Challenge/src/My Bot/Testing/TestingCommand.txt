@@ -15,6 +15,24 @@ C:\Users\mcpir\Downloads\cutechess-1.3.1-win64\cutechess-1.3.1-win64\cutechess-c
 
 
 C:\Users\mcpir\Downloads\cutechess-1.3.1-win64\cutechess-1.3.1-win64\cutechess-cli.exe ^
+-engine name="ARCNETX" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="Enemy__ARCNET__ARCNETX" ^
+-engine name="EloBot2" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="Enemy__EloBot2" ^
+-each proto="uci" tc=0/5+0.05 ^
+-maxmoves 1000 ^
+-games 2 ^
+-repeat ^
+-resultformat wide2 ^
+-ratinginterval 10 ^
+-rounds 400 ^
+-concurrency 4 ^
+-tournament "gauntlet" ^
+-pgnout "C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\src\My Bot\Testing\out.pgn" ^
+-openings file="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\src\My Bot\Testing\UHO_XXL_+0.90_+1.19.epd" format=epd
+
+
+
+
+C:\Users\mcpir\Downloads\cutechess-1.3.1-win64\cutechess-1.3.1-win64\cutechess-cli.exe ^
 -engine name="MyBotV3_3" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="MyBotV3_3" ^
 -engine name="EloBot1" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="Enemy__EloBot1" ^
 -each proto="uci" tc=0/5+0.05 ^

@@ -49,9 +49,9 @@ namespace ChessChallenge.Application {
             EvilBot, 
 
             Enemy__NNBot, Enemy__EloBot0, 
-            Enemy__ARCNET__ARCNET2_MoveOrdering, Enemy__ARCNET__ARCNET1, Enemy__ARCNET__ARCNET2B,
-            Enemy__ARCNET__ARCNET2_NN, Enemy__ARCNET__ARCNET2_Optimized,
-            Enemy__ARCNET__ARCNETX,
+            Enemy__Arcnet__ARCNET2_MoveOrdering, Enemy__Arcnet__ARCNET1, Enemy__Arcnet__ARCNET2B,
+            Enemy__Arcnet__ARCNET2_NN, Enemy__Arcnet__ARCNET2_Optimized,
+            Enemy__Arcnet__ARCNETX,
 
             Enemy__EloBot1, Enemy__EloBot2,
 
@@ -72,10 +72,10 @@ namespace ChessChallenge.Application {
                 PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine1, PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine4,
                 PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine2, PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine5,
                 PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine3, PlayerType.Enemy__LiteBlueEngine__LiteBlueEngine5a,
-                PlayerType.Enemy__ARCNET__ARCNET1, PlayerType.Enemy__Stormwind, 
-                PlayerType.Enemy__ARCNET__ARCNET2_MoveOrdering, PlayerType.Enemy__ARCNET__ARCNET2B, 
-                PlayerType.Enemy__ARCNET__ARCNET2_NN, PlayerType.Enemy__ARCNET__ARCNET2_Optimized, 
-                PlayerType.Enemy__ARCNET__ARCNETX,
+                PlayerType.Enemy__Arcnet__ARCNET1, PlayerType.Enemy__Stormwind, 
+                PlayerType.Enemy__Arcnet__ARCNET2_MoveOrdering, PlayerType.Enemy__Arcnet__ARCNET2B, 
+                PlayerType.Enemy__Arcnet__ARCNET2_NN, PlayerType.Enemy__Arcnet__ARCNET2_Optimized, 
+                PlayerType.Enemy__Arcnet__ARCNETX,
         };
 
         public static API.IChessBot? CreateBot(PlayerType type) {
@@ -102,12 +102,12 @@ namespace ChessChallenge.Application {
 
                 //CREDIT @Outercloudstudio https://github.com/outercloudstudio/Chess-Challenge/tree/main
                 PlayerType.Enemy__NNBot => new NNBot(),
-                PlayerType.Enemy__ARCNET__ARCNET2_MoveOrdering => new ARCNET2_MoveOrdering(),
-                PlayerType.Enemy__ARCNET__ARCNET1 => new ARCNET1(),
-                PlayerType.Enemy__ARCNET__ARCNET2B => new ARCNET2B(),
-                PlayerType.Enemy__ARCNET__ARCNET2_NN => new ARCNET2_NN(),
-                PlayerType.Enemy__ARCNET__ARCNET2_Optimized => new ARCNET2_Optimized(),
-                PlayerType.Enemy__ARCNET__ARCNETX => new ARCNETX(),
+                PlayerType.Enemy__Arcnet__ARCNET2_MoveOrdering => new ARCNET2_MoveOrdering(),
+                PlayerType.Enemy__Arcnet__ARCNET1 => new ARCNET1(),
+                PlayerType.Enemy__Arcnet__ARCNET2B => new ARCNET2B(),
+                PlayerType.Enemy__Arcnet__ARCNET2_NN => new ARCNET2_NN(),
+                PlayerType.Enemy__Arcnet__ARCNET2_Optimized => new ARCNET2_Optimized(),
+                PlayerType.Enemy__Arcnet__ARCNETX => new ARCNETX(),
 
                 //CREDIT @JacquesRW https://github.com/JacquesRW/Chess-Challenge
                 PlayerType.Enemy__EloBot0 => new EloBot0(),

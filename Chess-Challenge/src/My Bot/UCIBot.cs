@@ -1,110 +1,206 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
 using ChessChallenge.API;
 using ChessChallenge.Application;
-using ChessChallenge.Application.APIHelpers;
 using ChessChallenge.Chess;
-using System;
+using Board = ChessChallenge.API.Board;
+using Move = ChessChallenge.API.Move;
+using Timer = ChessChallenge.API.Timer;
 
-namespace ChessChallenge.UCI {
-    class UCIBot {
-        IChessBot bot;
-        readonly ChallengeController.PlayerType type;
-        readonly Chess.Board board;
-        readonly APIMoveGen moveGen;
+namespace ChessChallenge.UCI
+{
+    internal class UCIBot
+    {
+        private const string StartposFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-        static readonly string defaultFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        private IChessBot _bot;
+        private Board _board;
+        private ChallengeController.PlayerType _playerType;
 
-		public UCIBot(IChessBot bot, ChallengeController.PlayerType type) {
-            this.bot = bot;
-            this.type = type;
-            moveGen = new APIMoveGen();
-            board = new Chess.Board();
+        public UCIBot(IChessBot bot, ChallengeController.PlayerType playerType) {
+            _playerType = playerType;
+            Reset();
         }
 
-        void PositionCommand(string[] args) {
-            int idx = Array.FindIndex(args, x => x == "moves");
-            if (idx == -1) {
-                if (args[1] == "startpos")
-                    board.LoadStartPosition();
-                else
-                    board.LoadPosition(string.Join(" ", args.AsSpan(1, args.Length - 1).ToArray()));
-            } else {
-                if (args[1] == "startpos")
-					board.LoadStartPosition();
-				else 
-					board.LoadPosition(string.Join(" ", args.AsSpan(1, idx - 1).ToArray()));
+        private void Reset()
+        {
+            _bot = ChallengeController.CreateBot(_playerType);
+            _board = Board.CreateBoardFromFEN(StartposFen);
+        }
 
-                for (int i = idx + 1; i < args.Length; i++) {
-                    // this is such a hack
-                    API.Move move = new(args[i], new API.Board(board));
-                    board.MakeMove(new Chess.Move(move.RawValue), false);
+        private void HandleUci()
+        {
+            Console.WriteLine("id name Chess Challenge");
+            Console.WriteLine("id author Sebastian Lague, Gediminas Masaitis");
+            Console.WriteLine();
+            Console.WriteLine("uciok");
+        }
+
+        private void HandlePosition(IReadOnlyList<string> words)
+        {
+            var writingFen = false;
+            var writingMoves = false;
+            var fenBuilder = new StringBuilder();
+            
+            for (var wordIndex = 0; wordIndex < words.Count; wordIndex++)
+            {
+                var word = words[wordIndex];
+
+                if (word == "startpos")
+                {
+                    _board = Board.CreateBoardFromFEN(StartposFen);
+                }
+
+                if (word == "fen")
+                {
+                    writingFen = true;
+                    continue;
+                }
+
+                if (word == "moves")
+                {
+                    if (writingFen)
+                    {
+                        fenBuilder.Length--;
+                        var fen = fenBuilder.ToString();
+                        _board = Board.CreateBoardFromFEN(fen);
+                    }
+                    writingFen = false;
+                    writingMoves = true;
+                    continue;
+                }
+
+                if (writingFen)
+                {
+                    fenBuilder.Append(word);
+                    fenBuilder.Append(' ');
+                }
+
+                if (writingMoves)
+                {
+                    var move = new Move(word, _board);
+                    _board.MakeMove(move);
                 }
             }
 
-            string fen = FenUtility.CurrentFen(board);
-            Console.WriteLine(fen);
+            if (writingFen)
+            {
+                fenBuilder.Length--;
+                var fen = fenBuilder.ToString();
+                _board = Board.CreateBoardFromFEN(fen);
+            }
         }
 
-        void GoCommand(string[] args) {
-            int wtime = 0, btime = 0;
-            API.Board apiBoard = new(board);
-            Console.WriteLine(FenUtility.CurrentFen(board));
-            Console.WriteLine(apiBoard.GetFenString());
-
-            for (int i = 0; i < args.Length; i++) {
-                if (args[i] == "wtime")
-                    wtime = Int32.Parse(args[i + 1]);
-                else if (args[i] == "btime")
-                    btime = Int32.Parse(args[i + 1]);
+        private static string GetMoveName(Move move)
+        {
+            if (move.IsNull)
+            {
+                return "Null";
             }
 
-            if (!apiBoard.IsWhiteToMove) {
-                int tmp = wtime;
-                wtime = btime;
-                btime = tmp;
+            string startSquareName = BoardHelper.SquareNameFromIndex(move.StartSquare.Index);
+            string endSquareName = BoardHelper.SquareNameFromIndex(move.TargetSquare.Index);
+            string moveName = startSquareName + endSquareName;
+            if (move.IsPromotion)
+            {
+                switch (move.PromotionPieceType)
+                {
+                    case PieceType.Rook:
+                        moveName += "r";
+                        break;
+                    case PieceType.Knight:
+                        moveName += "n";
+                        break;
+                    case PieceType.Bishop:
+                        moveName += "b";
+                        break;
+                    case PieceType.Queen:
+                        moveName += "q";
+                        break;
+                }
             }
-
-            Timer timer = new Timer(wtime, btime, 0);
-            API.Move move = bot.Think(apiBoard, timer);
-            Console.WriteLine($"bestmove {move.ToString()[7..^1]}");
+            return moveName;
         }
 
-        void ExecCommand(string line) {
-            // default split by whitespace
-            var tokens = line.Split();
+        private void HandleGo(IReadOnlyList<string> words)
+        {
+            var ms = 60000;
 
-            if (tokens.Length == 0)
+            for (var wordIndex = 0; wordIndex < words.Count; wordIndex++)
+            {
+                var word = words[wordIndex];
+                if (words.Count > wordIndex + 1)
+                {
+                    var nextWord = words[wordIndex + 1];
+                    if (word == "wtime" && _board.IsWhiteToMove)
+                    {
+                        if (int.TryParse(nextWord, out var wtime))
+                        {
+                            ms = wtime;
+                        }
+                    }
+                    if (word == "btime" && !_board.IsWhiteToMove)
+                    {
+                        if (int.TryParse(nextWord, out var btime))
+                        {
+                            ms = btime;
+                        }
+                    }
+                }
+
+                if (word == "infinite")
+                {
+                    ms = int.MaxValue;
+                }
+            }
+
+            var timer = new Timer(ms);
+            var move = _bot.Think(_board, timer);
+            var moveStr = GetMoveName(move);
+            Console.WriteLine($"bestmove {moveStr}");
+        }
+
+        private void HandleLine(string line)
+        {
+            var words = line.Split(' ');
+            if (words.Length == 0)
+            {
                 return;
+            }
 
-            switch (tokens[0]) {
+            var firstWord = words[0];
+            switch (firstWord)
+            {
                 case "uci":
-                    Console.WriteLine("id name Chess Challenge");
-                    Console.WriteLine("id author AspectOfTheNoob, Sebastian Lague");
-                    Console.WriteLine("uciok");
-                    break;
+                    HandleUci();
+                    return;
                 case "ucinewgame":
-                    bot = ChallengeController.CreateBot(type);
-                    break;
+                    Reset();
+                    return;
                 case "position":
-                    PositionCommand(tokens);
-                    break;
+                    HandlePosition(words);
+                    return;
                 case "isready":
                     Console.WriteLine("readyok");
-                    break;
+                    return;
                 case "go":
-                    GoCommand(tokens);
-                    break;
+                    HandleGo(words);
+                    return;
             }
         }
 
-        public void Run() {
-            while (true) {
-                string line = Console.ReadLine();
-                if (line == null)
-                    continue;
-
+        public void Run()
+        {
+            while (true)
+            {
+                var line = Console.ReadLine();
                 if (line == "quit" || line == "exit")
+                {
                     return;
-                ExecCommand(line);
+                }
+
+                HandleLine(line);
             }
         }
     }

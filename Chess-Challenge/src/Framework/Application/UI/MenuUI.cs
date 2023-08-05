@@ -75,6 +75,13 @@ namespace ChessChallenge.Application {
                 Rectangle rec = UIHelper.GetRectangle(ScaleVector(initX,568), ScaleVector(500, 500));
                 Raylib.DrawRectangleRec(rec, new Color(20,26,36,255));
 
+                buttonPos.X = UIHelper.ScaleInt(75);
+                buttonPos.Y = UIHelper.ScaleInt(345);
+                if (NextButtonInRow("Create Engine", ref buttonPos, 0, buttonSizeXSmall, fontSizeXSmall)) {
+
+                }
+
+
 
             }
             
@@ -282,7 +289,7 @@ namespace ChessChallenge.Application {
 
             //create list beneath button
             Vector2 itemPos = new(pos.X, pos.Y + UIHelper.ScaleInt(45));
-            Vector2 itemSize = ScaleVector(250, 50);
+            Vector2 itemSize = ScaleVector(250, 35);
 
             float initX = itemPos.X;
             bool toggle = false; //two columns of buttons
@@ -298,7 +305,7 @@ namespace ChessChallenge.Application {
                 
                 //build row
                 if (toggle) {
-                    itemPos.Y += UIHelper.ScaleInt(45);
+                    itemPos.Y += UIHelper.ScaleInt(35);
                     itemPos.X = initX;
                 } else
                     itemPos.X += UIHelper.ScaleInt(250);
