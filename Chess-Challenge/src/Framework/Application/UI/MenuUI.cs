@@ -246,7 +246,7 @@ namespace ChessChallenge.Application {
 
             buttonPos.X = buttonSizeSmallPositionX2;
             buttonPos.Y = UIHelper.ScaleInt(345);
-            if (NextButtonInRow("Do Switch Perspectives", ref buttonPos, 0, buttonSizeSmall, UIHelper.ScaleInt(28), controller.doSwitchPerspective))
+            if (NextButtonInRow("Auto Perspective", ref buttonPos, 0, buttonSizeSmall, UIHelper.ScaleInt(28), controller.doSwitchPerspective))
                 controller.doSwitchPerspective = !controller.doSwitchPerspective;
             
             //player selection
