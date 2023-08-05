@@ -217,7 +217,7 @@ namespace ChessChallenge.Application {
             return new(centre.X - size.X / 2, centre.Y - size.Y / 2, size.X, size.Y);
         }
 
-        public static bool Button(string text, Vector2 centre, Vector2 size, bool isSelected = false) {
+        public static bool Button(string text, Vector2 centre, Vector2 size, int fontSize, bool isSelected = false) {
             Rectangle rec = GetRectangle(centre, size);
 
             Color normalCol = new(40, 40, 40, 255);
@@ -233,7 +233,6 @@ namespace ChessChallenge.Application {
 
             Raylib.DrawRectangleRec(rec, col);
             Color textCol = (mouseOver || isSelected) ? Color.WHITE : new Color(180, 180, 180, 255);
-            int fontSize = ScaleInt(32);
 
             DrawText(text, centre, fontSize, 1, textCol, AlignH.Centre);
 
