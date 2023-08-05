@@ -51,8 +51,18 @@ namespace ChessChallenge.Application {
             
             /*
             -engine
-                conf
             -each
+                conf=NAME
+                cmd=COMMAND
+                dir=DIR
+                arg=ARG
+                stderr=FILE
+                restart=MODE {"auto","on","off"}
+                trust
+                tc=TIMECONTROL {move/time+increment} {inf}
+                st=N
+                timemargin=N
+                whitepov
                 
             -concurrency 
                 N
@@ -93,12 +103,7 @@ namespace ChessChallenge.Application {
                 N
             -resultformat 
                 FORMAT
-
-
-
             */
-
-
 
 
             // Quick links/random buttons
