@@ -172,6 +172,7 @@ namespace ChessChallenge.Application {
         public BotMatchStats BotStatsA { get; private set; }
         public BotMatchStats BotStatsB {get;private set;}
         bool botAPlaysWhite;
+        public bool doSwitchPerspective;
 
 
         // Bot task
@@ -202,6 +203,7 @@ namespace ChessChallenge.Application {
             pgns = new();
             fastForward = false;
             paused = false;
+            doSwitchPerspective = true;
 
             BotStatsA = new BotMatchStats(botToTest1.ToString());
             BotStatsB = new BotMatchStats(botToTest2.ToString());
@@ -390,6 +392,7 @@ namespace ChessChallenge.Application {
         }
 
         void SetBoardPerspective() {
+            if (!doSwitchPerspective) return;
             // Board perspective
             if (PlayerWhite.IsHuman || PlayerBlack.IsHuman) {
                 boardUI.SetPerspective(PlayerWhite.IsHuman);

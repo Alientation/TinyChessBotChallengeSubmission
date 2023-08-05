@@ -244,6 +244,10 @@ namespace ChessChallenge.Application {
             buttonPos.X += UIHelper.ScaleInt(70);
             UIHelper.TextInput(ref timeIncrement2Input, ref isTimeIncrement2InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "0", MAX_INPUT_LENGTH);
 
+            buttonPos.X = buttonSizeSmallPositionX2;
+            buttonPos.Y = UIHelper.ScaleInt(345);
+            if (NextButtonInRow("Do Switch Perspectives", ref buttonPos, 0, buttonSizeSmall, UIHelper.ScaleInt(28), controller.doSwitchPerspective))
+                controller.doSwitchPerspective = !controller.doSwitchPerspective;
             
             //player selection
             DropdownListSelectPlayersHelper(ChallengeController.ActivePlayers, ref isPlayer1SelectionOpen, ScaleVector(130, 100), ScaleVector(240,35), ref selectedPlayer1);
