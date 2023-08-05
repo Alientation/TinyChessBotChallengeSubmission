@@ -9,6 +9,8 @@ namespace ChessChallenge.Application {
 
         public static int selectedPlayer1 = 0, selectedPlayer2 = 0;
         public static bool isPlayer1SelectionOpen = false, isPlayer2SelectionOpen = false;
+
+        public static bool isUCICommandUIOpen = false;
         
         public static string timeControl1Input = "", timeControl2Input = "";
         public static string timeIncrement1Input = "", timeIncrement2Input = "";
@@ -47,7 +49,16 @@ namespace ChessChallenge.Application {
             
             //Middle Buttons
             buttonPos.X = buttonSizeXSmallPositionX1;
-            buttonPos.Y = UIHelper.ScaleInt(900);
+            buttonPos.Y = UIHelper.ScaleInt(300);
+
+            if (NextButtonInRow("UCI Cmd Gen", ref buttonPos, spacingY, buttonSizeSmall, selected: isUCICommandUIOpen, shiftDown: false))
+                isUCICommandUIOpen = !isUCICommandUIOpen;
+
+            if (isUCICommandUIOpen) {
+
+
+
+            }
             
             /*
             -engine
@@ -263,7 +274,7 @@ namespace ChessChallenge.Application {
             //universal dropdown list
             (int, bool) DropdownList(string text, string[] options, bool isOpen, Vector2 pos, Vector2 size, int selectedOption = -1) {
                 //create button for dropdown list
-                bool pressed = UIHelper.Button(text, pos, size);
+                bool pressed = UIHelper.Button(text, pos, size, isOpen);
                 if (pressed) isOpen = !isOpen;
 
                 //if it is not open, return
