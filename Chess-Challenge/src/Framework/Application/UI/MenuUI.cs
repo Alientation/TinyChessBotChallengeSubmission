@@ -17,7 +17,7 @@ namespace ChessChallenge.Application {
         public static bool isTimeControl1InputActive = false, isTimeControlInput2Active;
         public static bool isTimeIncrement1InputActive = false, isTimeIncrement2InputActive;
 
-        public static int initX = 260, initY = 45, initWidth = 450, initHeight = 35;
+        public static int initX = 265, initY = 45, initWidth = 450, initHeight = 35;
         public static Vector2 ButtonSize => UIHelper.Scale(new Vector2(initWidth, initHeight));
         public static Vector2 ButtonSizeSmall => UIHelper.Scale(new Vector2(240,35));
         public static Vector2 ButtonSizeXSmall => UIHelper.Scale(new Vector2(110,35));
@@ -44,7 +44,6 @@ namespace ChessChallenge.Application {
             Vector2 buttonSizeXSmall = ButtonSizeXSmall;
 
             int buttonSizeNormalPositionX = ButtonSizeNormalPositionX;
-
             int buttonSizeSmallPositionX1 = ButtonSizeSmallPositionX1;
             int buttonSizeSmallPositionX2 = ButtonSizeSmallPositionX2;
 
@@ -65,9 +64,12 @@ namespace ChessChallenge.Application {
 
             if (NextButtonInRow("UCI Cmd Gen", ref buttonPos, 0, buttonSizeSmall, selected: isUCICommandUIOpen))
                 isUCICommandUIOpen = !isUCICommandUIOpen;
+            if (isPlayer1SelectionOpen || isPlayer2SelectionOpen)
+                isUCICommandUIOpen = false;
 
             if (isUCICommandUIOpen) {
-                
+                Rectangle rec = UIHelper.GetRectangle(ScaleVector(initX,568), ScaleVector(500, 500));
+                Raylib.DrawRectangleRec(rec, new Color(20,26,36,255));
 
 
             }
@@ -213,23 +215,23 @@ namespace ChessChallenge.Application {
             buttonPos.X = UIHelper.ScaleInt(90);
             UIHelper.DrawText("P1 Time: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(90);
-            UIHelper.TextInput(ref timeControl1Input, ref isTimeControl1InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), "infinity", MAX_INPUT_LENGTH);
+            UIHelper.TextInput(ref timeControl1Input, ref isTimeControl1InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "infinity", MAX_INPUT_LENGTH);
 
             buttonPos.X = UIHelper.ScaleInt(350);
             UIHelper.DrawText("P2 Time: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(90);
-            UIHelper.TextInput(ref timeControl2Input, ref isTimeControlInput2Active, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), "infinity", MAX_INPUT_LENGTH);
+            UIHelper.TextInput(ref timeControl2Input, ref isTimeControlInput2Active, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "infinity", MAX_INPUT_LENGTH);
 
             buttonPos.Y += UIHelper.ScaleInt(45);
             buttonPos.X = UIHelper.ScaleInt(110);
             UIHelper.DrawText("P1 t/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
-            UIHelper.TextInput(ref timeIncrement1Input, ref isTimeIncrement1InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), "0", MAX_INPUT_LENGTH);
+            UIHelper.TextInput(ref timeIncrement1Input, ref isTimeIncrement1InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "0", MAX_INPUT_LENGTH);
 
             buttonPos.X = UIHelper.ScaleInt(370);
             UIHelper.DrawText("P2 t/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
-            UIHelper.TextInput(ref timeIncrement2Input, ref isTimeIncrement2InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), "0", MAX_INPUT_LENGTH);
+            UIHelper.TextInput(ref timeIncrement2Input, ref isTimeIncrement2InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "0", MAX_INPUT_LENGTH);
 
             
             //player selection
@@ -276,8 +278,9 @@ namespace ChessChallenge.Application {
 
             //create list beneath button
             Vector2 itemPos = new(pos.X, pos.Y + UIHelper.ScaleInt(45));
+            Vector2 itemSize = ScaleVector(250, 50);
+
             float initX = itemPos.X;
-            Vector2 itemSize = UIHelper.Scale(new Vector2(250, 50));
             bool toggle = false; //two columns of buttons
             for (int i = 0; i < options.Length; i++) {
                 bool itemPressed = UIHelper.Button(options[i], itemPos, itemSize, i == selectedOption);

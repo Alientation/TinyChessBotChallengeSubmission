@@ -79,8 +79,8 @@ namespace ChessChallenge.Application {
         }
 
 
-        public static void NumberInput(ref string existingText, ref bool isActive, ref bool isMouseOver, Vector2 centre, Vector2 size, string textHint = "input text", int maxInputLength = 1000, int borderThickness = 5, AlignH alignH = AlignH.Centre, AlignV alignV = AlignV.Centre) {
-            TextInput(ref existingText, ref isActive, ref isMouseOver, centre, size, textHint, maxInputLength, borderThickness, alignH, alignV);
+        public static void NumberInput(ref string existingText, ref bool isActive, ref bool isMouseOver, Vector2 centre, Vector2 size, int fontSize, string textHint = "input text", int maxInputLength = 1000, int borderThickness = 5, AlignH alignH = AlignH.Centre, AlignV alignV = AlignV.Centre) {
+            TextInput(ref existingText, ref isActive, ref isMouseOver, centre, size, fontSize, textHint, maxInputLength, borderThickness, alignH, alignV);
             existingText = Regex.Replace(existingText, "[^0-9]", "");
         }
 
@@ -88,7 +88,7 @@ namespace ChessChallenge.Application {
         //if mouse is hovering over it (for mouse cursor effect)
         //
         //supports pasting in text, backspace, enter (to escape the text), clicking on the text to move the cursor, and of course typing in text
-        public static void TextInput(ref string existingText, ref bool isActive, ref bool isMouseOver, Vector2 centre, Vector2 size, string textHint = "input text", int maxInputLength = 1000, int borderThickness = 5, AlignH alignH = AlignH.Centre, AlignV alignV = AlignV.Centre) {
+        public static void TextInput(ref string existingText, ref bool isActive, ref bool isMouseOver, Vector2 centre, Vector2 size, int fontSize, string textHint = "input text", int maxInputLength = 1000, int borderThickness = 5, AlignH alignH = AlignH.Centre, AlignV alignV = AlignV.Centre) {
             //inner and outer rectangles for input
             Rectangle recInside = GetRectangle(centre, size);
 
@@ -103,9 +103,6 @@ namespace ChessChallenge.Application {
             Color insideCol = new(87, 83, 83, 255);
             Color insideHoverCol = new(134, 211, 247, 255);
             Color insidePressCol = new(61, 141, 179, 255);
-
-            //text size
-            int fontSize = ScaleInt(32);
 
             //check for mouse inputs
             bool mouseOver = MouseInRect(recOutside);
