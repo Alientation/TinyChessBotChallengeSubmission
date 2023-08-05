@@ -29,6 +29,7 @@ using static ChessChallenge.Application.ConsoleHelper;
     Allow for choosing fens to play from
     Allow for typing in fens to play on
     Add premoving (lol)
+    add switching sides
 
     Add UCI support - todo add uci command generator
     todo perhaps add z indexing to ui to fix overlaying ui components conflicting with each other
@@ -208,7 +209,7 @@ namespace ChessChallenge.Application {
 
             //read in all fens
 
-            DirectoryInfo d = new DirectoryInfo(FileHelper.GetResourcePath("Fens")); //Assuming Test is your Folder
+            DirectoryInfo d = new(FileHelper.GetResourcePath("Fens")); //Assuming Test is your Folder
 
             FileInfo[] files = d.GetFiles("*.txt"); //Getting Text files
             botMatchStartFens = new string[files.Length][];
@@ -216,13 +217,11 @@ namespace ChessChallenge.Application {
 
             for (int i = 0; i < files.Length; i++)
                 botMatchStartFens[i] = FileHelper.ReadResourceFile("Fens\\" + files[i].Name).Split('\n').Where(fen => fen.Length > 0).ToArray();
-            
-
-            //botMatchStartFens = FileHelper.ReadResourceFile("Fens.txt").Split('\n').Where(fen => fen.Length > 0).ToArray();
 
             botTaskWaitHandle = new AutoResetEvent(false);
 
             StartNewGame(PlayerType.Human, botToTest1);
+            EndGame(GameResult.VoidResult, false, false); //dont start the game initially, this is a quick and dirty way to do it
         }
 
 

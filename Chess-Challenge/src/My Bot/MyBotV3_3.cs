@@ -88,14 +88,14 @@ public class MyBotV3_3 : IChessBot {
         bestMove = bestRootMove = nullMove;
 
         #if DEBUG
-        Console.WriteLine("eval " + evaluate(0));
+        Console.WriteLine("eval " + Evaluate(0));
         #endif
         
         //iterative deepening, while there is still time left
         for (int depth = 1; depth <= 50 && !shouldStop; depth++) {
 
             //dont need value technically, just for debug purposes
-            int val = negamax(depth, 0, MIN_VALUE, MAX_VALUE);
+            int val = Negamax(depth, 0, MIN_VALUE, MAX_VALUE);
             
             //if the search was not canceled because of running out of time
             if (!shouldStop) {
@@ -136,12 +136,12 @@ public class MyBotV3_3 : IChessBot {
     #endif
 
     //quiesence searching till a quiet position is reached
-    public int quiesence(int depth, int alpha, int beta) {
+    public int Quiesence(int depth, int alpha, int beta) {
         #if DEBUG
         negamaxNodesCount++;
         #endif
 
-        int stand_pat = evaluate(depth);
+        int stand_pat = Evaluate(depth);
         if (stand_pat >= beta)
             return beta;
         if (alpha < stand_pat)
@@ -149,12 +149,12 @@ public class MyBotV3_3 : IChessBot {
 
         Span<Move> moves = stackalloc Move[128];
         board.GetLegalMovesNonAlloc(ref moves, true);
-        getOrderedMoves(ref moves, Move.NullMove, depth);
+        GetOrderedMoves(ref moves, Move.NullMove, depth);
 
         //search ordered moves
         foreach (Move move in moves) {
             board.MakeMove(move);
-            int score = -quiesence(depth + 1, -beta, -alpha);
+            int score = -Quiesence(depth + 1, -beta, -alpha);
             board.UndoMove(move);
 
             if (score >= beta) return beta;
@@ -165,9 +165,9 @@ public class MyBotV3_3 : IChessBot {
     }
 
     //negamax with alpha beta pruning
-    public int negamax(int depthLeft, int depth, int alpha, int beta) {
+    public int Negamax(int depthLeft, int depth, int alpha, int beta) {
         if (depthLeft < 1) //full search is completed, now search for a quiet position
-            return quiesence(depth, alpha, beta);
+            return Quiesence(depth, alpha, beta);
 
         //dont want to reach these states
         if (board.IsDraw()) return 0;
@@ -203,11 +203,11 @@ public class MyBotV3_3 : IChessBot {
         
         Span<Move> moves = stackalloc Move[128];
         board.GetLegalMovesNonAlloc(ref moves);
-        getOrderedMoves(ref moves, prevBestMove, depth);
+        GetOrderedMoves(ref moves, prevBestMove, depth);
 
         //no possible moves (which means checkmate/stalemate/draw)
         if (moves.Length == 0)
-            return evaluate(depth);
+            return Evaluate(depth);
 
         //find best move possible from all subtrees
         int highestEval = MIN_VALUE;
@@ -217,7 +217,7 @@ public class MyBotV3_3 : IChessBot {
                 return 0;
 
             board.MakeMove(move);
-            int eval = -negamax(depthLeft - 1, depth+1, -beta, -alpha) + (move.IsPromotion ? 20 * (int) move.PromotionPieceType : 0);
+            int eval = -Negamax(depthLeft - 1, depth+1, -beta, -alpha) + (move.IsPromotion ? 20 * (int) move.PromotionPieceType : 0);
             board.UndoMove(move);
 
             if (eval > highestEval) {
@@ -244,7 +244,7 @@ public class MyBotV3_3 : IChessBot {
     }
 
     //evaluates a position based on how desirable it is for the current player to play the next move
-    public int evaluate(int depth) {
+    public int Evaluate(int depth) {
         #if DEBUG
         boardEvalCount++;
         #endif
@@ -289,7 +289,7 @@ public class MyBotV3_3 : IChessBot {
     }
 
     //todo add move ordering
-    public void getOrderedMoves(ref Span<Move> moves, Move prevBestMove, int depth) {
+    public void GetOrderedMoves(ref Span<Move> moves, Move prevBestMove, int depth) {
         //use pv (principal variation) as first move in array
         //use stack alloc to store array (order by captures then non captures)
         Span<int> priorities = stackalloc int[moves.Length];
@@ -305,8 +305,8 @@ public class MyBotV3_3 : IChessBot {
             if (move == prevBestMove) priority += MAX_VALUE;
 
             //bonuses for capture, promotion, enpassant, castles
-            if (move.IsCapture) priority += 10 * (int) move.CapturePieceType;
-            if (move.IsPromotion && move.PromotionPieceType == PieceType.Queen) priority += 100;
+            if (move.IsCapture) priority += 1000 * (int) move.CapturePieceType - (int) move.MovePieceType;
+            if (move.IsPromotion) priority += 100 * (int) move.PromotionPieceType;
             if (move.IsEnPassant || move.IsCastles) priority += 20;
 
             priorities[i] = -priority;
