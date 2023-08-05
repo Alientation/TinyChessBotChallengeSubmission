@@ -1,13 +1,13 @@
 # TinyChessBotChallengeSubmission
 My submission for Sebastian Lague's Tiny Chess Bot Challenge
-Also containing several changes to the engine supplied to allow for easier bot testing
+Also containing several changes to the existing codebase to allow for easier bot testing/ui look and feel
 https://github.com/SebLague/Chess-Challenge
 
-#### Additional Feature list
-# - Drop down lists for choosing bot vs bot matches (to reduce button spam and allow more customizability)
-# - Time control text inputs
-# - Brain Capacity is appropriately shown for both bots playing each other
-# - added pausing and ending games prematurely (pausing might cause any bots currently in play to get a slight boost)
+## Additional Feature list
+- Drop down lists for choosing bot vs bot matches (to reduce button spam and allow more customizability)
+- Time control text inputs
+- Brain Capacity is appropriately shown for both bots playing each other
+- added pausing and ending games prematurely (pausing might cause any bots currently in play to get a slight boost)
 - TODO UCI Cutechess Command Generator
 - TODO Premoving
 - TODO Tournament Mode
@@ -15,7 +15,8 @@ https://github.com/SebLague/Chess-Challenge
 - TODO choosing from a set of fens files to play the games in
 - TODO let user type in fens to play
 
-Features Multiple Different Bots
+
+## Features Multiple Different Bots
 
 ### V1
 - Rudimentary minimax algorithm with AB pruning with some simple board/move eval
