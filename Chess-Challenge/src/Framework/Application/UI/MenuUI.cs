@@ -199,12 +199,7 @@ namespace ChessChallenge.Application {
                 ChallengeController.PlayerType player1 = ChallengeController.ActivePlayers[selectedPlayer1];
                 ChallengeController.PlayerType player2 = ChallengeController.ActivePlayers[selectedPlayer2];
 
-                ChallengeController.PlayerType Human = ChallengeController.PlayerType.Human;
-
-                if (player1 == Human || player2 == Human)
-                    controller.StartNewGame(player1, player2, timeControl1, timeIncrement1, timeControl2, timeIncrement2);
-                else
-                    controller.StartNewBotMatch(player1, player2, timeControl1, timeIncrement1, timeControl2, timeIncrement2);
+                controller.StartNewGamesMatch(player1, player2, timeControl1, timeIncrement1, timeControl2, timeIncrement2);
             }
             
             //End game

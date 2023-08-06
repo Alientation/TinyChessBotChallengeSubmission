@@ -3,55 +3,48 @@ using System.Numerics;
 using System;
 using static System.Formats.Asn1.AsnWriter;
 
-namespace ChessChallenge.Application
-{
-    public static class MatchStatsUI
-    {
-        public static void DrawMatchStats(ChallengeController controller)
-        {
-            if (controller.PlayerWhite.IsBot && controller.PlayerBlack.IsBot)
-            {
-                int nameFontSize = UIHelper.ScaleInt(40);
-                int regularFontSize = UIHelper.ScaleInt(35);
-                int headerFontSize = UIHelper.ScaleInt(45);
-                Color col = new(180, 180, 180, 255);
-                Vector2 startPos = UIHelper.Scale(new Vector2(1500, 250));
-                float spacingY = UIHelper.Scale(35);
+namespace ChessChallenge.Application {
+    public static class MatchStatsUI {
+        public static void DrawMatchStats(ChallengeController controller) {
+            //if (controller.PlayerWhite.IsBot && controller.PlayerBlack.IsBot) {
+            int nameFontSize = UIHelper.ScaleInt(40);
+            int regularFontSize = UIHelper.ScaleInt(35);
+            int headerFontSize = UIHelper.ScaleInt(45);
+            Color col = new(180, 180, 180, 255);
+            Vector2 startPos = UIHelper.Scale(new Vector2(1500, 250));
+            float spacingY = UIHelper.Scale(35);
 
-                DrawNextText($"Game {controller.CurrGameNumber} of {controller.TotalGameCount}", headerFontSize, Color.WHITE);
-                startPos.Y += spacingY * 2;
+            DrawNextText($"Game {controller.CurrGameNumber} of {controller.TotalGameCount}", headerFontSize, Color.WHITE);
+            startPos.Y += spacingY * 2;
 
-                DrawStats(controller.BotStatsA);
-                startPos.Y += spacingY * 2;
-                DrawStats(controller.BotStatsB);
+            DrawStats(controller.StatsA);
+            startPos.Y += spacingY * 2;
+            DrawStats(controller.StatsB);
 
-                startPos.Y += spacingY * 2;
+            startPos.Y += spacingY * 2;
 
-                string eloDifference = CalculateElo(controller.BotStatsA.NumWins, controller.BotStatsA.NumDraws, controller.BotStatsA.NumLosses);
-                string errorMargin = CalculateErrorMargin(controller.BotStatsA.NumWins, controller.BotStatsA.NumDraws, controller.BotStatsA.NumLosses);
-                
-                DrawNextText($"Elo Difference:", headerFontSize, Color.WHITE);
-                DrawNextText($"{eloDifference} {errorMargin}", regularFontSize, Color.GRAY);
+            string eloDifference = CalculateElo(controller.StatsA.NumWins, controller.StatsA.NumDraws, controller.StatsA.NumLosses);
+            string errorMargin = CalculateErrorMargin(controller.StatsA.NumWins, controller.StatsA.NumDraws, controller.StatsA.NumLosses);
+            
+            DrawNextText($"Elo Difference:", headerFontSize, Color.WHITE);
+            DrawNextText($"{eloDifference} {errorMargin}", regularFontSize, Color.GRAY);
 
-                void DrawStats(ChallengeController.BotMatchStats stats)
-                {
-                    DrawNextText(stats.BotName + ":", nameFontSize, Color.WHITE);
-                    DrawNextText($"Score: +{stats.NumWins} ={stats.NumDraws} -{stats.NumLosses}", regularFontSize, col);
-                    DrawNextText($"Num Timeouts: {stats.NumTimeouts}", regularFontSize, col);
-                    DrawNextText($"Num Illegal Moves: {stats.NumIllegalMoves}", regularFontSize, col);
-                    DrawNextText($"Winrate: {(float)stats.NumWins / (controller.CurrGameNumber - 1) * 100}%", regularFontSize, col);
-                }
-           
-                void DrawNextText(string text, int fontSize, Color col)
-                {
-                    UIHelper.DrawText(text, startPos, fontSize, 1, col);
-                    startPos.Y += spacingY;
-                }
+            void DrawStats(ChallengeController.MatchStats stats) {
+                DrawNextText(stats.PlayerName + ":", nameFontSize, Color.WHITE);
+                DrawNextText($"Score: +{stats.NumWins} ={stats.NumDraws} -{stats.NumLosses}", regularFontSize, col);
+                DrawNextText($"Num Timeouts: {stats.NumTimeouts}", regularFontSize, col);
+                DrawNextText($"Num Illegal Moves: {stats.NumIllegalMoves}", regularFontSize, col);
+                DrawNextText($"Winrate: {(float)stats.NumWins / controller.CurrGameNumber * 100}%", regularFontSize, col);
             }
+        
+            void DrawNextText(string text, int fontSize, Color col) {
+                UIHelper.DrawText(text, startPos, fontSize, 1, col);
+                startPos.Y += spacingY;
+            }
+            //}
         }
 
-        private static string CalculateElo(int wins, int draws, int losses)
-        {
+        private static string CalculateElo(int wins, int draws, int losses) {
             double score = wins + draws / 2;
             int totalGames = wins + draws + losses;
             double difference = CalculateEloDifference(score / totalGames);
@@ -64,13 +57,11 @@ namespace ChessChallenge.Application
             return $"{(int)difference}";
         }
 
-        private static double CalculateEloDifference(double percentage)
-        {
+        private static double CalculateEloDifference(double percentage) {
             return -400 * Math.Log(1 / percentage - 1) / 2.302;
         }
 
-        private static string CalculateErrorMargin(int wins, int draws, int losses)
-        {
+        private static string CalculateErrorMargin(int wins, int draws, int losses) {
             double total = wins + draws + losses;
             double winP = wins / total;
             double drawP = draws / total;
@@ -95,13 +86,11 @@ namespace ChessChallenge.Application
             return $"+/- {margin}";
         }
 
-        private static double PhiInv(double p)
-        {
+        private static double PhiInv(double p) {
             return Math.Sqrt(2) * CalculateInverseErrorFunction(2 * p - 1);
         }
 
-        private static double CalculateInverseErrorFunction(double x)
-        {
+        private static double CalculateInverseErrorFunction(double x) {
             double a = 8 * (Math.PI - 3) / (3 * Math.PI * (4 - Math.PI));
             double y = Math.Log(1 - x * x);
             double z = 2 / (Math.PI * a) + y / 2;

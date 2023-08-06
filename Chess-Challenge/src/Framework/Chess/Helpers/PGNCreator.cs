@@ -1,27 +1,39 @@
 ﻿
 using System.Text;
+using ChessChallenge.Application;
 
+/*
+Todo, make it save games respective to each unique challenge controller
+*/
 namespace ChessChallenge.Chess {
 
     public static class PGNCreator {
 
-        public static string CreatePGN(Move[] moves) {
-            return CreatePGN(moves, GameResult.InProgress, FenUtility.StartPositionFEN);
+        public static string CreatePGN(Move[] moves, ChallengeController controller) {
+            return CreatePGN(controller, moves, GameResult.InProgress, FenUtility.StartPositionFEN);
         }
 
-        public static string CreatePGN(Board board, GameResult result, string whiteName = "", string blackName = "") {
-            return CreatePGN(board.AllGameMoves.ToArray(), result, board.GameStartFen, whiteName, blackName);
+        public static string CreatePGN(ChallengeController controller, Board board, GameResult result, string whiteName = "", string blackName = "") {
+            return CreatePGN(controller, board.AllGameMoves.ToArray(), result, board.GameStartFen, whiteName, blackName);
         }
 
         private static int numGames = 0;
-        public static string CreatePGN(Move[] moves, GameResult result, string startFen, string whiteName = "", string blackName = "") {
+        private static int numMatches = 0;
+        private static int lastMatchID = -1;
+        public static string CreatePGN(ChallengeController controller, Move[] moves, GameResult result, string startFen, string whiteName = "", string blackName = "") {
             startFen = startFen.Replace("\n", "").Replace("\r", "");
 
             StringBuilder pgn = new();
-            Board board = new Board();
+            Board board = new();
             board.LoadPosition(startFen);
             numGames++;
-            pgn.AppendLine($"[Game #" + numGames + "]");
+            if (controller.GetMatchID() != lastMatchID) {
+                numMatches++;
+                numGames = 1;
+                lastMatchID = controller.GetMatchID();
+            }
+
+            pgn.AppendLine($"[Match #{numMatches} Game #{numGames}]");
 
             // Headers
             if (result is GameResult.WhiteIsMated or GameResult.BlackIsMated)
