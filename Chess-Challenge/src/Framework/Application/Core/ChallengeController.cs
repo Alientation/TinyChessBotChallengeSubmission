@@ -45,7 +45,9 @@ namespace ChessChallenge.Application {
             V1__MyBotV1, V1__MyBotV1NoDebug,
             V1__MyBotV1_1, V1__MyBotV1_2, V1__MyBotV1_3, V1__MyBotV1_4,
             V2__MyBotV2, V2__MyBotV2_1, V2__MyBotV2_2,
-            MyBotV3, MyBotV3_1, MyBotV3_2, MyBotV3_3, MyBot,
+            MyBotV3, MyBotV3_1, MyBotV3_2, MyBotV3_3, MyBotV3_4,
+            MyBot,
+
             EvilBot, 
 
             Enemy__NNBot, Enemy__EloBot0, 
@@ -65,7 +67,7 @@ namespace ChessChallenge.Application {
         public static PlayerType[] ActivePlayers = {
                 PlayerType.Human,           PlayerType.MyBot,
                 PlayerType.V2__MyBotV2_2,    PlayerType.MyBotV3_3,
-                PlayerType.V1__MyBotV1,    PlayerType.V1__MyBotV1_4,
+                PlayerType.V1__MyBotV1,    PlayerType.MyBotV3_4,
                 PlayerType.Enemy__EloBot0,  PlayerType.Enemy__SelenautBot,
                 PlayerType.Enemy__EloBot1,  PlayerType.Enemy__HumanBot, 
                 PlayerType.Enemy__EloBot2,  PlayerType.EvilBot,
@@ -96,6 +98,7 @@ namespace ChessChallenge.Application {
                 PlayerType.MyBotV3_1 => new MyBotV3_1(),
                 PlayerType.MyBotV3_2 => new MyBotV3_2(),
                 PlayerType.MyBotV3_3 => new MyBotV3_3(),
+                PlayerType.MyBotV3_4 => new MyBotV3_4(),
 
                 PlayerType.MyBot => new MyBot(),
 
