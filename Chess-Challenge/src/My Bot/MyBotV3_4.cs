@@ -9,6 +9,9 @@ using System.Linq;
     Fixed Transposition Table to actually work properly (i think, still needs testing)
 
     
+    -527 +/- 67 compared to EloBot2
+    14 +/- 79 compared to MyBotV3_3
+
 
     Todo
     History Heuristic (move ordering)
