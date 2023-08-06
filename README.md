@@ -6,8 +6,10 @@ https://github.com/SebLague/Chess-Challenge
 ## Additional Feature list
 - Drop down lists for choosing bot vs bot matches (to reduce button spam and allow more customizability)
 - Time control text inputs
+- Set how many games to play
 - Brain Capacity is appropriately shown for both bots playing each other
 - added pausing and ending games prematurely (pausing might cause any bots currently in play to get a slight boost)
+- QOL features like switching players sides, fast forwarding, setting the time pause between games, and more
 - TODO UCI Cutechess Command Generator
 - TODO Premoving
 - TODO Tournament Mode
