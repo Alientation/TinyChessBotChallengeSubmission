@@ -291,10 +291,10 @@ namespace ChessChallenge.Application {
             EndGame(GameResult.DrawByArbiter, log: false, autoStartNextMatch: false);
             gameID = rng.Next();
             pauseID = rng.Next();
-
-            if (gameIndex >= numberOfGamesToPlay)
-                return;
+            
             gameIndex++;
+            if (gameIndex > numberOfGamesToPlay)
+                return;
 
             player1Type = whiteType;
             player2Type = blackType;
