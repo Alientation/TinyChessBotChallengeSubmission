@@ -13,9 +13,11 @@ namespace ChessChallenge.Application {
         
         public static string timeControl1Input = "", timeControl2Input = "";
         public static string timeIncrement1Input = "", timeIncrement2Input = "";
+        public static string numberOfGamesInput = "";
         public static string timeBetweenGameInput = "";
         public static bool isTimeControl1InputActive = false, isTimeControlInput2Active = false;
         public static bool isTimeIncrement1InputActive = false, isTimeIncrement2InputActive = false;
+        public static bool numberOfGamesInputActive = false;
         public static bool isTimeBetweenGameInputActive = false;
 
         public static int initX = 265, initY = 45, initWidth = 450, initHeight = 35;
@@ -193,13 +195,15 @@ namespace ChessChallenge.Application {
                 int timeIncrement1 = timeIncrement1Input == "" ? Settings.DefaultIncrementMilliseconds : int.Parse(timeIncrement1Input);
                 int timeIncrement2 = timeIncrement2Input == "" ? Settings.DefaultIncrementMilliseconds : int.Parse(timeIncrement2Input);
 
+                int numberOfGames = numberOfGamesInput == "" ? Settings.DefaultGamesPerMatch : int.Parse(numberOfGamesInput);
+
                 int timeBetweenGames = timeBetweenGameInput == "" ? Settings.DefaultTimeBetweenGames : int.Parse(timeBetweenGameInput);
                 controller.startNextGameDelayMs = timeBetweenGames;
 
                 ChallengeController.PlayerType player1 = ChallengeController.ActivePlayers[selectedPlayer1];
                 ChallengeController.PlayerType player2 = ChallengeController.ActivePlayers[selectedPlayer2];
 
-                controller.StartNewGamesMatch(player1, player2, timeControl1, timeIncrement1, timeControl2, timeIncrement2);
+                controller.StartNewGamesMatch(player1, player2, timeControl1, timeIncrement1, timeControl2, timeIncrement2, gamesToPlay: numberOfGames);
             }
             
             //End game
@@ -233,8 +237,8 @@ namespace ChessChallenge.Application {
             buttonPos.X += UIHelper.ScaleInt(90);
             UIHelper.TextInput(ref timeControl2Input, ref isTimeControlInput2Active, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "infinity", MAX_INPUT_LENGTH);
 
-            buttonPos.Y += UIHelper.ScaleInt(45);
             buttonPos.X = UIHelper.ScaleInt(110);
+            buttonPos.Y += UIHelper.ScaleInt(45);
             UIHelper.DrawText("P1 t/move: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
             UIHelper.TextInput(ref timeIncrement1Input, ref isTimeIncrement1InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "0", MAX_INPUT_LENGTH);
@@ -244,8 +248,14 @@ namespace ChessChallenge.Application {
             buttonPos.X += UIHelper.ScaleInt(70);
             UIHelper.TextInput(ref timeIncrement2Input, ref isTimeIncrement2InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "0", MAX_INPUT_LENGTH);
 
-            buttonPos.X = UIHelper.ScaleInt(370);
+
+            buttonPos.X = UIHelper.ScaleInt(110);
             buttonPos.Y += UIHelper.ScaleInt(45);
+            UIHelper.DrawText("# Games: ", buttonPos, UIHelper.ScaleInt(24), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            buttonPos.X += UIHelper.ScaleInt(70);
+            UIHelper.TextInput(ref numberOfGamesInput, ref numberOfGamesInputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "" + Settings.DefaultGamesPerMatch, MAX_INPUT_LENGTH);
+
+            buttonPos.X = UIHelper.ScaleInt(370);
             UIHelper.DrawText("Wait t/game: ", buttonPos, UIHelper.ScaleInt(22), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
             buttonPos.X += UIHelper.ScaleInt(70);
             UIHelper.TextInput(ref timeBetweenGameInput, ref isTimeBetweenGameInputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "" + Settings.DefaultTimeBetweenGames, MAX_INPUT_LENGTH);
