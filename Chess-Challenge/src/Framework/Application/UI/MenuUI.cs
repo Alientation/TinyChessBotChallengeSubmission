@@ -1,7 +1,6 @@
 ﻿using Raylib_cs;
 using System.Numerics;
 using System;
-using System.Text.RegularExpressions;
 
 namespace ChessChallenge.Application {
     public static class MenuUI {
@@ -14,8 +13,10 @@ namespace ChessChallenge.Application {
         
         public static string timeControl1Input = "", timeControl2Input = "";
         public static string timeIncrement1Input = "", timeIncrement2Input = "";
-        public static bool isTimeControl1InputActive = false, isTimeControlInput2Active;
-        public static bool isTimeIncrement1InputActive = false, isTimeIncrement2InputActive;
+        public static string timeBetweenGameInput = "";
+        public static bool isTimeControl1InputActive = false, isTimeControlInput2Active = false;
+        public static bool isTimeIncrement1InputActive = false, isTimeIncrement2InputActive = false;
+        public static bool isTimeBetweenGameInputActive = false;
 
         public static int initX = 265, initY = 45, initWidth = 450, initHeight = 35;
         public static Vector2 ButtonSize => UIHelper.Scale(new Vector2(initWidth, initHeight));
@@ -64,7 +65,7 @@ namespace ChessChallenge.Application {
             
             //Middle Buttons
             buttonPos.X = buttonSizeSmallPositionX1;
-            buttonPos.Y = UIHelper.ScaleInt(300);
+            buttonPos.Y = UIHelper.ScaleInt(370);
 
             if (NextButtonInRow("UCI Cmd Gen", ref buttonPos, 0, buttonSizeSmall, fontSizeNormal, selected: isUCICommandUIOpen))
                 isUCICommandUIOpen = !isUCICommandUIOpen;
@@ -188,8 +189,12 @@ namespace ChessChallenge.Application {
                 if (timeControl1 == 0) timeControl1 = Settings.MAX_TIME;
                 int timeControl2 = timeControl2Input == "" ? Settings.MAX_TIME : int.Parse(timeControl2Input);
                 if (timeControl2 == 0) timeControl2 = Settings.MAX_TIME;
-                int timeIncrement1 = timeIncrement1Input == "" ? 0 : int.Parse(timeIncrement1Input);
-                int timeIncrement2 = timeIncrement2Input == "" ? 0 : int.Parse(timeIncrement2Input);
+
+                int timeIncrement1 = timeIncrement1Input == "" ? Settings.DefaultIncrementMilliseconds : int.Parse(timeIncrement1Input);
+                int timeIncrement2 = timeIncrement2Input == "" ? Settings.DefaultIncrementMilliseconds : int.Parse(timeIncrement2Input);
+
+                int timeBetweenGames = timeBetweenGameInput == "" ? Settings.DefaultTimeBetweenGames : int.Parse(timeBetweenGameInput);
+                controller.startNextGameDelayMs = timeBetweenGames;
 
                 ChallengeController.PlayerType player1 = ChallengeController.ActivePlayers[selectedPlayer1];
                 ChallengeController.PlayerType player2 = ChallengeController.ActivePlayers[selectedPlayer2];
@@ -244,8 +249,15 @@ namespace ChessChallenge.Application {
             buttonPos.X += UIHelper.ScaleInt(70);
             UIHelper.TextInput(ref timeIncrement2Input, ref isTimeIncrement2InputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "0", MAX_INPUT_LENGTH);
 
+            buttonPos.X = UIHelper.ScaleInt(370);
+            buttonPos.Y += UIHelper.ScaleInt(45);
+            UIHelper.DrawText("Wait t/game: ", buttonPos, UIHelper.ScaleInt(22), 0, Color.WHITE, UIHelper.AlignH.Right, UIHelper.AlignV.Centre);
+            buttonPos.X += UIHelper.ScaleInt(70);
+            UIHelper.TextInput(ref timeBetweenGameInput, ref isTimeBetweenGameInputActive, ref isMouseOverTextInput, buttonPos, ScaleVector(140,35), UIHelper.ScaleInt(32), "" + Settings.DefaultTimeBetweenGames, MAX_INPUT_LENGTH);
+
+            
             buttonPos.X = buttonSizeSmallPositionX2;
-            buttonPos.Y = UIHelper.ScaleInt(345);
+            buttonPos.Y = UIHelper.ScaleInt(370);
             if (NextButtonInRow("Auto Perspective", ref buttonPos, 0, buttonSizeSmall, UIHelper.ScaleInt(28), controller.doSwitchPerspective))
                 controller.doSwitchPerspective = !controller.doSwitchPerspective;
             
