@@ -40,11 +40,13 @@ https://github.com/SebLague/Chess-Challenge
 - Implemented Move Ordering
 - Apparently implementing move ordering fixed illegal moves?? -NVM illegal moves happen when my bot is losing so it tries to cheat nice
 
-### V3_1
+### V3_1, V3_2
 - Tried to update eval function and quiescence search but failed.. its worse than V3
 
-### V3_2
+### V3_3
 - Fixed illegal moves???
+- Shortened/Improved some eval functions
+- Fixed Transposition Tables
 
-### V3_2
+### V3_4
 - 
