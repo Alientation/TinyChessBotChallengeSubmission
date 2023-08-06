@@ -154,12 +154,16 @@ namespace ChessChallenge.Application {
         // Game state
         readonly Random rng;
         int gameID;
+        int gameIndex;
         int matchID;
         int pauseID;
         bool isPlaying;
         Board board;
         public ChessPlayer PlayerWhite { get; private set; }
         public ChessPlayer PlayerBlack {get;private set;}
+        public MatchStats StatsA { get; private set; }
+        public MatchStats StatsB {get;private set;}
+        bool playerAPlaysWhite;
 
         float lastMoveMadeTime;
         bool isWaitingToPlayMove;
@@ -167,15 +171,9 @@ namespace ChessChallenge.Application {
         float playMoveTime;
         public bool HumanWasWhiteLastGame { get; private set; }
 
-        // Bot match state
+        // Board list
         int startFensIndex;
         readonly string[][] startFens;
-
-        int gameIndex;
-        public MatchStats StatsA { get; private set; }
-        public MatchStats StatsB {get;private set;}
-        bool playerAPlaysWhite;
-        public bool doSwitchPerspective;
 
 
         // Bot task
@@ -186,10 +184,14 @@ namespace ChessChallenge.Application {
         // Other
         readonly BoardUI boardUI;
         readonly MoveGenerator moveGenerator;
-        public int tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2;
-        public bool fastForward;
-        bool paused;
         readonly StringBuilder pgns;
+
+        public int tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2;
+        
+        public bool fastForward;
+        public bool doSwitchPerspective;
+        bool paused;
+        
         public int gameDuration1Milliseconds = DefaultGameDurationMilliseconds, gameDuration2Milliseconds = DefaultGameDurationMilliseconds;
         public int increment1Milliseconds = DefaultIncrementMilliseconds, increment2Milliseconds = DefaultIncrementMilliseconds;
         public int startNextGameDelayMs = DefaultTimeBetweenGames;
