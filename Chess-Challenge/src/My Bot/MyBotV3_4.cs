@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 
 /*
-    MyBot V3.4  ~(10016 Brain Power)
+    MyBot V3.4  ~(1015 Brain Power)
 
     Features (dif from previous version 3.3)
     Fixed Transposition Table to actually work properly (i think, still needs testing)

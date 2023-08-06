@@ -23547,3 +23547,55 @@ Qd3# {Black mates} 0-1
 1. Qa4 Kd7 2. d5 Bxd5 3. exd5 Nxd5 4. Nxd5 Kd6 5. Qc4 Ke6 6. Ng5+ Kf5
 7. Qf4# {White mates} 1-0
 
+[Event "?"]
+[Site "?"]
+[Date "2023.08.06"]
+[Round "1"]
+[White "EloBot2"]
+[Black "MyBotV3_4"]
+[Result "*"]
+[FEN "r1bqkb1r/ppp2pp1/5n1p/3P4/2P1p3/5N2/PPP2PPP/RNBQK2R w KQkq - 0 1"]
+[SetUp "1"]
+[Termination "unterminated"]
+[TimeControl "5+0.05"]
+ *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.08.06"]
+[Round "1"]
+[White "MyBotV3_4"]
+[Black "EloBot2"]
+[Result "*"]
+[FEN "r1bqkb1r/ppp2pp1/5n1p/3P4/2P1p3/5N2/PPP2PPP/RNBQK2R w KQkq - 0 1"]
+[SetUp "1"]
+[Termination "unterminated"]
+[TimeControl "5+0.05"]
+ *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.08.06"]
+[Round "1"]
+[White "EloBot2"]
+[Black "MyBotV3_3"]
+[Result "*"]
+[FEN "r1bqkb1r/ppp2pp1/5n1p/3P4/2P1p3/5N2/PPP2PPP/RNBQK2R w KQkq - 0 1"]
+[SetUp "1"]
+[Termination "unterminated"]
+[TimeControl "5+0.05"]
+ *
+
+[Event "?"]
+[Site "?"]
+[Date "2023.08.06"]
+[Round "1"]
+[White "MyBotV3_3"]
+[Black "EloBot2"]
+[Result "*"]
+[FEN "r1bqkb1r/ppp2pp1/5n1p/3P4/2P1p3/5N2/PPP2PPP/RNBQK2R w KQkq - 0 1"]
+[SetUp "1"]
+[Termination "unterminated"]
+[TimeControl "5+0.05"]
+ *
+

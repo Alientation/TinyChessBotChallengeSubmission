@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 
 /*
-    MyBot V1.0  ~(1008 Brain Power SMH)
+    MyBot V1.0  ~(1023 Brain Power SMH)
 
     Features
     Negamax Alpha Beta Pruning
