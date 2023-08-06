@@ -22,6 +22,7 @@ using System.Linq;
     delta pruning
 
     NOTES
+    Bot fails at end game, potentially some problems with TT tables
     
 */
 
@@ -56,7 +57,7 @@ public class MyBot : IChessBot {
     int bestEval, bestRootEval, timePerMove;
 
     //TTable (also Thanks @Selenaut for the extremely compact version)
-    (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[] TTable = new (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[TranspositionTableLength];
+    (ulong zobristKey, int depth, int eval, int flag, Move Move)[] TTable = new (ulong zobristKey, int depth, int eval, int flag, Move Move)[TranspositionTableLength];
     private const int MIN_VALUE = -1_000_000,  MAX_VALUE = 1_000_000, TranspositionTableLength = 2097152;
 
     //piece eval tables
@@ -186,10 +187,9 @@ public class MyBot : IChessBot {
             tTableCacheCount++;
             #endif
 
-            if (depth != 0 && transpositionTableEntry.depthSearchedAfter >= depthLeft)
-                if (transpositionTableEntry.flag == 0 ||
-                transpositionTableEntry.flag == 1 && transpositionTableEntry.eval >= beta ||
-                transpositionTableEntry.flag == 2 && transpositionTableEntry.eval <= alpha)
+            if (depth != 0 && transpositionTableEntry.depth >= depth && (transpositionTableEntry.flag == 1 ||
+                transpositionTableEntry.flag == 0 && transpositionTableEntry.eval <= alpha ||
+                transpositionTableEntry.flag == 2 && transpositionTableEntry.eval >= beta))
                     return transpositionTableEntry.eval;
 
             #if DEBUG
@@ -236,11 +236,7 @@ public class MyBot : IChessBot {
         }
 
         //mark and cache
-        byte flag = 0;
-        if (highestEval <= beta) flag = 1;
-        if (highestEval >= alpha) flag = 2;
-
-        TTable[board.ZobristKey % TranspositionTableLength] = (board.ZobristKey, depth, highestEval, flag, highestMove);
+        TTable[board.ZobristKey % TranspositionTableLength] = (board.ZobristKey, depth, highestEval, highestEval >= beta ? 2 : highestEval > alpha ? 1 : 0, highestMove);
         return highestEval;
     }
 
