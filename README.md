@@ -10,6 +10,10 @@ Also don't ask why I didn't fork from the original repository (im a github noob)
 
 <br>
 
+# Some examples
+
+<br>
+
 ![Image 1](https://github.com/Alientation/TinyChessBotChallengeSubmission/assets/87630050/6755263e-ea23-4ad5-b191-9725d9dd13dd) 
 
 ![Image 2](https://github.com/Alientation/TinyChessBotChallengeSubmission/assets/87630050/31a638a0-921f-4400-bfd9-f4c8c43e0e5c) 
