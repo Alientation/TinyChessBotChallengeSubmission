@@ -1,12 +1,12 @@
 # TinyChessBotChallengeSubmission
-My submission for Sebastian Lague's Tiny Chess Bot Challenge [GitHub Repo](https://github.com/SebLague/Chess-Challenge) <br>
+My submission for Sebastian Lague's [Tiny Chess Bot Challenge](https://github.com/SebLague/Chess-Challenge) <br>
 Contains several changes to the supplied project to allow for easier bot testing/ui look and feel <br>
 Feel free to make use of this, but just know that there's been so many changes to so many places so it might be hard to incorporate a select subset of features <br>
 Also don't ask why I didn't fork from the original repository (im a github noob) <br>
 
 # Credits
-- Fast Forward [GitHub Repo](https://github.com/GheorgheMorari/Chess-Challenge)
-- UCI Cutechess [GitHub Repo](https://github.com/GediminasMasaitis/Chess-Challenge-Uci/tree/uci)
+- [Fast Forward](https://github.com/GheorgheMorari/Chess-Challenge)
+- [UCI Cutechess](https://github.com/GediminasMasaitis/Chess-Challenge-Uci/tree/uci)
 
 <br>
 
