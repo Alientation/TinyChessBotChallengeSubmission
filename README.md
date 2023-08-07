@@ -10,8 +10,18 @@ Also don't ask why I didn't fork from the original repository (im a github noob)
 
 <br>
 
+<img src="https://github.com/Alientation/TinyChessBotChallengeSubmission/assets/87630050/6755263e-ea23-4ad5-b191-9725d9dd13dd" width="49%">
+
+<img src="https://github.com/Alientation/TinyChessBotChallengeSubmission/assets/87630050/31a638a0-921f-4400-bfd9-f4c8c43e0e5c" width="49%">
+
+<img src="https://github.com/Alientation/TinyChessBotChallengeSubmission/assets/87630050/8603e076-6020-4105-a185-a5bc0e1d1255" width="49%">
+
+<br>
+
+
 # QOL Feature list
 - Dropdown lists for choosing bot vs bot matches (to reduce button spam and allow more customizability)
+  - *Beware, there is no z-ordering in place which means you can still interact with elements underneath the dropdown list... this is something I'm working on*
   - *Might implement some kind of paging system to the dropdown list*  
 - Time control text inputs (*this was painful*)
 - Set how many games to play in a match up
