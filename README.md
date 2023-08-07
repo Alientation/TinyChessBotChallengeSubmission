@@ -1,20 +1,20 @@
 # TinyChessBotChallengeSubmission
-My submission for Sebastian Lague's Tiny Chess Bot Challenge (https://github.com/SebLague/Chess-Challenge) <br>
+My submission for Sebastian Lague's Tiny Chess Bot Challenge [GitHub Repo](https://github.com/SebLague/Chess-Challenge) <br>
 Contains several changes to the supplied project to allow for easier bot testing/ui look and feel <br>
 Feel free to make use of this, but just know that there's been so many changes to so many places so it might be hard to incorporate a select subset of features <br>
 Also don't ask why I didn't fork from the original repository (im a github noob) <br>
 
 # Credits
-- Fast Forward (https://github.com/GheorgheMorari/Chess-Challenge)
-- UCI Cutechess (https://github.com/GediminasMasaitis/Chess-Challenge-Uci/tree/uci)
+- Fast Forward [GitHub Repo](https://github.com/GheorgheMorari/Chess-Challenge)
+- UCI Cutechess [GitHub Repo](https://github.com/GediminasMasaitis/Chess-Challenge-Uci/tree/uci)
 
 <br>
 
-<img src="https://github.com/Alientation/TinyChessBotChallengeSubmission/assets/87630050/6755263e-ea23-4ad5-b191-9725d9dd13dd" width="49%">
+![Image 1](https://github.com/Alientation/TinyChessBotChallengeSubmission/assets/87630050/6755263e-ea23-4ad5-b191-9725d9dd13dd) 
 
-<img src="https://github.com/Alientation/TinyChessBotChallengeSubmission/assets/87630050/31a638a0-921f-4400-bfd9-f4c8c43e0e5c" width="49%">
+![Image 2](https://github.com/Alientation/TinyChessBotChallengeSubmission/assets/87630050/31a638a0-921f-4400-bfd9-f4c8c43e0e5c) 
 
-<img src="https://github.com/Alientation/TinyChessBotChallengeSubmission/assets/87630050/8603e076-6020-4105-a185-a5bc0e1d1255" width="49%">
+![Image 3](https://github.com/Alientation/TinyChessBotChallengeSubmission/assets/87630050/8603e076-6020-4105-a185-a5bc0e1d1255) 
 
 <br>
 
