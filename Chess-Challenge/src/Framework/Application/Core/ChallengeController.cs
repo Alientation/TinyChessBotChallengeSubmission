@@ -31,6 +31,9 @@ using static ChessChallenge.Application.ConsoleHelper;
     Add premoving (lol)
 
     Add UCI support - todo add uci command generator
+    Support multi line text input, select a subsequence of text
+    - For multi line text input, allow for scrolling up and down
+    - For single line text input, allow for scrolling left and right
 
 
 */
