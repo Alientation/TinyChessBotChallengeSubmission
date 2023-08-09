@@ -182,6 +182,8 @@ namespace ChessChallenge.Application {
 
             if (isDraggingPiece)
                 DrawPiece(board.Square[dragSquare], dragPos - new Vector2(squareSize * 0.5f, squareSize * 0.5f));
+            else if (board.IsInCheck())
+                OverrideSquareColour(board.KingSquare[board.MoveColourIndex], HighlightType.Check);
 
 
             // Reset state
@@ -361,6 +363,7 @@ namespace ChessChallenge.Application {
                 Raylib.DrawTexturePro(piecesTexture, srcRect, targRect, new Vector2(0, 0), 0, tint);
             }
         }
+
 
         static Color LerpColour(Color a, Color b, float t) {
             int newR = (int)(Math.Round(Lerp(a.r, b.r, t)));

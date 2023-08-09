@@ -27,10 +27,10 @@ namespace ChessChallenge.Chess {
             Board board = new();
             board.LoadPosition(startFen);
             numGames++;
-            if (controller.GetMatchID() != lastMatchID) {
+            if (controller.MatchID != lastMatchID) {
                 numMatches++;
                 numGames = 1;
-                lastMatchID = controller.GetMatchID();
+                lastMatchID = controller.MatchID;
             }
 
             pgn.AppendLine($"[Match #{numMatches} Game #{numGames}]");

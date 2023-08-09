@@ -194,7 +194,10 @@ namespace ChessChallenge.Application {
         readonly MoveGenerator moveGenerator;
         readonly StringBuilder pgns;
 
-        public int tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2;
+        public int TokenCount1 { get; private set; }
+        public int DebugTokenCount1 { get; private set; }
+        public int TokenCount2 { get; private set; }
+        public int DebugTokenCount2 { get; private set; }
         
         public bool fastForward;
         public bool doSwitchPerspective;
@@ -351,8 +354,8 @@ namespace ChessChallenge.Application {
             // UI Setup
             boardUI.UpdatePosition(board);
             boardUI.ResetSquareColours();
-            (tokenCount1, debugTokenCount1) = GetTokenCount(player1Type);
-            (tokenCount2, debugTokenCount2) = GetTokenCount(player2Type);
+            (TokenCount1, DebugTokenCount1) = GetTokenCount(player1Type);
+            (TokenCount2, DebugTokenCount2) = GetTokenCount(player2Type);
             SetBoardPerspective();
 
             // Start
@@ -599,9 +602,9 @@ namespace ChessChallenge.Application {
 
         public void DrawOverlay() {
             if (PlayerBlack.IsHuman)
-                BotBrainCapacityUI.Draw(MenuUI.GetShortName(player1Type), MenuUI.GetShortName(player2Type),tokenCount1, debugTokenCount1, tokenCount2, debugTokenCount2, MaxTokenCount);
+                BotBrainCapacityUI.Draw(MenuUI.GetShortName(player1Type), MenuUI.GetShortName(player2Type),TokenCount1, DebugTokenCount1, TokenCount2, DebugTokenCount2, MaxTokenCount);
             else
-                BotBrainCapacityUI.Draw(MenuUI.GetShortName(player2Type), MenuUI.GetShortName(player1Type),tokenCount2, debugTokenCount2, tokenCount1, debugTokenCount1, MaxTokenCount);
+                BotBrainCapacityUI.Draw(MenuUI.GetShortName(player2Type), MenuUI.GetShortName(player1Type),TokenCount2, DebugTokenCount2, TokenCount1, DebugTokenCount1, MaxTokenCount);
             
             MenuUI.DrawButtons(this);
             MatchStatsUI.DrawMatchStats(this);
