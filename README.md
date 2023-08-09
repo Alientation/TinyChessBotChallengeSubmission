@@ -1,7 +1,10 @@
 # TinyChessBotChallengeSubmission
 My submission for Sebastian Lague's [Tiny Chess Bot Challenge](https://github.com/SebLague/Chess-Challenge) <br>
+
 Contains several changes to the supplied project to allow for easier bot testing/ui look and feel <br>
+
 Feel free to make use of this, but just know that there's been so many changes to so many places so it might be hard to incorporate a select subset of features <br>
+
 Also don't ask why I didn't fork from the original repository (im a github noob) <br>
 
 # Credits
@@ -42,6 +45,7 @@ Also don't ask why I didn't fork from the original repository (im a github noob)
   - Possibly hashing the code in the bot's file and saving stats to its respective hash to accurately show changes between versions 
 - Allow the user to use multiple fen files from the fens folder without having to rebuild
 - Customizable fen input to play a game in
+- Save progress from unfinished matches, previous saves folder?
 
 <br>
 
