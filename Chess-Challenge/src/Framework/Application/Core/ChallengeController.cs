@@ -31,7 +31,6 @@ using static ChessChallenge.Application.ConsoleHelper;
     Add premoving (lol)
 
     Add UCI support - todo add uci command generator
-    todo perhaps add z indexing to ui to fix overlaying ui components conflicting with each other
 
 
 */
