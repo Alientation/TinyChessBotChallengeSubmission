@@ -352,7 +352,7 @@ namespace ChessChallenge.Application {
             PlayerBlack.SubscribeToMoveChosenEventIfHuman(OnMoveChosen);
 
             // UI Setup
-            boardUI.UpdatePosition(board);
+            boardUI.UpdatePosition(board, true);
             boardUI.ResetSquareColours();
             (TokenCount1, DebugTokenCount1) = GetTokenCount(player1Type);
             (TokenCount2, DebugTokenCount2) = GetTokenCount(player2Type);

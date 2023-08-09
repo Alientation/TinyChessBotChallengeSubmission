@@ -65,12 +65,15 @@ namespace ChessChallenge.Application {
             bottomTextCol = inactiveTextCol;
         }
 
+        int[][] pieceCount;
+
         public void SetPerspective(bool whitePerspective) {
             this.whitePerspective = whitePerspective;
         }
 
-        public void UpdatePosition(Board board) {
-            pieceCount ??= new int[][] {
+        public void UpdatePosition(Board board, bool newGame = false) {
+            if (newGame) {
+                pieceCount = new int[][] {
                     new int[] {
                         board.pawns[0].Count,
                         board.knights[0].Count,
@@ -86,6 +89,7 @@ namespace ChessChallenge.Application {
                         board.queens[1].Count,
                     }
                 };
+            }
 
             isAnimatingMove = false;
 
@@ -95,8 +99,6 @@ namespace ChessChallenge.Application {
             if (board.IsInCheck())
                 OverrideSquareColour(board.KingSquare[board.MoveColourIndex], HighlightType.Check);
         }
-
-        int[][] pieceCount;
 
         public void UpdatePosition(Board board, Move moveMade, bool animate = false) {
             if (moveMade.IsPromotion)
