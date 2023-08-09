@@ -202,8 +202,6 @@ namespace ChessChallenge.Application {
 
         public ChallengeController() {
             Log($"Launching Chess-Challenge version {Settings.Version}");
-            (tokenCount1, debugTokenCount1) = GetTokenCount(botToTest1);
-            (tokenCount2, debugTokenCount2) = GetTokenCount(botToTest2);
             Warmer.Warm();
 
             rng = new Random();
