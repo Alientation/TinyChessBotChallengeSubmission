@@ -1,7 +1,7 @@
 # TinyChessBotChallengeSubmission
 My submission for Sebastian Lague's [Tiny Chess Bot Challenge](https://github.com/SebLague/Chess-Challenge) <br>
 
-Contains several changes to the supplied project to allow for easier bot testing/ui look and feel <br>
+Contains MANY changes to allow for easier bot testing/better ui look and feel <br>
 
 Feel free to make use of this, but just know that there's been so many changes to so many places so it might be hard to incorporate a select subset of features <br>
 
@@ -28,13 +28,13 @@ Also don't ask why I didn't fork from the original repository (im a github noob)
 
 # QOL Feature list
 - Dropdown lists for choosing bot vs bot matches (to reduce button spam and allow more customizability)
-  - *Beware, there is no z-ordering in place which means you can still interact with elements underneath the dropdown list... this is something I'm working on*
+  - *Quick patch to simulate z-ordering and fix mouse detection*
   - *Might implement some kind of paging system to the dropdown list*  
 - Time control text inputs (*this was painful*)
 - Set how many games to play in a match up
-- Brain Capacity is appropriately shown for both bots playing each other
-- added pausing and ending games prematurely (pausing might cause any bots currently in play to get a slight boost)
-- switching sides of the players, fast forwarding, setting the time pause between games, and more
+- Brain Capacity is appropriately shown for both bots
+- Added pausing and ending games prematurely (pausing might cause any bots currently in play to get a slight boost if they cache their search)
+- Switching sides of the players, fast forwarding, setting the time between games, piece difference, fixed some visual bugs, and more
 
 <br>
 
