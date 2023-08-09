@@ -235,7 +235,6 @@ namespace ChessChallenge.Application {
             // Draw pieces value
             int top = getPiecesValue(!whitePerspective);
             int bottom = getPiecesValue(whitePerspective);
-            int max = Math.Max(top, bottom);
 
             UIHelper.DrawText(format(bottom, top), new Vector2(boardStartX, boardStartY + squareSize * 8 + spaceY + 30), 36, 1, activeTextCol, UIHelper.AlignH.Left);
             UIHelper.DrawText(format(top, bottom), new Vector2(boardStartX, boardStartY - spaceY - 30), 36, 1, activeTextCol, UIHelper.AlignH.Left);
@@ -245,9 +244,6 @@ namespace ChessChallenge.Application {
                 else return "+ " + (val1 - val2);
             }
 
-            int[] pieceValue = {
-                0,1,3,3,5,9,0
-            };
             int getPiecesValue(bool isWhite) {
                 int value = 0;
                 value += board.pawns[isWhite ? 0 : 1].Count * 1;

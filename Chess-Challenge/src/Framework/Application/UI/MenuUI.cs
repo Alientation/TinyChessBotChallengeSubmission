@@ -186,7 +186,7 @@ namespace ChessChallenge.Application {
 
             //Play game
             buttonPos = ScaleVector(66, 100 + initY);
-            if (NextButtonInRow("Play", ref buttonPos, 0, buttonSizeXSmall, fontSizeNormal, controller.IsGameInProgress())) {
+            if (NextButtonInRow("Play", ref buttonPos, 0, buttonSizeXSmall, fontSizeNormal, controller.IsPlaying)) {
                 int timeControl1 = timeControl1Input == "" ? Settings.MAX_TIME : int.Parse(timeControl1Input);
                 if (timeControl1 == 0) timeControl1 = Settings.MAX_TIME;
                 int timeControl2 = timeControl2Input == "" ? Settings.MAX_TIME : int.Parse(timeControl2Input);
@@ -213,8 +213,8 @@ namespace ChessChallenge.Application {
 
             //Toggle Pause game
             buttonPos.X = UIHelper.ScaleInt(336);
-            if (NextButtonInRow("Paused", ref buttonPos, 0, buttonSizeXSmall, fontSizeNormal, controller.IsPaused())) {
-                if (controller.IsPaused())
+            if (NextButtonInRow("Paused", ref buttonPos, 0, buttonSizeXSmall, fontSizeNormal, controller.Paused)) {
+                if (controller.Paused)
                     controller.ResumeGame();
                 else
                     controller.PauseGame();
