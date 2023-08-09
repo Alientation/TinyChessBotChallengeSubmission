@@ -57,19 +57,14 @@ namespace ChessChallenge.Chess
         {
             get
             {
-                switch (MoveFlag)
+                return MoveFlag switch
                 {
-                    case PromoteToRookFlag:
-                        return PieceHelper.Rook;
-                    case PromoteToKnightFlag:
-                        return PieceHelper.Knight;
-                    case PromoteToBishopFlag:
-                        return PieceHelper.Bishop;
-                    case PromoteToQueenFlag:
-                        return PieceHelper.Queen;
-                    default:
-                        return PieceHelper.None;
-                }
+                    PromoteToRookFlag => PieceHelper.Rook,
+                    PromoteToKnightFlag => PieceHelper.Knight,
+                    PromoteToBishopFlag => PieceHelper.Bishop,
+                    PromoteToQueenFlag => PieceHelper.Queen,
+                    _ => PieceHelper.None,
+                };
             }
         }
 

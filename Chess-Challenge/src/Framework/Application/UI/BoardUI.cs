@@ -35,7 +35,6 @@ namespace ChessChallenge.Application {
 
         static readonly int[] pieceImageOrder = { 5, 3, 2, 4, 1, 0 };
         Texture2D piecesTexture;
-        BoardTheme theme;
         Dictionary<int, Color> squareColOverrides;
         Board board;
         Move lastMove;
@@ -57,8 +56,6 @@ namespace ChessChallenge.Application {
 
 
         public BoardUI() {
-            theme = new BoardTheme();
-
             LoadPieceTexture();
 
             board = new Board();
@@ -73,6 +70,23 @@ namespace ChessChallenge.Application {
         }
 
         public void UpdatePosition(Board board) {
+            pieceCount ??= new int[][] {
+                    new int[] {
+                        board.pawns[0].Count,
+                        board.knights[0].Count,
+                        board.bishops[0].Count,
+                        board.rooks[0].Count,
+                        board.queens[0].Count,
+                    },
+                    new int[]  {
+                        board.pawns[1].Count,
+                        board.knights[1].Count,
+                        board.bishops[1].Count,
+                        board.rooks[1].Count,
+                        board.queens[1].Count,
+                    }
+                };
+
             isAnimatingMove = false;
 
             // Update
@@ -82,7 +96,13 @@ namespace ChessChallenge.Application {
                 OverrideSquareColour(board.KingSquare[board.MoveColourIndex], HighlightType.Check);
         }
 
+        int[][] pieceCount;
+
         public void UpdatePosition(Board board, Move moveMade, bool animate = false) {
+            if (moveMade.IsPromotion)
+                if (this.board.IsWhiteToMove)
+                    pieceCount[this.board.IsWhiteToMove ? 0 : 1][moveMade.PromotionPieceType - 1]++;
+
             // Interrupt prev animation
             if (isAnimatingMove) {
                 UpdatePosition(animateMoveTargetBoardState);
@@ -141,11 +161,11 @@ namespace ChessChallenge.Application {
             bool isLight = new Coord(square).IsLightSquare();
 
             Color col = hightlightType switch {
-                HighlightType.MoveFrom => isLight ? theme.MoveFromLight : theme.MoveFromDark,
-                HighlightType.MoveTo => isLight ? theme.MoveToLight : theme.MoveToDark,
-                HighlightType.LegalMove => isLight ? theme.LegalLight : theme.LegalDark,
-                HighlightType.Check => isLight ? theme.CheckLight : theme.CheckDark,
-                HighlightType.Premove => isLight ? theme.PremoveLight : theme.PremoveDark,
+                HighlightType.MoveFrom => isLight ? BoardTheme.MoveFromLight : BoardTheme.MoveFromDark,
+                HighlightType.MoveTo => isLight ? BoardTheme.MoveToLight : BoardTheme.MoveToDark,
+                HighlightType.LegalMove => isLight ? BoardTheme.LegalLight : BoardTheme.LegalDark,
+                HighlightType.Check => isLight ? BoardTheme.CheckLight : BoardTheme.CheckDark,
+                HighlightType.Premove => isLight ? BoardTheme.PremoveLight : BoardTheme.PremoveDark,
                 _ => Color.PINK
             };
 
@@ -238,12 +258,45 @@ namespace ChessChallenge.Application {
             int top = getPiecesValue(!whitePerspective);
             int bottom = getPiecesValue(whitePerspective);
 
-            UIHelper.DrawText(format(bottom, top), new Vector2(boardStartX, boardStartY + squareSize * 8 + spaceY + 30), 36, 1, activeTextCol, UIHelper.AlignH.Left);
-            UIHelper.DrawText(format(top, bottom), new Vector2(boardStartX, boardStartY - spaceY - 30), 36, 1, activeTextCol, UIHelper.AlignH.Left);
+            int boardTopY = boardStartY + squareSize * 8 + spaceY + UIHelper.ScaleInt(50);
+            int boardBottomY = boardStartY - spaceY - UIHelper.ScaleInt(50);
 
-            String format(int val1, int val2) {
+            UIHelper.DrawText(format(bottom, top), new Vector2(boardStartX, boardTopY), 36, 1, activeTextCol, UIHelper.AlignH.Left);
+            UIHelper.DrawText(format(top, bottom), new Vector2(boardStartX, boardBottomY), 36, 1, activeTextCol, UIHelper.AlignH.Left);
+
+            // Draw missing pieces
+            int[][] missingPieces = new int[][]{
+                getMissingPieces(!whitePerspective ? 1 : 0),
+                getMissingPieces(whitePerspective ? 1 : 0)
+            };
+
+            int pieceSize = UIHelper.ScaleInt(75);
+            int spacingXSamePiece = UIHelper.ScaleInt(20);
+            int spacingXDifPiece = UIHelper.ScaleInt(50);
+
+            for (int color = 0; color < 2; color++) {
+                int missingPieceX = boardStartX + UIHelper.ScaleInt(70);
+
+                for (int piece = 0; piece < missingPieces[color].Length; piece++) {
+                    for (int pieceIndex = 0; pieceIndex < missingPieces[color][piece]; pieceIndex++) {
+                        int type = PieceHelper.PieceType(piece + 1);
+                        Rectangle srcRect = GetPieceTextureRect(type, color == 0);
+                        Rectangle targRect = new(missingPieceX, (color == 0 ^ whitePerspective ? boardTopY : boardBottomY) - pieceSize/2, pieceSize, pieceSize);
+
+                        Color tint = new(255, 255, 255, 255);
+                        Raylib.DrawTexturePro(piecesTexture, srcRect, targRect, new Vector2(0, 0), 0, tint);
+
+                        missingPieceX += spacingXSamePiece;
+                    }
+
+                    if (missingPieces[color][piece] != 0)
+                        missingPieceX += spacingXDifPiece;
+                }
+            }
+
+            string format(int val1, int val2) {
                 if (val1 < val2) return "" + (val1 - val2);
-                else return "+ " + (val1 - val2);
+                else return "+" + (val1 - val2);
             }
 
             int getPiecesValue(bool isWhite) {
@@ -254,6 +307,16 @@ namespace ChessChallenge.Application {
                 value += board.rooks[isWhite ? 0 : 1].Count * 5;
                 value += board.queens[isWhite ? 0 : 1].Count * 9;
                 return value;
+            }
+
+            int[] getMissingPieces(int isWhite) {
+                int[] missing = new int[5];
+                missing[0] = pieceCount[isWhite][0] - board.pawns[isWhite].Count;
+                missing[1] = pieceCount[isWhite][1] - board.knights[isWhite].Count;
+                missing[2] = pieceCount[isWhite][2] - board.bishops[isWhite].Count;
+                missing[3] = pieceCount[isWhite][3] - board.rooks[isWhite].Count;
+                missing[4] = pieceCount[isWhite][4] - board.queens[isWhite].Count;
+                return missing;
             }
 
             void Draw(float y, string colName, string name, int timeMs, Color textCol) {
@@ -289,13 +352,13 @@ namespace ChessChallenge.Application {
             int boardStartX = -squareSize * 4;
             int boardStartY = -squareSize * 4;
             int w = 12;
-            Raylib.DrawRectangle(boardStartX - w, boardStartY - w, 8 * squareSize + w * 2, 8 * squareSize + w * 2, theme.BorderCol);
+            Raylib.DrawRectangle(boardStartX - w, boardStartY - w, 8 * squareSize + w * 2, 8 * squareSize + w * 2, BoardTheme.BorderCol);
         }
 
         void DrawSquare(int file, int rank) {
 
             Coord coord = new Coord(file, rank);
-            Color col = coord.IsLightSquare() ? theme.LightCol : theme.DarkCol;
+            Color col = coord.IsLightSquare() ? BoardTheme.LightCol : BoardTheme.DarkCol;
             if (squareColOverrides.TryGetValue(coord.SquareIndex, out Color overrideCol))
                 col = overrideCol;
 
@@ -311,7 +374,7 @@ namespace ChessChallenge.Application {
                 int textSize = 25;
                 float xpadding = 5f;
                 float ypadding = 2f;
-                Color coordNameCol = coord.IsLightSquare() ? theme.DarkCoordCol : theme.LightCoordCol;
+                Color coordNameCol = coord.IsLightSquare() ? BoardTheme.DarkCoordCol : BoardTheme.LightCoordCol;
 
                 if (rank == (whitePerspective ? 0 : 7))  {
                     string fileName = BoardHelper.fileNames[file] + "";

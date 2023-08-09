@@ -3,8 +3,6 @@ using System;
 
 namespace ChessChallenge.Application {
     public class ChessPlayer {
-        // public event Action<Chess.Core.Move>? MoveChosen;
-
         public readonly ChallengeController.PlayerType PlayerType;
         public readonly IChessBot? Bot;
         public readonly HumanPlayer? Human;
