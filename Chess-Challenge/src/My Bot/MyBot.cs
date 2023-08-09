@@ -1,3 +1,5 @@
+//#define PRINT
+
 using ChessChallenge.API;
 using System;
 using System.Linq;
@@ -41,6 +43,7 @@ using System.Linq;
     Late Move Reductions, History Reductions
     
 */
+
 public class MyBot : IChessBot {
 
     //save tokens by storing references here
@@ -77,7 +80,7 @@ public class MyBot : IChessBot {
                                             94, 281, 297, 512, 936, 20000}; //Endgame
 
     public Move Think(Board cBoard, Timer cTimer) {
-        #if DEBUG
+        #if PRINT
         negamaxNodesCount = 0; tTableCacheCount = 0; tTableExpiredCacheCount = 0; boardEvalCount = 0;
         #endif
 
@@ -89,26 +92,26 @@ public class MyBot : IChessBot {
         Move[] moves = cBoard.GetLegalMoves();
         bestMove = bestRootMove = moves[0];
 
-        #if DEBUG
+        #if PRINT
         Console.WriteLine("eval " + Evaluate(0));
         #endif
         
         //iterative deepening, while there is still time left
         for (int depth = 1; depth <= 50 && !shouldStop; depth++) {
 
-            //dont need value technically, just for debug purposes
+            //dont need value technically, just for PRINT purposes
             int val = Negamax(depth, 0, MIN_VALUE, MAX_VALUE);
             
             //if the search was not canceled because of running out of time
             if (!shouldStop) {
                 bestRootMove = bestMove;
 
-                #if DEBUG
+                #if PRINT
                 bestRootEval = val;
                 #endif
             }
 
-            #if DEBUG
+            #if PRINT
             Console.WriteLine("depth " + depth + " " + bestMove + " (" + val +") | " + "(" + timer.MillisecondsElapsedThisTurn + "ms)");
             #endif
         }
@@ -119,12 +122,12 @@ public class MyBot : IChessBot {
         if (bestRootMove == moves[0]) {
             bestRootMove = bestMove;
 
-            #if DEBUG
+            #if PRINT
             bestRootEval = bestEval;
             #endif
         }
 
-        #if DEBUG
+        #if PRINT
         Console.WriteLine($"{bestRootMove} ({bestRootEval}) | {cTimer.MillisecondsElapsedThisTurn}ms");
         Console.WriteLine($"{negamaxNodesCount} Negamax\t{boardEvalCount} boardEvals\t TTable ({(tTableCacheCount - tTableExpiredCacheCount) / (float)negamaxNodesCount}))");
         Console.WriteLine($"{1000 * negamaxNodesCount / (float) timer.MillisecondsElapsedThisTurn} Nodes/s");
@@ -133,13 +136,13 @@ public class MyBot : IChessBot {
         return bestRootMove;
     }
 
-    #if DEBUG
+    #if PRINT
     int negamaxNodesCount = 0, tTableCacheCount = 0, tTableExpiredCacheCount = 0, boardEvalCount = 0;
     #endif
 
     //quiesence searching till a quiet position is reached
     public int Quiesence(int depth, int alpha, int beta) {
-        #if DEBUG
+        #if PRINT
         negamaxNodesCount++;
         #endif
 
@@ -183,7 +186,7 @@ public class MyBot : IChessBot {
             //todo do pv on current best move cached on this board position
             prevBestMove = transpositionTableEntry.Move;
 
-            #if DEBUG
+            #if PRINT
             tTableCacheCount++;
             #endif
 
@@ -192,12 +195,12 @@ public class MyBot : IChessBot {
                 transpositionTableEntry.flag == 2 && transpositionTableEntry.eval >= beta))
                     return transpositionTableEntry.eval;
 
-            #if DEBUG
+            #if PRINT
             tTableExpiredCacheCount++;
             #endif
         }
 
-        #if DEBUG
+        #if PRINT
         negamaxNodesCount++;
         #endif
 
@@ -242,7 +245,7 @@ public class MyBot : IChessBot {
 
     //evaluates a position based on how desirable it is for the current player to play the next move
     public int Evaluate(int depth) {
-        #if DEBUG
+        #if PRINT
         boardEvalCount++;
         #endif
 

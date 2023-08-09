@@ -2,7 +2,7 @@
 
 namespace ChessChallenge.Application {
     public static class Settings {
-        public const string Version = "1.19";
+        public const string Version = "1.20";
 
         // Game settings
         public const int DefaultGameDurationMilliseconds = 360 * 1000;
