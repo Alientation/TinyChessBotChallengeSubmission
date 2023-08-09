@@ -29,6 +29,10 @@ namespace ChessChallenge.Application {
         public static Color TextInputTextHoverColor = Color.WHITE;
 
 
+        //Text Colors
+        public static Color LightTextColor = new(180, 180, 180, 255);
+
+
         //BoardUI Colors
         public static Color ActivePlayerTextColor = new(200, 200, 200, 255);
         public static Color InactivePlayerTextColor = new(100, 100, 100, 255);

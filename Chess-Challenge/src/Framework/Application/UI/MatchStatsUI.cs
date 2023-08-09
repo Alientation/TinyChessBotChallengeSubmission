@@ -10,7 +10,6 @@ namespace ChessChallenge.Application {
             int nameFontSize = UIHelper.ScaleInt(40);
             int regularFontSize = UIHelper.ScaleInt(35);
             int headerFontSize = UIHelper.ScaleInt(45);
-            Color col = new(180, 180, 180, 255);
             Vector2 startPos = UIHelper.Scale(new Vector2(1500, 250));
             float spacingY = UIHelper.Scale(35);
 
@@ -31,14 +30,14 @@ namespace ChessChallenge.Application {
 
             void DrawStats(ChallengeController.MatchStats stats) {
                 DrawNextText(stats.PlayerName + ":", nameFontSize, Color.WHITE);
-                DrawNextText($"Score: +{stats.NumWins} ={stats.NumDraws} -{stats.NumLosses}", regularFontSize, col);
-                DrawNextText($"Num Timeouts: {stats.NumTimeouts}", regularFontSize, col);
-                DrawNextText($"Num Illegal Moves: {stats.NumIllegalMoves}", regularFontSize, col);
-                DrawNextText($"Winrate: {(float)stats.NumWins / controller.CurrGameNumber * 100}%", regularFontSize, col);
+                DrawNextText($"Score: +{stats.NumWins} ={stats.NumDraws} -{stats.NumLosses}", regularFontSize, Theme.LightTextColor);
+                DrawNextText($"Num Timeouts: {stats.NumTimeouts}", regularFontSize, Theme.LightTextColor);
+                DrawNextText($"Num Illegal Moves: {stats.NumIllegalMoves}", regularFontSize, Theme.LightTextColor);
+                DrawNextText($"Winrate: {(float)stats.NumWins / controller.CurrGameNumber * 100}%", regularFontSize, Theme.LightTextColor);
             }
         
-            void DrawNextText(string text, int fontSize, Color col) {
-                UIHelper.DrawText(text, startPos, fontSize, 1, col);
+            void DrawNextText(string text, int fontSize, Color color) {
+                UIHelper.DrawText(text, startPos, fontSize, 1, color);
                 startPos.Y += spacingY;
             }
             //}
