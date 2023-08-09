@@ -2,6 +2,7 @@
 using System;
 using System.Numerics;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 using static ChessChallenge.Application.FileHelper;
 
 namespace ChessChallenge.Application {
@@ -22,6 +23,9 @@ namespace ChessChallenge.Application {
         //text input get cursor position on text
         public static Vector2 lastMousePressedPos = new(-1, -1);
         public static int cursorAtTextLocationFromEnd = 0;
+
+        public static List<Rectangle> buttonInteractDetectors = new();
+        public static List<Rectangle> previousButtonInteractDetectors = new();
 
         static Font font;
         static Font fontSdf;
@@ -241,7 +245,29 @@ namespace ChessChallenge.Application {
 
         public static bool MouseInRect(Rectangle rec) {
             Vector2 mousePos = Raylib.GetMousePosition();
-            return mousePos.X >= rec.x && mousePos.Y >= rec.y && mousePos.X <= rec.x + rec.width && mousePos.Y <= rec.y + rec.height;
+            buttonInteractDetectors.Add(rec);
+
+            //really sloppy way of checking for overlapping mouse detectors but it is what it is
+
+            //iterate from the last mouse detector check because that is the one that was previously rendered at the top
+            for (int i = previousButtonInteractDetectors.Count - 1; i >= 0; i--) {
+                if (IsPointInRect(mousePos, previousButtonInteractDetectors[i])) {
+
+                    //check if same rectangle or something else is overlapping the current click
+                    return EqualRectangles(previousButtonInteractDetectors[i], rec);
+                }
+            }
+
+
+            return IsPointInRect(mousePos, rec);
+        }
+
+        public static bool IsPointInRect(Vector2 pos, Rectangle rec) {
+            return pos.X >= rec.x && pos.Y >= rec.y && pos.X <= rec.x + rec.width && pos.Y <= rec.y + rec.height;
+        }
+
+        public static bool EqualRectangles(Rectangle rec1, Rectangle rec2) {
+            return rec1.x == rec2.x && rec1.y == rec2.y && rec1.width == rec2.width && rec1.height == rec2.height;
         }
 
         public static bool PositionInRectangle(Vector2 pos, Rectangle rec) {
@@ -260,6 +286,11 @@ namespace ChessChallenge.Application {
             float x = Scale(vec.X, referenceResolution);
             float y = Scale(vec.Y, referenceResolution);
             return new Vector2(x, y);
+        }
+
+        public static void NextFrame() {
+            previousButtonInteractDetectors = buttonInteractDetectors;
+            buttonInteractDetectors = new();
         }
 
         public static void Release() {

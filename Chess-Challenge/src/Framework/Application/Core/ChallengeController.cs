@@ -594,6 +594,8 @@ namespace ChessChallenge.Application {
         }
 
         public void Draw() {
+            UIHelper.NextFrame();
+
             boardUI.Draw();
             string nameW = GetPlayerName(PlayerWhite);
             string nameB = GetPlayerName(PlayerBlack);
