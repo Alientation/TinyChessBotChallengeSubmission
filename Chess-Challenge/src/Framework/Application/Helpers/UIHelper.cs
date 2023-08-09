@@ -63,7 +63,8 @@ namespace ChessChallenge.Application {
             font = Raylib.LoadFontEx(GetResourcePath("Fonts", fontName), 128, null, 0);
         }
 
-        public static void DrawText(string text, Vector2 pos, int size, int spacing, Color col, AlignH alignH = AlignH.Left, AlignV alignV = AlignV.Centre) {
+        public static void DrawText(string text, Vector2 pos, int size, int spacing, Color col, 
+                                    AlignH alignH = AlignH.Left, AlignV alignV = AlignV.Centre) {
             Vector2 boundSize = Raylib.MeasureTextEx(font, text, size, spacing);
             float offsetX = alignH == AlignH.Left ? 0 : (alignH == AlignH.Centre ? -boundSize.X / 2 : -boundSize.X);
             float offsetY = alignV == AlignV.Top ? 0 : (alignV == AlignV.Centre ? -boundSize.Y / 2 : -boundSize.Y);
@@ -79,8 +80,11 @@ namespace ChessChallenge.Application {
         }
 
 
-        public static void NumberInput(ref string existingText, ref bool isActive, ref bool isMouseOver, Vector2 centre, Vector2 size, int fontSize, string textHint = "input text", int maxInputLength = 1000, int borderThickness = 5, AlignH alignH = AlignH.Centre, AlignV alignV = AlignV.Centre) {
-            TextInput(ref existingText, ref isActive, ref isMouseOver, centre, size, fontSize, textHint, maxInputLength, borderThickness, alignH, alignV);
+        public static void NumberInput(ref string existingText, ref bool isActive, ref bool isMouseOver, Vector2 centre, Vector2 size, 
+                                            int fontSize, string textHint = "input text", int maxInputLength = 1000, int borderThickness = 5, 
+                                            AlignH alignH = AlignH.Centre, AlignV alignV = AlignV.Centre) {
+            TextInput(ref existingText, ref isActive, ref isMouseOver, centre, size, fontSize, textHint, maxInputLength, 
+                        borderThickness, alignH, alignV);
             existingText = Regex.Replace(existingText, "[^0-9]", "");
         }
 
@@ -88,21 +92,15 @@ namespace ChessChallenge.Application {
         //if mouse is hovering over it (for mouse cursor effect)
         //
         //supports pasting in text, backspace, enter (to escape the text), clicking on the text to move the cursor, and of course typing in text
-        public static void TextInput(ref string existingText, ref bool isActive, ref bool isMouseOver, Vector2 centre, Vector2 size, int fontSize, string textHint = "input text", int maxInputLength = 1000, int borderThickness = 5, AlignH alignH = AlignH.Centre, AlignV alignV = AlignV.Centre) {
+        public static void TextInput(ref string existingText, ref bool isActive, ref bool isMouseOver, Vector2 centre, Vector2 size, 
+                                        int fontSize, string textHint = "input text", int maxInputLength = 1000, int borderThickness = 5, 
+                                        AlignH alignH = AlignH.Centre, AlignV alignV = AlignV.Centre) {
             //inner and outer rectangles for input
             Rectangle recInside = GetRectangle(centre, size);
 
             size.X += ScaleInt(borderThickness);
             size.Y += ScaleInt(borderThickness);
             Rectangle recOutside = GetRectangle(centre, size);
-
-            //colors for various states
-            Color normalCol = new(40, 40, 40, 255);
-            Color hoverCol = new(3, 173, 252, 255);
-            Color pressCol = new(2, 119, 173, 255);
-            Color insideCol = new(87, 83, 83, 255);
-            Color insideHoverCol = new(134, 211, 247, 255);
-            Color insidePressCol = new(61, 141, 179, 255);
 
             //check for mouse inputs
             bool mouseOver = MouseInRect(recOutside);
@@ -141,13 +139,13 @@ namespace ChessChallenge.Application {
             }
 
             //draw the text input box
-            Color col1 = isActive ? (pressed ? pressCol : hoverCol) : normalCol;
-            Color col2 = isActive ? (pressed ? insidePressCol : insideHoverCol) : insideCol;
+            Color col1 = isActive ? (pressed ? Theme.TextInputBackgroundPressedColor : Theme.TextInputBackgroundHoverColor) : Theme.TextInputBackgroundColor;
+            Color col2 = isActive ? (pressed ? Theme.TextInputInsidePressedColor : Theme.TextInputInsideHoverColor) : Theme.TextInputInsideColor;
 
             Raylib.DrawRectangleRec(recOutside, col1);
             Raylib.DrawRectangleRec(recInside, col2);
 
-            Color textCol = isActive ? Color.WHITE : new Color(180, 180, 180, 255);
+            Color textCol = isActive ? Theme.TextInputTextHoverColor : Theme.TextInputTextColor;
 
             //returns current text and closes the text input
             if (!isActive) {
@@ -226,15 +224,15 @@ namespace ChessChallenge.Application {
 
             Color col;
             if (isSelected || (mouseOver && !pressed))
-                col = BoardTheme.ButtonHoverColor;
+                col = Theme.ButtonBackgroundHoverColor;
             else if (mouseOver && pressed)
-                col = BoardTheme.ButtonPressedColor;
+                col = Theme.ButtonBackgroundPressedColor;
             else
-                col = BoardTheme.ButtonBackgroundColor;
+                col = Theme.ButtonBackgroundColor;
             
 
             Raylib.DrawRectangleRec(rec, col);
-            Color textCol = (mouseOver || isSelected) ? BoardTheme.ButtonHoverTextColor : BoardTheme.ButtonTextColor;
+            Color textCol = (mouseOver || isSelected) ? Theme.ButtonTextHoverColor : Theme.ButtonTextColor;
 
             DrawText(text, centre, fontSize, 1, textCol, AlignH.Centre);
 

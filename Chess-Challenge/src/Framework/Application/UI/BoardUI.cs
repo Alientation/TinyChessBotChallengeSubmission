@@ -163,11 +163,11 @@ namespace ChessChallenge.Application {
             bool isLight = new Coord(square).IsLightSquare();
 
             Color col = hightlightType switch {
-                HighlightType.MoveFrom => isLight ? BoardTheme.MoveFromLight : BoardTheme.MoveFromDark,
-                HighlightType.MoveTo => isLight ? BoardTheme.MoveToLight : BoardTheme.MoveToDark,
-                HighlightType.LegalMove => isLight ? BoardTheme.LegalLight : BoardTheme.LegalDark,
-                HighlightType.Check => isLight ? BoardTheme.CheckLight : BoardTheme.CheckDark,
-                HighlightType.Premove => isLight ? BoardTheme.PremoveLight : BoardTheme.PremoveDark,
+                HighlightType.MoveFrom => isLight ? Theme.MoveFromLight : Theme.MoveFromDark,
+                HighlightType.MoveTo => isLight ? Theme.MoveToLight : Theme.MoveToDark,
+                HighlightType.LegalMove => isLight ? Theme.LegalLight : Theme.LegalDark,
+                HighlightType.Check => isLight ? Theme.CheckLight : Theme.CheckDark,
+                HighlightType.Premove => isLight ? Theme.PremoveLight : Theme.PremoveDark,
                 _ => Color.PINK
             };
 
@@ -354,13 +354,13 @@ namespace ChessChallenge.Application {
             int boardStartX = -squareSize * 4;
             int boardStartY = -squareSize * 4;
             int w = 12;
-            Raylib.DrawRectangle(boardStartX - w, boardStartY - w, 8 * squareSize + w * 2, 8 * squareSize + w * 2, BoardTheme.BorderCol);
+            Raylib.DrawRectangle(boardStartX - w, boardStartY - w, 8 * squareSize + w * 2, 8 * squareSize + w * 2, Theme.BorderCol);
         }
 
         void DrawSquare(int file, int rank) {
 
             Coord coord = new Coord(file, rank);
-            Color col = coord.IsLightSquare() ? BoardTheme.LightCol : BoardTheme.DarkCol;
+            Color col = coord.IsLightSquare() ? Theme.LightCol : Theme.DarkCol;
             if (squareColOverrides.TryGetValue(coord.SquareIndex, out Color overrideCol))
                 col = overrideCol;
 
@@ -376,7 +376,7 @@ namespace ChessChallenge.Application {
                 int textSize = 25;
                 float xpadding = 5f;
                 float ypadding = 2f;
-                Color coordNameCol = coord.IsLightSquare() ? BoardTheme.DarkCoordCol : BoardTheme.LightCoordCol;
+                Color coordNameCol = coord.IsLightSquare() ? Theme.DarkCoordCol : Theme.LightCoordCol;
 
                 if (rank == (whitePerspective ? 0 : 7))  {
                     string fileName = BoardHelper.fileNames[file] + "";

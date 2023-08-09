@@ -53,7 +53,7 @@ namespace ChessChallenge.Application {
 
             while (!Raylib.WindowShouldClose()) {
                 Raylib.BeginDrawing();
-                Raylib.ClearBackground(BoardTheme.BackgroundColor);
+                Raylib.ClearBackground(Theme.WindowBackgroundColor);
                 Raylib.BeginMode2D(cam);
 
                 controller.Update();
