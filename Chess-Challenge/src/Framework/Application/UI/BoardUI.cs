@@ -15,15 +15,6 @@ namespace ChessChallenge.Application {
         const double moveAnimDuration = 0.15;
         bool whitePerspective = true;
 
-        // Text colours
-        static readonly Color activeTextCol = new(200, 200, 200, 255);
-        static readonly Color inactiveTextCol = new(100, 100, 100, 255);
-        static readonly Color nameCol = new(67, 204, 101, 255);
-
-        // Bitboard debug mode
-        static readonly Color bitboardColZERO = new(61, 121, 217, 200);
-        static readonly Color bitboardColONE = new(252, 43, 92, 200);
-
         // Colour state
         Color topTextCol;
         Color bottomTextCol;
@@ -61,8 +52,8 @@ namespace ChessChallenge.Application {
             board = new Board();
             board.LoadStartPosition();
             squareColOverrides = new Dictionary<int, Color>();
-            topTextCol = inactiveTextCol;
-            bottomTextCol = inactiveTextCol;
+            topTextCol = Theme.InactivePlayerTextColor;
+            bottomTextCol = Theme.InactivePlayerTextColor;
         }
 
         int[][] pieceCount;
@@ -163,11 +154,11 @@ namespace ChessChallenge.Application {
             bool isLight = new Coord(square).IsLightSquare();
 
             Color col = hightlightType switch {
-                HighlightType.MoveFrom => isLight ? Theme.MoveFromLight : Theme.MoveFromDark,
-                HighlightType.MoveTo => isLight ? Theme.MoveToLight : Theme.MoveToDark,
-                HighlightType.LegalMove => isLight ? Theme.LegalLight : Theme.LegalDark,
-                HighlightType.Check => isLight ? Theme.CheckLight : Theme.CheckDark,
-                HighlightType.Premove => isLight ? Theme.PremoveLight : Theme.PremoveDark,
+                HighlightType.MoveFrom => isLight ? Theme.MoveFromLightColor : Theme.MoveFromDarkColor,
+                HighlightType.MoveTo => isLight ? Theme.MoveToLightColor : Theme.MoveToDarkColor,
+                HighlightType.LegalMove => isLight ? Theme.LegalLightColor : Theme.LegalDarkColor,
+                HighlightType.Check => isLight ? Theme.CheckLightColor : Theme.CheckDarkColor,
+                HighlightType.Premove => isLight ? Theme.PremoveLightColor : Theme.PremoveDarkColor,
                 _ => Color.PINK
             };
 
@@ -244,8 +235,8 @@ namespace ChessChallenge.Application {
             const int spaceY = 35;
 
 
-            Color textTopTargetCol = topTurnToMove ? activeTextCol : inactiveTextCol;
-            Color textBottomTargetCol = bottomTurnToMove ? activeTextCol : inactiveTextCol;
+            Color textTopTargetCol = topTurnToMove ? Theme.ActivePlayerTextColor : Theme.InactivePlayerTextColor;
+            Color textBottomTargetCol = bottomTurnToMove ? Theme.ActivePlayerTextColor : Theme.InactivePlayerTextColor;
 
             float colLerpSpeed = 16;
             topTextCol = LerpColour(topTextCol, textTopTargetCol, Raylib.GetFrameTime() * colLerpSpeed);
@@ -263,8 +254,8 @@ namespace ChessChallenge.Application {
             int boardTopY = boardStartY + squareSize * 8 + spaceY + UIHelper.ScaleInt(50);
             int boardBottomY = boardStartY - spaceY - UIHelper.ScaleInt(50);
 
-            UIHelper.DrawText(format(bottom, top), new Vector2(boardStartX, boardTopY), 36, 1, activeTextCol, UIHelper.AlignH.Left);
-            UIHelper.DrawText(format(top, bottom), new Vector2(boardStartX, boardBottomY), 36, 1, activeTextCol, UIHelper.AlignH.Left);
+            UIHelper.DrawText(format(bottom, top), new Vector2(boardStartX, boardTopY), 36, 1, Theme.ActivePlayerTextColor, UIHelper.AlignH.Left);
+            UIHelper.DrawText(format(top, bottom), new Vector2(boardStartX, boardBottomY), 36, 1, Theme.ActivePlayerTextColor, UIHelper.AlignH.Left);
 
             // Draw missing pieces
             int[][] missingPieces = new int[][]{
@@ -326,7 +317,7 @@ namespace ChessChallenge.Application {
                 const int fontSpacing = 1;
                 var namePos = new Vector2(boardStartX, y);
 
-                UIHelper.DrawText($"{colName}: {name}", namePos, fontSize, fontSpacing, nameCol);
+                UIHelper.DrawText($"{colName}: {name}", namePos, fontSize, fontSpacing, Theme.PlayerNameColor);
                 var timePos = new Vector2(boardStartX + squareSize * 8, y);
                 string timeText;
                 if (timeMs == Settings.MAX_TIME)
@@ -354,13 +345,13 @@ namespace ChessChallenge.Application {
             int boardStartX = -squareSize * 4;
             int boardStartY = -squareSize * 4;
             int w = 12;
-            Raylib.DrawRectangle(boardStartX - w, boardStartY - w, 8 * squareSize + w * 2, 8 * squareSize + w * 2, Theme.BorderCol);
+            Raylib.DrawRectangle(boardStartX - w, boardStartY - w, 8 * squareSize + w * 2, 8 * squareSize + w * 2, Theme.BorderColor);
         }
 
         void DrawSquare(int file, int rank) {
 
             Coord coord = new Coord(file, rank);
-            Color col = coord.IsLightSquare() ? Theme.LightCol : Theme.DarkCol;
+            Color col = coord.IsLightSquare() ? Theme.LightColor : Theme.DarkColor;
             if (squareColOverrides.TryGetValue(coord.SquareIndex, out Color overrideCol))
                 col = overrideCol;
 
@@ -376,7 +367,7 @@ namespace ChessChallenge.Application {
                 int textSize = 25;
                 float xpadding = 5f;
                 float ypadding = 2f;
-                Color coordNameCol = coord.IsLightSquare() ? Theme.DarkCoordCol : Theme.LightCoordCol;
+                Color coordNameCol = coord.IsLightSquare() ? Theme.DarkCoordColor : Theme.LightCoordColor;
 
                 if (rank == (whitePerspective ? 0 : 7))  {
                     string fileName = BoardHelper.fileNames[file] + "";
@@ -395,7 +386,7 @@ namespace ChessChallenge.Application {
         void DrawBitboardDebugOverlaySquare(int file, int rank) {
             ulong bitboard = BitboardDebugState.BitboardToVisualize;
             bool isSet = BitBoardUtility.ContainsSquare(bitboard, new Coord(file,rank).SquareIndex);
-            Color col = isSet ? bitboardColONE : bitboardColZERO;
+            Color col = isSet ? Theme.BitboardColorONE : Theme.BitboardColorZERO;
 
             Vector2 squarePos = GetSquarePos(file, rank, whitePerspective);
             Raylib.DrawRectangle((int)squarePos.X, (int)squarePos.Y, squareSize, squareSize, col);

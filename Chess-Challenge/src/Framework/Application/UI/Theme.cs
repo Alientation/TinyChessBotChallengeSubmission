@@ -30,31 +30,39 @@ namespace ChessChallenge.Application {
 
 
         //BoardUI Colors
-        public static Color LightCol = new(238, 216, 192, 255);
-        public static Color DarkCol = new(171, 121, 101, 255);
+        public static Color ActivePlayerTextColor = new(200, 200, 200, 255);
+        public static Color InactivePlayerTextColor = new(100, 100, 100, 255);
+        public static Color PlayerNameColor = new(67, 204, 101, 255);
 
-        public static Color SelectedLight = new(236, 197, 123, 255);
-        public static Color SelectedDark = new(200, 158, 80, 255);
+        public static Color BitboardColorZERO = new(61, 121, 217, 200);
+        public static Color BitboardColorONE = new(252, 43, 92, 200);
 
-        public static Color MoveFromLight = new(207, 172, 106, 255);
-        public static Color MoveFromDark = new(197, 158, 54, 255);
 
-        public static Color MoveToLight = new(221, 208, 124, 255);
-        public static Color MoveToDark = new(197, 173, 96, 255);
+        public static Color LightColor = new(238, 216, 192, 255);
+        public static Color DarkColor = new(171, 121, 101, 255);
 
-        public static Color LegalLight = new(89, 171, 221, 255);
-        public static Color LegalDark = new(62, 144, 195, 255);
+        public static Color SelectedLightColor = new(236, 197, 123, 255);
+        public static Color SelectedDarkColor = new(200, 158, 80, 255);
 
-        public static Color CheckLight = new(234, 74, 74, 255);
-        public static Color CheckDark = new(207, 39, 39, 255);
+        public static Color MoveFromLightColor = new(207, 172, 106, 255);
+        public static Color MoveFromDarkColor = new(197, 158, 54, 255);
 
-        public static Color BorderCol = new(44, 44, 44, 255);
+        public static Color MoveToLightColor = new(221, 208, 124, 255);
+        public static Color MoveToDarkColor = new(197, 173, 96, 255);
 
-        public static Color LightCoordCol = new(255, 240, 220, 255);
-        public static Color DarkCoordCol = new(140, 100, 80, 255);
+        public static Color LegalLightColor = new(89, 171, 221, 255);
+        public static Color LegalDarkColor = new(62, 144, 195, 255);
 
-        public static Color PremoveLight = new(255, 142, 105, 255);
-        public static Color PremoveDark = new(255, 142, 105, 255);
+        public static Color CheckLightColor = new(234, 74, 74, 255);
+        public static Color CheckDarkColor = new(207, 39, 39, 255);
+
+        public static Color BorderColor = new(44, 44, 44, 255);
+
+        public static Color LightCoordColor = new(255, 240, 220, 255);
+        public static Color DarkCoordColor = new(140, 100, 80, 255);
+
+        public static Color PremoveLightColor = new(255, 142, 105, 255);
+        public static Color PremoveDarkColor = new(255, 142, 105, 255);
     }
 }
 
