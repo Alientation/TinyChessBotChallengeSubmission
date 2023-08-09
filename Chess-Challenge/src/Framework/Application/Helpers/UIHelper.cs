@@ -220,19 +220,21 @@ namespace ChessChallenge.Application {
         public static bool Button(string text, Vector2 centre, Vector2 size, int fontSize, bool isSelected = false) {
             Rectangle rec = GetRectangle(centre, size);
 
-            Color normalCol = new(40, 40, 40, 255);
-            Color hoverCol = new(3, 173, 252, 255);
-            Color pressCol = new(2, 119, 173, 255);
-
             bool mouseOver = MouseInRect(rec);
             bool pressed = mouseOver && Raylib.IsMouseButtonDown(MouseButton.MOUSE_BUTTON_LEFT);
             bool pressedThisFrame = pressed && Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT);
-            Color col = mouseOver ? (pressed ? pressCol : hoverCol) : normalCol;
 
-            if (isSelected) col = hoverCol;
+            Color col;
+            if (isSelected || (mouseOver && !pressed))
+                col = BoardTheme.ButtonHoverColor;
+            else if (mouseOver && pressed)
+                col = BoardTheme.ButtonPressedColor;
+            else
+                col = BoardTheme.ButtonBackgroundColor;
+            
 
             Raylib.DrawRectangleRec(rec, col);
-            Color textCol = (mouseOver || isSelected) ? Color.WHITE : new Color(180, 180, 180, 255);
+            Color textCol = (mouseOver || isSelected) ? BoardTheme.ButtonHoverTextColor : BoardTheme.ButtonTextColor;
 
             DrawText(text, centre, fontSize, 1, textCol, AlignH.Centre);
 

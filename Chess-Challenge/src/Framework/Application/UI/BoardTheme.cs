@@ -1,9 +1,16 @@
 ﻿using Raylib_cs;
 
-namespace ChessChallenge.Application
-{
-    public class BoardTheme
-    {
+namespace ChessChallenge.Application {
+    public class BoardTheme {
+        public static Color BackgroundColor = new(36, 31, 31, 255);
+        public static Color ButtonBackgroundColor = new(48, 44, 44, 255);
+        public static Color ButtonHoverColor = new(3, 173, 252, 255);
+        public static Color ButtonPressedColor = new(2, 119, 173, 255);
+
+        public static Color ButtonTextColor = new (180, 180, 180, 255);
+        public static Color ButtonHoverTextColor = Color.WHITE;
+
+
         public static Color LightCol = new(238, 216, 192, 255);
         public static Color DarkCol = new(171, 121, 101, 255);
 
@@ -29,8 +36,6 @@ namespace ChessChallenge.Application
 
         public static Color PremoveLight = new(255, 142, 105, 255);
         public static Color PremoveDark = new(255, 142, 105, 255);
-
-        public static Color BackgroundColor = new(43, 39, 39, 255);
     }
 }
 
