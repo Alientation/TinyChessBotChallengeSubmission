@@ -91,6 +91,10 @@ public class MyBot : IChessBot {
         Console.WriteLine("eval " + Evaluate(0));
         #endif
         
+
+        //prevent illegal moves
+        bestRootMove = board.GetLegalMoves()[0];
+
         //iterative deepening, while there is still time left
         for (int depth = 1; !shouldStop && depth < 50; ) {
 
