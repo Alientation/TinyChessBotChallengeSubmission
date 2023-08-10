@@ -319,7 +319,6 @@ namespace ChessChallenge.Application {
             GameID = rng.Next();
             PauseID = rng.Next();
             
-            GameIndex++;
             if (GameIndex > numberOfGamesToPlay)
                 return;
 
@@ -500,7 +499,8 @@ namespace ChessChallenge.Application {
                 UpdateMatchStats(result);
 
                 //End of game match up
-                if (log && GameIndex + 1 >= numberOfGamesToPlay) {
+                GameIndex++;
+                if (log && GameIndex >= numberOfGamesToPlay) {
                     Log(numberOfGamesToPlay + " games finished between " + StatsA.PlayerName + " and " + StatsB.PlayerName, false, ConsoleColor.White);
                     return;
                 }
