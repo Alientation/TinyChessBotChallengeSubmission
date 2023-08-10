@@ -47,8 +47,8 @@ namespace ChessChallenge.Application
 
             var textPos1 = new System.Numerics.Vector2(startX + (screenWidth - startX) / 2, height / 2);
             var textPos2 = new System.Numerics.Vector2(startX + (screenWidth - startX) / 2, screenHeight - height / 2);
-            string text1 = name1 + $"Bot Brain Capacity: {activeTokenCount1}/{tokenLimit}";
-            string text2 = name2 + $"Bot Brain Capacity: {activeTokenCount2}/{tokenLimit}";
+            string text1 = name1 + $" Brain Capacity: {activeTokenCount1}/{tokenLimit}";
+            string text2 = name2 + $" Brain Capacity: {activeTokenCount2}/{tokenLimit}";
             if (activeTokenCount1 > tokenLimit)
                 text1 += " [LIMIT EXCEEDED]";
             else if (debugTokenCount1 != 0)
