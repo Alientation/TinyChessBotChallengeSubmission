@@ -36,6 +36,8 @@ using static ChessChallenge.Application.ConsoleHelper;
     - For single line text input, allow for scrolling left and right
 
 
+    Previous moves in current game
+    Previous games and the moves played in them (plus various stats like time taken / piece difference / potentially stockfish evaluation)
 */
 
 namespace ChessChallenge.Application {
