@@ -80795,3 +80795,26 @@ Kg8 15. a5 Ra8 16. Rb6 Rab8 17. Nb5 Nd7 18. Nd6 Nxb6 19. Nxe8 Rxe8 20. axb6 Rd8
 51. Rd7 Be4+ 52. Kb2 h4 53. Rf7+ Bf5 54. Kc1 Rf2 55. Rg7 h3 56. Rf7 h2 57. Rxf5+
 Kxf5 58. Kb1 h1=Q# {Black mates} 0-1
 
+[Event "?"]
+[Site "?"]
+[Date "2023.08.10"]
+[Round "37"]
+[White "MyBotV3_5"]
+[Black "MyBotV3_4"]
+[Result "1-0"]
+[FEN "r1b1k1nr/pp2qppp/2pp4/2b5/2BpPP2/3P4/PPP3PP/RNBQ1RK1 w kq - 0 1"]
+[GameDuration "00:00:07"]
+[GameEndTime "2023-08-10T18:33:45.113 Central Daylight Time"]
+[GameStartTime "2023-08-10T18:33:37.640 Central Daylight Time"]
+[PlyCount "79"]
+[SetUp "1"]
+[TimeControl "5+0.05"]
+
+1. Re1 Nf6 2. e5 dxe5 3. Rxe5 Be6 4. f5 Bd6 5. Re1 b5 6. fxe6 Bxh2+ 7. Kh1 Kf8
+8. exf7 Be5 9. Bb3 Qc7 10. Bd2 a5 11. Qf3 Bg3 12. Re6 Rc8 13. Be1 Bxe1 14. Rxe1
+a4 15. Be6 Qa5 16. Nd2 Qxd2 17. Bxc8 Kxf7 18. Be6+ Kg6 19. Bf5+ Kg5 20. Qg3+ Kh6
+21. Re6 Qg5 22. Qh3+ Qh5 23. Qxh5+ Kxh5 24. Rxc6 Rd8 25. Rb6 Rd5 26. Be6 Rc5
+27. Rc1 Ng4 28. Kg1 Ne3 29. Bd7 Rxc2 30. Rxc2 Nxc2 31. Bxb5 g5 32. Bxa4 Ne1
+33. Bd1+ Kh4 34. Re6 Nxd3 35. Re4+ Nf4 36. Kh2 g4 37. Rxf4 h5 38. Rf5 g3+
+39. Kg1 d3 40. Rxh5# {White mates} 1-0
+
