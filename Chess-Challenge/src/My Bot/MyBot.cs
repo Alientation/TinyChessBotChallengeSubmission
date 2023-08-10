@@ -1,11 +1,9 @@
-#define PRINT
-
 using ChessChallenge.API;
 using System;
 using System.Linq;
 
 /*
-    MyBot V3.5  ~(997 Brain Power SMH)
+    MyBot V3.6  ~(780 Brain Power SMH)
 
     Features
     Negamax Alpha Beta Pruning
@@ -62,7 +60,7 @@ public class MyBot : IChessBot {
 
     private const int MIN_VALUE = -100000,  MAX_VALUE = 100000;
 
-    //piece eval tables
+    //PeSTO evaluation
     int[] piecePhase = { 0, 0, 1, 1, 2, 4, 0 };
     private readonly decimal[] PackedPestoTables = {
         63746705523041458768562654720m, 71818693703096985528394040064m, 75532537544690978830456252672m, 75536154932036771593352371712m, 76774085526445040292133284352m, 3110608541636285947269332480m, 936945638387574698250991104m, 75531285965747665584902616832m,
@@ -76,56 +74,25 @@ public class MyBot : IChessBot {
     };
     private readonly int[][] UnpackedPestoTables;
     private readonly short[] pieceEval = {  82, 337, 365, 477, 1025, 20000, // Middlegame
-                                            94, 281, 297, 512, 936, 20000}; //Endgame
+                                            94, 281, 297, 512, 936, 20000}; // Endgame
+
 
     public Move Think(Board cBoard, Timer cTimer) {
-        #if PRINT
-        negamaxNodesCount = 0; tTableCacheCount = 0; tTableExpiredCacheCount = 0; boardEvalCount = 0;
-        #endif
-
         board = cBoard;
         timer = cTimer;
         timePerMove = timer.MillisecondsRemaining / 40;
 
-        #if PRINT
-        Console.WriteLine("eval " + Evaluate(0));
-        #endif
-        
 
         //prevent illegal moves
         bestRootMove = board.GetLegalMoves()[0];
 
+
         //iterative deepening, while there is still time left
-        for (int depth = 1; !shouldStop && depth < 50; ) {
-
-            //dont need value technically, just for PRINT purposes
-            int val = Negamax(++depth, 0, MIN_VALUE, MAX_VALUE);
-
-            if (val > 50000) break;
-            
-            #if PRINT
-            bestRootEval = val;
-            #endif
-            
-
-            #if PRINT
-            Console.WriteLine("depth " + depth + " " + bestRootMove + " (" + val +") | " + "(" + timer.MillisecondsElapsedThisTurn + "ms)");
-            #endif
-        }
-
-        #if PRINT
-        Console.WriteLine($"{bestRootMove} ({bestRootEval}) | {cTimer.MillisecondsElapsedThisTurn}ms");
-        Console.WriteLine($"{negamaxNodesCount} Negamax\t{boardEvalCount} boardEvals\t TTable ({(tTableCacheCount - tTableExpiredCacheCount) / (float)negamaxNodesCount}))");
-        Console.WriteLine($"{1000 * negamaxNodesCount / (float) timer.MillisecondsElapsedThisTurn} Nodes/s");
-        Console.WriteLine($"{tTableExpiredCacheCount} TtableExpired");
-        #endif
-
+        for (int depth = 1; !shouldStop && depth < 50; )
+            if (Negamax(++depth, 0, MIN_VALUE, MAX_VALUE) > 50000) break;
         return bestRootMove;
     }
 
-    #if PRINT
-    int negamaxNodesCount = 0, tTableCacheCount = 0, tTableExpiredCacheCount = 0, boardEvalCount = 0, bestRootEval;
-    #endif
 
     //negamax with alpha beta pruning
     public int Negamax(int depth, int ply, int alpha, int beta) {
@@ -133,37 +100,23 @@ public class MyBot : IChessBot {
         int highestEval = MIN_VALUE;
         Move highestMove = Move.NullMove;
 
+
         // Check for draw by repetition
         if (!root && board.IsRepeatedPosition()) return 0;
         if (isInCheck) depth++;
         bool quiesence = depth < 1;
 
+
         //check caches
         TTableEntry TTEntry = TTable[board.ZobristKey & 0x3FFFFF];
-        if (TTEntry.zobristKey == board.ZobristKey) {
-            #if PRINT
-            tTableCacheCount++;
-            #endif
-
-            //check for flags
-            if (depth != 0 && TTEntry.depth >= depth && !root && (TTEntry.flag == 1 ||
-                TTEntry.flag == 0 && TTEntry.eval <= alpha ||
-                TTEntry.flag == 2 && TTEntry.eval >= beta))
-                    return TTEntry.eval;
-
-            #if PRINT
-            tTableExpiredCacheCount++;
-            #endif
-        }
-
-        #if PRINT
-        negamaxNodesCount++;
-        #endif
+        if (TTEntry.zobristKey == board.ZobristKey && depth != 0 && TTEntry.depth >= depth && !root && 
+            (TTEntry.flag == 1 || TTEntry.flag == 0 && TTEntry.eval <= alpha || TTEntry.flag == 2 && TTEntry.eval >= beta))
+            return TTEntry.eval;
 
 
         //check for cutoff in quiesence search
         if (quiesence) {
-            highestEval = Evaluate(depth);
+            highestEval = Evaluate();
             if (highestEval >= beta)
                 return beta;
             alpha = Math.Max(alpha, highestEval);
@@ -171,12 +124,23 @@ public class MyBot : IChessBot {
 
 
         //inline sort moves
-        Move[] moves = board.GetLegalMoves(quiesence && !isInCheck).OrderByDescending(
+        /*Move[] moves = board.GetLegalMoves(quiesence && !isInCheck).OrderByDescending(
             move => 
                 move == TTEntry.Move ? 1000000 :
-                move.IsCapture ? 1000 * (int)move.CapturePieceType - (int)move.MovePieceType :
+                move.IsCapture ? 1000 * (int)move.CapturePieceType - (int)move.MovePieceType : 
                 0
-        ).ToArray();
+        ).ToArray();*/
+
+        //faster sort than inline
+        Move[] moves = board.GetLegalMoves(quiesence && !isInCheck);
+        int[] movesScore = new int[moves.Length];
+        for (int i = 0; i++ < moves.Length; ) {
+            Move move = moves[i];
+            movesScore[i] -= move == TTEntry.Move ? 1000000 :
+                            move.IsCapture ? 1000 * (int)move.CapturePieceType - (int)move.MovePieceType :
+                            0;
+        }
+        Array.Sort(movesScore, moves);
 
         
         //no possible moves (which means checkmate/stalemate/draw)
@@ -199,13 +163,8 @@ public class MyBot : IChessBot {
                 highestEval = eval;
                 highestMove = move;
 
-                if (root) {
+                if (root)
                     bestRootMove = move;
-
-                    #if PRINT
-                    bestRootEval = highestEval;
-                    #endif
-                }
 
                 alpha = Math.Max(alpha, eval);
 
@@ -222,11 +181,7 @@ public class MyBot : IChessBot {
     }
 
     //evaluates a position based on how desirable it is for the current player to play the next move
-    public int Evaluate(int depth) {
-        #if PRINT
-        boardEvalCount++;
-        #endif
-
+    public int Evaluate() {
         //add up score for pieces and their locations at current game stage
         int mg = 0, eg = 0, phase = 0;
         // Iterate through both players

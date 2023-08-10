@@ -1,11 +1,9 @@
-#define PRINT
-
 using ChessChallenge.API;
 using System;
 using System.Linq;
 
 /*
-    MyBot V3.5  ~(997 Brain Power SMH)
+    MyBot V3.5  ~(780 Brain Power)
 
     Features
     Negamax Alpha Beta Pruning
