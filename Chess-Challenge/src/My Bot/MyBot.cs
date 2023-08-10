@@ -11,9 +11,9 @@ using System.Linq;
     Transposition table
     Time management (fail safe by preventing unfinished depth searches from affecting results)
     Quiescense searching (only applies to moves that result in a capture)
-     MVV-LVA
-     delta pruning
-    Move ordering
+        MVV-LVA
+        delta pruning
+    Move ordering (speed optimized)
 
     Todo
     History Heuristic (move ordering)
@@ -23,7 +23,8 @@ using System.Linq;
 
     NOTES
     Bot fails at end game, potentially some problems with TT tables
-    
+
+    30.6 +/- 18.3 compared to MyBotV3_5
 */
 
 /*
@@ -134,7 +135,7 @@ public class MyBot : IChessBot {
         //faster sort than inline
         Move[] moves = board.GetLegalMoves(quiesence && !isInCheck);
         int[] movesScore = new int[moves.Length];
-        for (int i = 0; i++ < moves.Length; ) {
+        for (int i = -1; ++i < moves.Length; ) {
             Move move = moves[i];
             movesScore[i] -= move == TTEntry.Move ? 1000000 :
                             move.IsCapture ? 1000 * (int)move.CapturePieceType - (int)move.MovePieceType :
