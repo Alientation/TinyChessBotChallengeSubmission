@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 
 /*
-    MyBot V3.1  ~(1008 Brain Power SMH)
+    MyBot V3.5  ~(997 Brain Power SMH)
 
     Features
     Negamax Alpha Beta Pruning
@@ -13,15 +13,15 @@ using System.Linq;
     Transposition table
     Time management (fail safe by preventing unfinished depth searches from affecting results)
     Quiescense searching (only applies to moves that result in a capture)
-    Move ordering (basic)
+     MVV-LVA
+     delta pruning
+    Move ordering
 
     Todo
     History Heuristic (move ordering)
     Null move pruning
     check extensions
     RFP
-    MVV-LVA
-    delta pruning
 
     NOTES
     Bot fails at end game, potentially some problems with TT tables
@@ -126,9 +126,14 @@ public class MyBot : IChessBot {
     //negamax with alpha beta pruning
     public int Negamax(int depth, int ply, int alpha, int beta) {
         //full search is completed, now search for a quiet position
-        bool quiesence = depth < 1, isInCheck = board.IsInCheck(), root = ply == 0;
+        bool isInCheck = board.IsInCheck(), root = ply == 0;
         int highestEval = MIN_VALUE;
         Move highestMove = Move.NullMove;
+
+        // Check for draw by repetition
+        if (!root && board.IsRepeatedPosition()) return 0;
+        if (isInCheck) depth++;
+        bool quiesence = depth < 1;
 
         //check caches
         TTableEntry TTEntry = TTable[board.ZobristKey & 0x3FFFFF];
