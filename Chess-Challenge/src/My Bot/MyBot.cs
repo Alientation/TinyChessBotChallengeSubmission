@@ -1,4 +1,4 @@
-//#define PRINT
+#define PRINT
 
 using ChessChallenge.API;
 using System;
@@ -52,16 +52,15 @@ public class MyBot : IChessBot {
     //is this a lambda function??
     bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
 
-    //save who knows how many tokens (like 1 or 2 maybe)
-    static Move nullMove = Move.NullMove;
-
     //best move from the current depth, best move for the search as a whole
-    Move bestMove, bestRootMove;
-    int bestEval, bestRootEval, timePerMove;
+    Move bestRootMove;
+    int timePerMove;
 
-    //TTable (also Thanks @Selenaut for the extremely compact version)
-    (ulong zobristKey, int depth, int eval, int flag, Move Move)[] TTable = new (ulong zobristKey, int depth, int eval, int flag, Move Move)[TranspositionTableLength];
-    private const int MIN_VALUE = -1_000_000,  MAX_VALUE = 1_000_000, TranspositionTableLength = 2097152;
+    //TTable
+    record struct TTableEntry(ulong zobristKey, int depth, int eval, int flag, Move Move);
+    TTableEntry[] TTable = new TTableEntry[0x400000];
+
+    private const int MIN_VALUE = -100000,  MAX_VALUE = 100000;
 
     //piece eval tables
     int[] piecePhase = { 0, 0, 1, 1, 2, 4, 0 };
@@ -87,43 +86,26 @@ public class MyBot : IChessBot {
         board = cBoard;
         timer = cTimer;
         timePerMove = timer.MillisecondsRemaining / 40;
-        
-        //reset best moves
-        Move[] moves = cBoard.GetLegalMoves();
-        bestMove = bestRootMove = moves[0];
 
         #if PRINT
         Console.WriteLine("eval " + Evaluate(0));
         #endif
         
         //iterative deepening, while there is still time left
-        for (int depth = 1; depth <= 50 && !shouldStop; depth++) {
+        for (int depth = 1; !shouldStop && depth < 50; ) {
 
             //dont need value technically, just for PRINT purposes
-            int val = Negamax(depth, 0, MIN_VALUE, MAX_VALUE);
+            int val = Negamax(++depth, 0, MIN_VALUE, MAX_VALUE);
+
+            if (val > 50000) break;
             
-            //if the search was not canceled because of running out of time
-            if (!shouldStop) {
-                bestRootMove = bestMove;
-
-                #if PRINT
-                bestRootEval = val;
-                #endif
-            }
-
             #if PRINT
-            Console.WriteLine("depth " + depth + " " + bestMove + " (" + val +") | " + "(" + timer.MillisecondsElapsedThisTurn + "ms)");
+            bestRootEval = val;
             #endif
-        }
-
-        //best root move is default move, so set it to the best move ever found
-        //should only ever occur if the bot runs out of time at the first depth search which means this is useless then
-        //check to see if we can just set it to a random move
-        if (bestRootMove == moves[0]) {
-            bestRootMove = bestMove;
+            
 
             #if PRINT
-            bestRootEval = bestEval;
+            Console.WriteLine("depth " + depth + " " + bestRootMove + " (" + val +") | " + "(" + timer.MillisecondsElapsedThisTurn + "ms)");
             #endif
         }
 
@@ -133,67 +115,32 @@ public class MyBot : IChessBot {
         Console.WriteLine($"{1000 * negamaxNodesCount / (float) timer.MillisecondsElapsedThisTurn} Nodes/s");
         Console.WriteLine($"{tTableExpiredCacheCount} TtableExpired");
         #endif
+
         return bestRootMove;
     }
 
     #if PRINT
-    int negamaxNodesCount = 0, tTableCacheCount = 0, tTableExpiredCacheCount = 0, boardEvalCount = 0;
+    int negamaxNodesCount = 0, tTableCacheCount = 0, tTableExpiredCacheCount = 0, boardEvalCount = 0, bestRootEval;
     #endif
 
-    //quiesence searching till a quiet position is reached
-    public int Quiesence(int depth, int alpha, int beta) {
-        #if PRINT
-        negamaxNodesCount++;
-        #endif
-
-        int stand_pat = Evaluate(depth);
-        if (stand_pat >= beta)
-            return beta;
-        if (alpha < stand_pat)
-            alpha = stand_pat;
-
-        Span<Move> moves = stackalloc Move[128];
-        board.GetLegalMovesNonAlloc(ref moves, true);
-        GetOrderedMoves(ref moves, Move.NullMove, depth);
-
-        //search ordered moves
-        foreach (Move move in moves) {
-            board.MakeMove(move);
-            int score = -Quiesence(depth + 1, -beta, -alpha);
-            board.UndoMove(move);
-
-            if (score >= beta) return beta;
-            if (score > alpha) alpha = score;
-        }
-
-        return alpha;
-    }
-
     //negamax with alpha beta pruning
-    public int Negamax(int depthLeft, int depth, int alpha, int beta) {
-        if (depthLeft < 1) //full search is completed, now search for a quiet position
-            return Quiesence(depth, alpha, beta);
-
-        //dont want to reach these states
-        if (board.IsDraw()) return 0;
-        if (board.IsInCheckmate()) return  MIN_VALUE + depth;
-        
-        Move prevBestMove = nullMove;
+    public int Negamax(int depth, int ply, int alpha, int beta) {
+        //full search is completed, now search for a quiet position
+        bool quiesence = depth < 1, isInCheck = board.IsInCheck(), root = ply == 0;
+        int highestEval = MIN_VALUE;
+        Move highestMove = Move.NullMove;
 
         //check caches
-        ref var transpositionTableEntry = ref TTable[board.ZobristKey % TranspositionTableLength];
-        if (transpositionTableEntry.zobristKey == board.ZobristKey) {
-            //todo do pv on current best move cached on this board position
-            prevBestMove = transpositionTableEntry.Move;
-
+        TTableEntry TTEntry = TTable[board.ZobristKey & 0x3FFFFF];
+        if (TTEntry.zobristKey == board.ZobristKey) {
             #if PRINT
             tTableCacheCount++;
             #endif
 
-            if (depth != 0 && transpositionTableEntry.depth >= depth && (transpositionTableEntry.flag == 1 ||
-                transpositionTableEntry.flag == 0 && transpositionTableEntry.eval <= alpha ||
-                transpositionTableEntry.flag == 2 && transpositionTableEntry.eval >= beta))
-                    return transpositionTableEntry.eval;
+            if (depth != 0 && TTEntry.depth >= depth && !root && (TTEntry.flag == 1 ||
+                TTEntry.flag == 0 && TTEntry.eval <= alpha ||
+                TTEntry.flag == 2 && TTEntry.eval >= beta))
+                    return TTEntry.eval;
 
             #if PRINT
             tTableExpiredCacheCount++;
@@ -204,42 +151,55 @@ public class MyBot : IChessBot {
         negamaxNodesCount++;
         #endif
 
-        
-        Span<Move> moves = stackalloc Move[128];
-        board.GetLegalMovesNonAlloc(ref moves);
-        GetOrderedMoves(ref moves, prevBestMove, depth);
+        if (quiesence) {
+            highestEval = Evaluate(depth);
+            if (highestEval >= beta)
+                return beta;
+            alpha = Math.Max(alpha, highestEval);
+        }
 
-        //no possible moves (which means checkmate/stalemate/draw)
-        if (moves.Length == 0)
-            return Evaluate(depth);
+
+        Move[] moves = board.GetLegalMoves(quiesence && !isInCheck).OrderByDescending(
+            move => 
+                move == TTEntry.Move ? 1000000 :
+                move.IsCapture ? 1000 * (int)move.CapturePieceType - (int)move.MovePieceType :
+                0
+        ).ToArray();
+
+        if (!quiesence && moves.Length == 0) //no possible moves (which means checkmate/stalemate/draw)
+            return isInCheck ? MIN_VALUE + depth : 0;
 
         //find best move possible from all subtrees
-        int highestEval = MIN_VALUE;
-        Move highestMove = Move.NullMove;
         foreach (Move move in moves) {
             if (shouldStop)
-                return 0;
+                return MAX_VALUE;
 
             board.MakeMove(move);
-            int eval = -Negamax(depthLeft - 1, depth+1, -beta, -alpha) + (move.IsPromotion ? 20 * (int) move.PromotionPieceType : 0);
+            int eval = -Negamax(depth - 1, ply + 1, -beta, -alpha);
             board.UndoMove(move);
 
             if (eval > highestEval) {
                 highestEval = eval;
                 highestMove = move;
 
-                if (depth == 0) {
-                    bestMove = move;
-                    bestEval = highestEval;
+                if (root) {
+                    bestRootMove = move;
+
+                    #if PRINT
+                    bestRootEval = highestEval;
+                    #endif
                 }
+
+                alpha = Math.Max(alpha, eval);
+
+                if (alpha >= beta)
+                    break;
             }
-            alpha = Math.Max(alpha, eval);
-            if (alpha >= beta)
-                break;
         }
 
         //mark and cache
-        TTable[board.ZobristKey % TranspositionTableLength] = (board.ZobristKey, depth, highestEval, highestEval >= beta ? 2 : highestEval > alpha ? 1 : 0, highestMove);
+        TTable[board.ZobristKey & 0x3FFFFF] = new TTableEntry(board.ZobristKey, depth, highestEval, highestEval >= beta ? 2 : highestEval > alpha ? 1 : 0, highestMove);
+
         return highestEval;
     }
 
@@ -248,11 +208,6 @@ public class MyBot : IChessBot {
         #if PRINT
         boardEvalCount++;
         #endif
-
-        int eval = 0;
-        //bonus points for having the right to castle
-        if (board.HasKingsideCastleRight(board.IsWhiteToMove)) eval += 10;
-        if (board.HasQueensideCastleRight(board.IsWhiteToMove)) eval += 5;
 
         //add up score for pieces and their locations at current game stage
         int mg = 0, eg = 0, phase = 0;
@@ -285,34 +240,7 @@ public class MyBot : IChessBot {
         phase = Math.Min(phase, 24);
 
         // Tapered evaluation
-        return (mg * phase + eg * (24 - phase)) / 24 * (board.IsWhiteToMove ? 1 : -1) + eval;
-    }
-
-    //todo add move ordering
-    public void GetOrderedMoves(ref Span<Move> moves, Move prevBestMove, int depth) {
-        //use pv (principal variation) as first move in array
-        //use stack alloc to store array (order by captures then non captures)
-        Span<int> priorities = stackalloc int[moves.Length];
-        for (int i = 0; i < moves.Length; i++) {
-            var move = moves[i];
-            //this causes immense lag, figure out if we can hash a board's eval
-            //board.MakeMove(move);
-            //priorities[i] = -evaluate(depth);
-            //board.UndoMove(move);
-
-            //prioritize lower eval pieces moving
-            int priority = - 10 * (int) move.MovePieceType;
-            if (move == prevBestMove) priority += MAX_VALUE;
-
-            //bonuses for capture, promotion, enpassant, castles
-            if (move.IsCapture) priority += 1000 * (int) move.CapturePieceType - (int) move.MovePieceType;
-            if (move.IsPromotion) priority += 100 * (int) move.PromotionPieceType;
-            if (move.IsEnPassant || move.IsCastles) priority += 20;
-
-            priorities[i] = -priority;
-        }
-        //sort
-        priorities.Sort(moves);
+        return (mg * phase + eg * (24 - phase)) / 24 * (board.IsWhiteToMove ? 1 : -1) + (board.HasKingsideCastleRight(board.IsWhiteToMove) ? 15 : board.HasQueensideCastleRight(board.IsWhiteToMove) ? 5 : 0);
     }
 
     //expands the pesto tables from their compressed versions
