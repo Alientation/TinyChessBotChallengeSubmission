@@ -129,7 +129,6 @@ public class MyBot : IChessBot {
 
     //negamax with alpha beta pruning
     public int Negamax(int depth, int ply, int alpha, int beta) {
-        //full search is completed, now search for a quiet position
         bool isInCheck = board.IsInCheck(), root = ply == 0;
         int highestEval = MIN_VALUE;
         Move highestMove = Move.NullMove;
@@ -146,6 +145,7 @@ public class MyBot : IChessBot {
             tTableCacheCount++;
             #endif
 
+            //check for flags
             if (depth != 0 && TTEntry.depth >= depth && !root && (TTEntry.flag == 1 ||
                 TTEntry.flag == 0 && TTEntry.eval <= alpha ||
                 TTEntry.flag == 2 && TTEntry.eval >= beta))
@@ -160,6 +160,8 @@ public class MyBot : IChessBot {
         negamaxNodesCount++;
         #endif
 
+
+        //check for cutoff in quiesence search
         if (quiesence) {
             highestEval = Evaluate(depth);
             if (highestEval >= beta)
@@ -168,6 +170,7 @@ public class MyBot : IChessBot {
         }
 
 
+        //inline sort moves
         Move[] moves = board.GetLegalMoves(quiesence && !isInCheck).OrderByDescending(
             move => 
                 move == TTEntry.Move ? 1000000 :
@@ -175,8 +178,11 @@ public class MyBot : IChessBot {
                 0
         ).ToArray();
 
-        if (!quiesence && moves.Length == 0) //no possible moves (which means checkmate/stalemate/draw)
+        
+        //no possible moves (which means checkmate/stalemate/draw)
+        if (!quiesence && moves.Length == 0)
             return isInCheck ? MIN_VALUE + depth : 0;
+
 
         //find best move possible from all subtrees
         foreach (Move move in moves) {
@@ -187,6 +193,8 @@ public class MyBot : IChessBot {
             int eval = -Negamax(depth - 1, ply + 1, -beta, -alpha);
             board.UndoMove(move);
 
+            
+            //check for cutoffs and update best moves
             if (eval > highestEval) {
                 highestEval = eval;
                 highestMove = move;
@@ -206,7 +214,8 @@ public class MyBot : IChessBot {
             }
         }
 
-        //mark and cache
+
+        //mark and cache search result
         TTable[board.ZobristKey & 0x3FFFFF] = new TTableEntry(board.ZobristKey, depth, highestEval, highestEval >= beta ? 2 : highestEval > alpha ? 1 : 0, highestMove);
 
         return highestEval;
