@@ -509,7 +509,7 @@ namespace ChessChallenge.Application {
             if (autoStartNextMatch) {
                 playerAPlaysWhite = !playerAPlaysWhite;
                 
-                if (fastForward) {
+                if (fastForward || startNextGameDelayMs < 1) {
                     StartNewGame(PlayerBlack.PlayerType, PlayerWhite.PlayerType, gameDuration2Milliseconds, increment2Milliseconds, gameDuration1Milliseconds, increment1Milliseconds, startFensIndex);
                     return;
                 }
