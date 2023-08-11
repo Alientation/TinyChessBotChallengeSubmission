@@ -10,6 +10,9 @@ using System.Linq;
 
     NOTES
     
+    123 +/- 22.5 compared to V3.2
+
+    18.9 +/- 20.4 compared to V3.1
 */
 public class MyBotV3_3 : IChessBot {
 

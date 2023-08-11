@@ -13,6 +13,7 @@ using System.Linq;
     Null move pruning
     check extensions
     RFP
+    Futility pruning
 
     NOTES
     

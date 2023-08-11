@@ -51,7 +51,7 @@ using System.Linq;
     -113 +/- 103 elo difference
 
 
-
+    335.8 +/- 28.5 compared to V2.2
 */
 
 public class MyBotV3_1 : IChessBot {

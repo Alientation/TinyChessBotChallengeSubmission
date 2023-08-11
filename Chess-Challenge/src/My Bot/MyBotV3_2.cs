@@ -12,6 +12,8 @@ using System.Linq;
     NOTES
     ==============THIS BOT SUCKS DONT USE THIS================
     LITERALLY WORSE THAN THE PREVIOUS VERSION
+
+    -44.4 +/- 16.7 ompared to V3.1
 */
 
 public class MyBotV3_2 : IChessBot {
