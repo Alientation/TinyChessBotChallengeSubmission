@@ -195,7 +195,7 @@ public class MyBotV2 : IChessBot {
 
         return moves;
     }
-    #if DEBUG
+    
     int[][] pieceValueLocation = new int[][] {
         new int[] { //pawn
             00,00,00,00,00,00,00,00,
@@ -392,5 +392,4 @@ public class MyBotV2 : IChessBot {
     public void GameOver() {
         
     }
-    #endif
 }

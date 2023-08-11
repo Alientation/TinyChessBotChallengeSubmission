@@ -67,19 +67,25 @@ public class MyBot : IChessBot {
                                             94, 281, 297, 512, 936, 20000}; // Endgame
 
 
+    #if DEBUG
+    int nodesWithoutQuiesence = 0, nodesWithQuiesence = 0, terminalNodesWithoutQuiesence = 0, terminalNodesWithQuiesence = 0;
+    #endif
+
+
     public Move Think(Board cBoard, Timer cTimer) {
         board = cBoard;
         timer = cTimer;
         timePerMove = timer.MillisecondsRemaining / 40;
 
-
         //prevent illegal moves
         bestRootMove = board.GetLegalMoves()[0];
 
-
         //iterative deepening, while there is still time left
         for (int depth = 1; !shouldStop && depth < 50; ) {
+            #if DEBUG
             Console.WriteLine("d" + (depth-1) + " " + cTimer.MillisecondsElapsedThisTurn + "ms");
+            #endif
+
             if (Negamax(++depth, 0, MIN_VALUE, MAX_VALUE) > 50000) break;
         }
 
@@ -89,23 +95,22 @@ public class MyBot : IChessBot {
 
     //negamax with alpha beta pruning
     public int Negamax(int depth, int ply, int alpha, int beta) {
+
+
         bool isInCheck = board.IsInCheck(), root = ply == 0;
         int highestEval = MIN_VALUE;
         Move highestMove = Move.NullMove;
-
 
         // Check for draw by repetition
         if (!root && board.IsRepeatedPosition()) return 0;
         if (isInCheck) depth++;
         bool quiesence = depth < 1;
 
-
         //check caches
         TTableEntry TTEntry = TTable[board.ZobristKey & 0x3FFFFF];
         if (TTEntry.zobristKey == board.ZobristKey && depth != 0 && TTEntry.depth >= depth && !root && 
             (TTEntry.flag == 1 || TTEntry.flag == 0 && TTEntry.eval <= alpha || TTEntry.flag == 2 && TTEntry.eval >= beta))
             return TTEntry.eval;
-
 
         //check for cutoff in quiesence search
         if (quiesence) {
@@ -114,7 +119,6 @@ public class MyBot : IChessBot {
                 return beta;
             alpha = Math.Max(alpha, highestEval);
         }
-
 
         //faster sort than inline
         Move[] moves = board.GetLegalMoves(quiesence && !isInCheck);
@@ -127,11 +131,9 @@ public class MyBot : IChessBot {
         }
         Array.Sort(movesScore, moves);
 
-        
         //no possible moves (which means checkmate/stalemate/draw)
         if (!quiesence && moves.Length == 0)
             return isInCheck ? MIN_VALUE + depth : 0;
-
 
         //find best move possible from all subtrees
         foreach (Move move in moves) {
@@ -142,7 +144,6 @@ public class MyBot : IChessBot {
             int eval = -Negamax(depth - 1, ply + 1, -beta, -alpha);
             board.UndoMove(move);
 
-            
             //check for cutoffs and update best moves
             if (eval > highestEval) {
                 highestEval = eval;
@@ -157,7 +158,6 @@ public class MyBot : IChessBot {
                     break;
             }
         }
-
 
         //mark and cache search result
         TTable[board.ZobristKey & 0x3FFFFF] = new TTableEntry(board.ZobristKey, depth, highestEval, highestEval >= beta ? 2 : highestEval > alpha ? 1 : 0, highestMove);
@@ -196,7 +196,8 @@ public class MyBot : IChessBot {
         phase = Math.Min(phase, 24);
 
         // Tapered evaluation
-        return (mg * phase + eg * (24 - phase)) / 24 * (board.IsWhiteToMove ? 1 : -1); // + (board.HasKingsideCastleRight(board.IsWhiteToMove) ? 15 : board.HasQueensideCastleRight(board.IsWhiteToMove) ? 5 : 0)
+        return (mg * phase + eg * (24 - phase)) / 24 * (board.IsWhiteToMove ? 1 : -1); 
+        // + (board.HasKingsideCastleRight(board.IsWhiteToMove) ? 15 : board.HasQueensideCastleRight(board.IsWhiteToMove) ? 5 : 0)
     }
 
     //expands the pesto tables from their compressed versions
