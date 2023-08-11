@@ -5,7 +5,7 @@ using System.Linq;
 /*
     MyBot V3.5  ~(747 Brain Power)
 
-    Features (dif from previous version 3.3)
+    Features (dif from previous version 3.4)
     Shortened code by combining negamax and quiescense search
         In the process, fixed or atleast made better use of alpha beta cutoffs/transposition tables apparently
 

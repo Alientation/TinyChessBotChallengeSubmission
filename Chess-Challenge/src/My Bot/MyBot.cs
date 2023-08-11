@@ -3,9 +3,9 @@ using System;
 using System.Linq;
 
 /*
-    MyBot V3.6  ~(780 Brain Power SMH)
+    MyBot V3.6  ~(780 Brain Power)
 
-    Features (dif from previous version 3.3)
+    Features (dif from previous version 3.5)
     Improved Move Ordering performance
 
     Todo
@@ -114,14 +114,6 @@ public class MyBot : IChessBot {
             alpha = Math.Max(alpha, highestEval);
         }
 
-
-        //inline sort moves
-        /*Move[] moves = board.GetLegalMoves(quiesence && !isInCheck).OrderByDescending(
-            move => 
-                move == TTEntry.Move ? 1000000 :
-                move.IsCapture ? 1000 * (int)move.CapturePieceType - (int)move.MovePieceType : 
-                0
-        ).ToArray();*/
 
         //faster sort than inline
         Move[] moves = board.GetLegalMoves(quiesence && !isInCheck);

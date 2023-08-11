@@ -52,10 +52,10 @@ C:\Users\mcpir\Downloads\cutechess-1.3.1-win64\cutechess-1.3.1-win64\cutechess-c
 
 --testing
 C:\Users\mcpir\Downloads\cutechess-1.3.1-win64\cutechess-1.3.1-win64\cutechess-cli.exe ^
--engine name="MyBotV3_5" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="MyBotV3_5" ^
 -engine name="MyBotV3_4" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="MyBotV3_4" ^
+-engine name="MyBotV3_3" cmd="C:\Users\mcpir\Documents\Chess-Challenge\Chess-Challenge\bin\Debug\net6.0\Chess-Challenge" arg="uci" arg="MyBotV3_3" ^
 -each proto="uci" tc=0/5+0.05 ^
--games 2 -rounds 500 -repeat 2 -maxmoves 200 ^
+-games 2 -rounds 350 -repeat 2 -maxmoves 200 ^
 -resultformat wide2 ^
 -ratinginterval 10 ^
 -concurrency 4 ^

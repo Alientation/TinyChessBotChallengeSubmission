@@ -2,12 +2,10 @@ using ChessChallenge.API;
 using System;
 
 /*
-    MyBot V1.0  ~(725 Brain Power SMH)
+    MyBot V3.0  ~(725 Brain Power)
 
-    Features
-    Negamax Alpha Beta Pruning
-    Score board based off piece locations
-     Added Transposition table (remove move cache)
+    Features (dif from previous version 2.2)
+    
 
     NOTES
     When its end game, it incorrectly values moving the king as winning the game instead of promoting pawns and checkmating with queens.. this does not make sense. might be a problem with the Ttables
@@ -20,38 +18,13 @@ using System;
     elo difference (273 +/- 84)
 
 
-    Against NNBot
-    
-
     Against the EloBot1
     - 202 +/- 58 Elo difference
     - 119 / 17 / 31 (win rate 71.25%)
 
 
-    Add Quiesence
-    Add move ordering
-    possibly do killer moves and null move pruning
-Ggame stage
 */
 
-/*
-    TODO
-
-    Go back and correct MyBotV2_1's negamax/eval functions because i think they are flawed and is the reason it blundered pieces
-
-    sort moves when getting possible moves
-    add more features to board evaluation
-        - pawn advancement
-        - piece mobility
-        - piece threats
-        - piece protection
-    Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
-    Quiesence Searching (only applies to moves that result in a capture)
-    OPTIMIZE CODE
-    Move Pruning
-    Late Move Reductions, History Reductions
-    
-*/
 public class MyBotV3 : IChessBot {
     Timer timer; Board board;
     bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;

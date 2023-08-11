@@ -3,19 +3,11 @@ using System;
 using System.Linq;
 
 /*
-    MyBot V3.1  ~(1008 Brain Power SMH)
+    MyBot V3.1  ~(1008 Brain Power)
 
-    Features
-    Negamax Alpha Beta Pruning
-    Score board based off piece locations and phases (?dunno what this is tbh) with emphasis on the stage of the game
-    Transposition table
-    Time management (fail safe by preventing unfinished depth searches from affecting results)
-    Quiescense searching (only applies to moves that result in a capture)
-    Move ordering (basic)
+    Features (dif from previous version 3.0)
 
     NOTES
-    When its end game, it incorrectly values moving the king as winning the game instead of promoting pawns and checkmating with queens.. this does not make sense. might be a problem with the Ttables
-
 
     Against SelenautBot
     11 / 14/ -25
@@ -60,39 +52,18 @@ using System.Linq;
 
 
 
-
-    possibly do killer moves and null move pruning
 */
 
-/*
-    TODO
-    Go back and correct MyBotV2_1's negamax/eval functions because i think they are flawed and is the reason it blundered pieces
-
-    add more features to board evaluation
-        - pawn advancement
-        - piece mobility
-        - piece threats
-        - piece protection
-    Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
-    OPTIMIZE CODE
-    Move Pruning
-    Late Move Reductions, History Reductions
-    
-*/
 public class MyBotV3_1 : IChessBot {
 
     //save tokens by storing references here
     Timer timer; Board board;
-
-    //is this a lambda function??
-    bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
-
-    //save who knows how many tokens (like 1 or 2 maybe)
     static Move nullMove = Move.NullMove;
 
-    //best move from the current depth, best move for the search as a whole
+    //search info
     Move bestMove, bestRootMove;
     int bestEval, bestRootEval, timePerMove;
+    bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
 
     //TTable (also Thanks @Selenaut for the extremely compact version)
     (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[] TTable = new (ulong zobristKey, int depthSearchedAfter, int eval, byte flag, Move Move)[TranspositionTableLength];
