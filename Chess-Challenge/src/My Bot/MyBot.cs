@@ -141,7 +141,7 @@ public class MyBot : IChessBot {
             Console.WriteLine(output);
         }
 
-         Console.WriteLine("\n");
+         Console.WriteLine("");
         for (int i = 0; i < branchingFactorsByDepth[0].Length; i++) {
             if (branchingFactorsByDepth[1][i] == 0) break;
             if (i % 11 == 10)
@@ -165,7 +165,7 @@ public class MyBot : IChessBot {
             ));
         }
 
-        Console.WriteLine("\n--");
+        Console.WriteLine("\n--\n--\n--");
         #endif
 
         return bestRootMove;
@@ -221,7 +221,9 @@ public class MyBot : IChessBot {
 
         #if PRINT
         if (moves.Length == 0 && quiesence) terminalNodesWithQuiesence++;
-        branchingFactorsByDepth[1][ply]++;
+
+        if (!quiesence)
+            branchingFactorsByDepth[1][ply]++;
         #endif
 
 
@@ -233,7 +235,8 @@ public class MyBot : IChessBot {
         //find best move possible from all subtrees
         foreach (Move move in moves) {
             #if PRINT
-            branchingFactorsByDepth[0][ply]++;
+            if (!quiesence)
+                branchingFactorsByDepth[0][ply]++;
             #endif
 
             //verify that this does not affect search result (ie, unfinished searches corrupting results)
