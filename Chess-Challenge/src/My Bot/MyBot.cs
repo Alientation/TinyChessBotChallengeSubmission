@@ -111,13 +111,14 @@ public class MyBot : IChessBot {
             nodesWithQuiesence = nodes = terminalNodesWithQuiesence = terminalNodes = 0;
             #endif
 
+            //if (Negamax(++depth, 0, MIN_VALUE, MAX_VALUE) > 50000) break;
+
+            int value = Negamax(depth, 0, MIN_VALUE, MAX_VALUE);
+
             if (shouldStop)
                 break;
             else 
                 bestRootMove = bestMove;
-            //if (Negamax(++depth, 0, MIN_VALUE, MAX_VALUE) > 50000) break;
-
-            int value = Negamax(depth, 0, MIN_VALUE, MAX_VALUE);
 
             #if PRINT
             int elapsedTime = cTimer.MillisecondsElapsedThisTurn - startSearchTime;
