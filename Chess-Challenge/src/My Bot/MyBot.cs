@@ -5,24 +5,17 @@ using System.Linq;
 /*
     MyBot V3.6  ~(780 Brain Power SMH)
 
-    Features
-    Negamax Alpha Beta Pruning
-    Score board based off piece locations and phases (?dunno what this is tbh) with emphasis on the stage of the game
-    Transposition table
-    Time management (fail safe by preventing unfinished depth searches from affecting results)
-    Quiescense searching (only applies to moves that result in a capture)
-        MVV-LVA
-        delta pruning
-    Move ordering (speed optimized)
+    Features (dif from previous version 3.3)
+    Improved Move Ordering performance
 
     Todo
-    History Heuristic (move ordering)
+    History Heuristic
     Null move pruning
     check extensions
     RFP
 
     NOTES
-    Bot fails at end game, potentially some problems with TT tables
+    
 
     30.6 +/- 18.3 compared to MyBotV3_5
 */
@@ -37,10 +30,7 @@ using System.Linq;
         - piece threats
         - piece protection
     Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
-    OPTIMIZE CODE
-    Move Pruning
     Late Move Reductions, History Reductions
-    
 */
 
 public class MyBot : IChessBot {
@@ -48,10 +38,8 @@ public class MyBot : IChessBot {
     //save tokens by storing references here
     Timer timer; Board board;
 
-    //is this a lambda function??
+    //search info
     bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
-
-    //best move from the current depth, best move for the search as a whole
     Move bestRootMove;
     int timePerMove;
 
@@ -89,8 +77,11 @@ public class MyBot : IChessBot {
 
 
         //iterative deepening, while there is still time left
-        for (int depth = 1; !shouldStop && depth < 50; )
+        for (int depth = 1; !shouldStop && depth < 50; ) {
+            Console.WriteLine("d" + (depth-1) + " " + cTimer.MillisecondsElapsedThisTurn + "ms");
             if (Negamax(++depth, 0, MIN_VALUE, MAX_VALUE) > 50000) break;
+        }
+
         return bestRootMove;
     }
 

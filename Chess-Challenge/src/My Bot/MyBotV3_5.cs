@@ -3,43 +3,16 @@ using System;
 using System.Linq;
 
 /*
-    MyBot V3.5  ~(780 Brain Power)
+    MyBot V3.5  ~(747 Brain Power)
 
-    Features
-    Negamax Alpha Beta Pruning
-    Score board based off piece locations and phases (?dunno what this is tbh) with emphasis on the stage of the game
-    Transposition table
-    Time management (fail safe by preventing unfinished depth searches from affecting results)
-    Quiescense searching (only applies to moves that result in a capture)
-     MVV-LVA
-     delta pruning
-    Move ordering
-
-    Todo
-    History Heuristic (move ordering)
-    Null move pruning
-    check extensions
-    RFP
+    Features (dif from previous version 3.3)
+    Shortened code by combining negamax and quiescense search
+        In the process, fixed or atleast made better use of alpha beta cutoffs/transposition tables apparently
 
     NOTES
-    Bot fails at end game, potentially some problems with TT tables
-    
-*/
+    Bot still can't seem to win a winning endgame most of the time and ends in a draw
 
-/*
-    TODO
-    Go back and correct MyBotV2_1's negamax/eval functions because i think they are flawed and is the reason it blundered pieces
-
-    add more features to board evaluation
-        - pawn advancement
-        - piece mobility
-        - piece threats
-        - piece protection
-    Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
-    OPTIMIZE CODE
-    Move Pruning
-    Late Move Reductions, History Reductions
-    
+    253.6 +/- 24.3 compared to MyBotV3_4
 */
 
 public class MyBotV3_5 : IChessBot {
@@ -47,12 +20,10 @@ public class MyBotV3_5 : IChessBot {
     //save tokens by storing references here
     Timer timer; Board board;
 
-    //is this a lambda function??
-    bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
-
-    //best move from the current depth, best move for the search as a whole
+    //search info
     Move bestRootMove;
     int timePerMove;
+    bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
 
     //TTable
     record struct TTableEntry(ulong zobristKey, int depth, int eval, int flag, Move Move);
@@ -88,8 +59,10 @@ public class MyBotV3_5 : IChessBot {
 
 
         //iterative deepening, while there is still time left
-        for (int depth = 1; !shouldStop && depth < 50; )
+        for (int depth = 1; !shouldStop && depth < 50; ) {
+            Console.WriteLine("d" + (depth-1) + " " + cTimer.MillisecondsElapsedThisTurn + "ms");
             if (Negamax(++depth, 0, MIN_VALUE, MAX_VALUE) > 50000) break;
+        }
         return bestRootMove;
     }
 
