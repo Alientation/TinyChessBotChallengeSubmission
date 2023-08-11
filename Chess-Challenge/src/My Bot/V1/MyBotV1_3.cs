@@ -4,36 +4,11 @@ using System.Collections.Generic;
 using System.Numerics;
 
 /*
-    MyBot V1.0  ~(637 Brain Power SMH)
+    MyBot V1.3  ~(637 Brain Power)
 
-    Features
-    Min Max Algorithm
-    Alpha Beta Pruning
+    Features (dif from previous version 1.2)
 */
 
-/*
-    TODO
-
-    Score board based off piece locations
-    sort moves when getting possible moves
-    add more features to board evaluation
-        - pawn advancement
-        - piece mobility
-        - piece threats
-        - piece protection
-
-    add more features to move scoring
-    add game stage
-    Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
-    Quiesence Searching (only applies to moves that result in a capture)
-    Optimized Searching (go down only promising paths)
-    OPTIMIZE CODE
-    Move Pruning
-    Late Move Reductions, History Reductions
-    Use NegaMax??
-    Store minimax traversals (edges that haven't been searched from a particular board state)
-    
-*/
 public class MyBotV1_3 : IChessBot {
     bool isBotWhite;
     int timePerMove = 500;

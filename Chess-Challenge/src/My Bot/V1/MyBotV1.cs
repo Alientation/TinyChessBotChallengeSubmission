@@ -3,82 +3,13 @@ using System;
 using System.Collections.Generic; 
 
 /*
-    MyBot V1.0  ~(637 Brain Power SMH)
+    MyBot V1.0  ~(637 Brain Power)
 
     Features
     Min Max Algorithm
     Alpha Beta Pruning
 */
-/*  STATS = {
-        1st Move Metric
-        Thinking time: 692 resulting in a board eval of 0 + (0)
-        Time for ThinkTime: 692 (692)
-        Time for MinimaxTime: 673 (33.65)
-        Time for evalBoardTime: 682 (0.05)
-        Time for evalPieceTime: 624 (0)
-        Time for getPossibleMovesTime: 0 (0)
-        Total moves: 15942
-        Total count for ThinkCount: 1
-        Total count for minimaxCount: 15962
-        Total count for minimaxCacheCount: 0
-        Total count for minimaxDepthCacheCount: 0
-        Total count for getPossibleMovesCount: 1618
-        Total count for getPossibleMovesCacheCount: 66
-        Total count for evalBoardCount: 14347
-        Total count for evalBoardCacheCount: 1508
-        Total count for evalPieceCount: 410448
-        Total count for evalPieceCacheCount: 410272
 
-        2nd Move Metric
-
-
-
-        5th Move Metric
-
-
-
-        10th Move Metric
-
-
-
-        20th Move Metric
-
-
-
-
-        30th Move Metric
-
-
-        40th Move Metric
-
-
-        50th Move Metric
-
-    }*/
-
-    /*
-    TODO
-
-    Score board based off piece locations
-    sort moves when getting possible moves
-    add more features to board evaluation
-        - pawn advancement
-        - piece mobility
-        - piece threats
-        - piece protection
-
-    add more features to move scoring
-    add game stage
-    Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
-    Quiesence Searching (only applies to moves that result in a capture)
-    Optimized Searching (go down only promising paths)
-    OPTIMIZE CODE
-    Move Pruning
-    Late Move Reductions, History Reductions
-    Use NegaMax??
-    Store minimax traversals (edges that haven't been searched from a particular board state)
-    
-*/
 public class MyBotV1 : IChessBot
 {
     /*

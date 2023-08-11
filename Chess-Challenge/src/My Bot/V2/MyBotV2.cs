@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using System.Numerics;
 
 /*
-    MyBot V1.0  ~(725 Brain Power SMH)
+    MyBot V2.0  ~(725 Brain Power)
 
-    Features
-    Negamax Alpha Beta Pruning
-    Score board based off piece locations
+    Features (dif from previous version 1.4)
+    
 
     NOTES
-
 
     Against NNBot, it makes unintelligent trades that result in large eval drops. why does the search do this?
     
@@ -20,32 +18,9 @@ using System.Numerics;
     - 202 +/- 58 Elo difference
     - 119 / 17 / 31 (win rate 71.25%)
 
-
-    Add Transposition table (remove move cache)
-    Add Quiesence
-    Add move ordering
-    possibly do killer moves and null move pruning
-Ggame stage
-*/
-
-/*
-    TODO
-
-    sort moves when getting possible moves
-    add more features to board evaluation
-        - pawn advancement
-        - piece mobility
-        - piece threats
-        - piece protection
-    Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
-    Quiesence Searching (only applies to moves that result in a capture)
-    Optimized Searching (go down only promising paths)
-    OPTIMIZE CODE
-    Move Pruning
-    Late Move Reductions, History Reductions
-    Store minimax traversals (edges that haven't been searched from a particular board state)
     
 */
+
 public class MyBotV2 : IChessBot {
     bool isBotWhite, breakBecauseTime = false;
     int timePerMove = 500, gameStage = 0;

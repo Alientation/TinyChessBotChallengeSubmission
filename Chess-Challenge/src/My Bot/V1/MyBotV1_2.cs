@@ -3,47 +3,13 @@ using System;
 using System.Collections.Generic; 
 
 /*
-    MyBot V1.2  ~(___ Brain Power)
+    MyBot V1.2  ~(69420 Brain Power)
 
-    Features
-    Negamax Algorithm
-    Alpha Beta Pruning
+    Features (dif from previous version 1.1)
+    
 */
-/*  STATS depth_ = {
-        
 
-    }*/
-
-    /*
-    TODO
-
-    Score board based off piece locations
-    sort moves when getting possible moves
-    add more features to board evaluation
-        - pawn advancement
-        - piece mobility
-        - piece threats
-        - piece protection
-
-    add more features to move scoring
-    add game stage
-    Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
-    Quiesence Searching (only applies to moves that result in a capture)
-    Optimized Searching (go down only promising paths)
-    OPTIMIZE CODE
-    Move Pruning
-    Late Move Reductions, History Reductions
-    Store minimax traversals (edges that haven't been searched from a particular board state)
-    Dont use dictionary, use hash + bit mask and an array (much faster)
-
-
-    Make tournament system
-    Make elo system
-    file system for bots (bot training)
-    add dropdown menu for bot matches
-*/
-public class MyBotV1_2 : IChessBot
-{
+public class MyBotV1_2 : IChessBot {
 
     //dont reset after each game to get a slight advantage (lol)
     Dictionary<ulong,Move[]> movesFromBoardCache = new Dictionary<ulong,Move[]>();

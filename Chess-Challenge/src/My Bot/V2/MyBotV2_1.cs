@@ -4,12 +4,10 @@ using System.Collections.Generic;
 using System.Numerics;
 
 /*
-    MyBot V1.0  ~(725 Brain Power SMH)
+    MyBot V2.1  ~(725 Brain Power)
 
-    Features
-    Negamax Alpha Beta Pruning
-    Score board based off piece locations
-     Added Transposition table (remove move cache)
+    Features (dif from previous version 2.0)
+    
 
     NOTES
 
@@ -27,28 +25,8 @@ using System.Numerics;
     - 44 / 0 / -6 (win rate 86.27%) (5 losses from timeouts because of poor endgame)
 
 
-    Add Quiesence
-    Add move ordering
-    possibly do killer moves and null move pruning
-Ggame stage
 */
 
-/*
-    TODO
-
-    sort moves when getting possible moves
-    add more features to board evaluation
-        - pawn advancement
-        - piece mobility
-        - piece threats
-        - piece protection
-    Null Move Heuristic (find eval of opponent moving two times in a row to get the minimum alpha value)
-    Quiesence Searching (only applies to moves that result in a capture)
-    OPTIMIZE CODE
-    Move Pruning
-    Late Move Reductions, History Reductions
-    
-*/
 public class MyBotV2_1 : IChessBot {
     int timePerMove = 500;
     Timer timer;
