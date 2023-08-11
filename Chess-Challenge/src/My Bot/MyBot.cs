@@ -1,4 +1,5 @@
 #define PRINT
+#define BRANCHING
 
 using ChessChallenge.API;
 using System;
@@ -72,18 +73,15 @@ public class MyBot : IChessBot {
 
     #if PRINT
     int nodesWithQuiesence = 0, nodes = 0, terminalNodesWithQuiesence = 0, terminalNodes = 0;
+    #endif
 
+    #if BRANCHING
     int[][] branchingFactorsByDepth;
     #endif
 
 
     public Move Think(Board cBoard, Timer cTimer) {
         #if PRINT
-        branchingFactorsByDepth = new int[2][] {
-            new int[60],
-            new int[60],
-        };
-
         List<string> outputs = new()
         {
             string.Format(  "{0,8}\t{1,20}\t{2,10}\t{3,15}\t{4,50}\t{5,30}",
@@ -94,7 +92,14 @@ public class MyBot : IChessBot {
                             "nodesExcluding / total  (npsExcluding / nps)",
                             "endNodesExcluding / total")
         };
-#endif
+        #endif
+
+        #if BRANCHING
+        branchingFactorsByDepth = new int[2][] {
+            new int[60],
+            new int[60],
+        };
+        #endif
 
 
         board = cBoard;
@@ -140,8 +145,10 @@ public class MyBot : IChessBot {
         foreach (string output in outputs) {
             Console.WriteLine(output);
         }
+        #endif
 
-         Console.WriteLine("");
+        #if BRANCHING
+        Console.WriteLine("");
         for (int i = 0; i < branchingFactorsByDepth[0].Length; i++) {
             if (branchingFactorsByDepth[1][i] == 0) break;
             if (i % 11 == 10)
@@ -165,6 +172,10 @@ public class MyBot : IChessBot {
             ));
         }
 
+        Console.WriteLine("\n--\n--\n--");
+        #endif
+
+        #if PRINT || BRANCHING
         Console.WriteLine("\n--\n--\n--");
         #endif
 
@@ -221,7 +232,9 @@ public class MyBot : IChessBot {
 
         #if PRINT
         if (moves.Length == 0 && quiesence) terminalNodesWithQuiesence++;
+        #endif
 
+        #if BRANCHING
         if (!quiesence)
             branchingFactorsByDepth[1][ply]++;
         #endif
@@ -234,7 +247,7 @@ public class MyBot : IChessBot {
 
         //find best move possible from all subtrees
         foreach (Move move in moves) {
-            #if PRINT
+            #if BRANCHING
             if (!quiesence)
                 branchingFactorsByDepth[0][ply]++;
             #endif
