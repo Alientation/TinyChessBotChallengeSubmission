@@ -115,11 +115,6 @@ public class MyBot : IChessBot {
 
             int value = Negamax(depth, 0, MIN_VALUE, MAX_VALUE);
 
-            if (shouldStop)
-                break;
-            else 
-                bestRootMove = bestMove;
-
             #if PRINT
             int elapsedTime = cTimer.MillisecondsElapsedThisTurn - startSearchTime;
             int npsExcluding = (int)((nodes - nodesWithQuiesence) / (elapsedTime / 1000f));
@@ -133,7 +128,11 @@ public class MyBot : IChessBot {
                                         $"{nodes - nodesWithQuiesence}/{nodes} ({npsExcluding}/{nps})",
                                         $"{terminalNodes - terminalNodesWithQuiesence}/{terminalNodes}"));
             #endif
-
+            
+            if (shouldStop)
+                break;
+            else 
+                bestRootMove = bestMove;
             if (value > 50000) break;
         }
 
@@ -148,6 +147,15 @@ public class MyBot : IChessBot {
             Console.Write(string.Format(
                 "{0,10}",
                 $"d{i+1} {Math.Round(100 * branchingFactorsByDepth[0][i] / (float) branchingFactorsByDepth[1][i]) / 100.0}"
+            ));
+        }
+        Console.WriteLine();
+        for (int i = 0; i < branchingFactorsByDepth[0].Length; i++) {
+            if (branchingFactorsByDepth[1][i] == 0) break;
+
+            Console.Write(string.Format(
+                "{0,10}",
+                $"d{i+1} {branchingFactorsByDepth[0][i]}"
             ));
         }
 
