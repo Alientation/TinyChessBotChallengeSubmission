@@ -85,10 +85,14 @@ Also don't ask why I didn't fork from the original repository (im a github noob)
 ### V3_1, V3_2
 - Tried to update eval function and quiescence search but failed.. its worse than V3
 
-### V3_3
+### V3_3, V3_4
 - Fixed illegal moves??? for real this time???
 - Shortened/Improved some eval functions
 - Fixed Transposition Tables to properly determine when to overwrite and when to use cached calculations
 
-### V3_4
+### V3_5
+- Combined quiesence into negamax search to save tokens
+- Somehow managed to increase pruning and overall achieve higher depths
+
+### V3_6
 - 
