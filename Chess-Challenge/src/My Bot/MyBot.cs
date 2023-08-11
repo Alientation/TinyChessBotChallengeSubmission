@@ -73,17 +73,20 @@ public class MyBot : IChessBot {
     #if PRINT
     int nodesWithQuiesence = 0, nodes = 0, terminalNodesWithQuiesence = 0, terminalNodes = 0;
 
-    int[,] branchingFactorsByDepth = new int[50,2];
+    int[][] branchingFactorsByDepth;
     #endif
 
 
     public Move Think(Board cBoard, Timer cTimer) {
         #if PRINT
-        branchingFactorsByDepth = new int[50,2];
+        branchingFactorsByDepth = new int[2][] {
+            new int[60],
+            new int[60],
+        };
 
         List<string> outputs = new()
         {
-            string.Format(  "{0,8}\t{1,20}\t{2,10}\t{3,10}\t{4,40}\t{5,20}",
+            string.Format(  "{0,8}\t{1,20}\t{2,10}\t{3,15}\t{4,50}\t{5,30}",
                             "depth",
                             "total / elapsed time",
                             "eval",
@@ -121,25 +124,33 @@ public class MyBot : IChessBot {
             int npsExcluding = (int)((nodes - nodesWithQuiesence) / (elapsedTime / 1000f));
             int nps = (int)(nodes / (elapsedTime / 1000f));
 
-            outputs.Add(string.Format(  "{0,8}\t{1,20}\t{2,10}\t{3,10}\t{4,40}\t{5,20}", 
+            outputs.Add(string.Format(  "{0,8}\t{1,20}\t{2,10}\t{3,15}\t{4,50}\t{5,30}", 
                                         $"d{depth}",
                                         $"{cTimer.MillisecondsElapsedThisTurn}ms ({elapsedTime}ms)",
                                         $"{value}",
                                         $"{bestRootMove}",
                                         $"{nodes - nodesWithQuiesence}/{nodes} ({npsExcluding}/{nps})",
                                         $"{terminalNodes - terminalNodesWithQuiesence}/{terminalNodes}"));
-            //outputs.Add($"d{depth}\t{cTimer.MillisecondsElapsedThisTurn}ms  ({elapsedTime})\t\t\teval={value}\t\tnodes= {nodes - nodesWithQuiesence}/{nodes} ({npsExcluding}/{nps})\t\t\tterminal= {terminalNodes - terminalNodesWithQuiesence}/{terminalNodes}");
-            //Console.WriteLine($"d{depth} : {cTimer.MillisecondsElapsedThisTurn}ms  ({elapsedTime}) : {value} eval : {nodes - nodesWithQuiesence}/{nodes} nodes ({npsExcluding}/{nps}) : {terminalNodes - terminalNodesWithQuiesence}/{terminalNodes} terminal");
             #endif
 
             if (value > 50000) break;
         }
-        
+
         #if PRINT
         foreach (string output in outputs) {
             Console.WriteLine(output);
         }
-        Console.WriteLine("--");
+
+        for (int i = 0; i < branchingFactorsByDepth[0].Length; i++) {
+            if (branchingFactorsByDepth[1][i] == 0) break;
+
+            Console.Write(string.Format(
+                "{0,10}",
+                $"d{i+1} {Math.Round(100 * branchingFactorsByDepth[0][i] / (float) branchingFactorsByDepth[1][i]) / 100.0}"
+            ));
+        }
+
+        Console.WriteLine("\n--");
         #endif
 
         return bestRootMove;
@@ -195,7 +206,7 @@ public class MyBot : IChessBot {
 
         #if PRINT
         if (moves.Length == 0 && quiesence) terminalNodesWithQuiesence++;
-        branchingFactorsByDepth[ply,1]++;
+        branchingFactorsByDepth[1][ply]++;
         #endif
 
 
@@ -207,7 +218,7 @@ public class MyBot : IChessBot {
         //find best move possible from all subtrees
         foreach (Move move in moves) {
             #if PRINT
-            branchingFactorsByDepth[ply,0]++;
+            branchingFactorsByDepth[0][ply]++;
             #endif
 
             //verify that this does not affect search result (ie, unfinished searches corrupting results)
