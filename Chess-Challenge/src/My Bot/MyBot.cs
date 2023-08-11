@@ -1,5 +1,8 @@
+#define PRINT
+
 using ChessChallenge.API;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 /*
@@ -41,7 +44,7 @@ public class MyBot : IChessBot {
 
     //search info
     bool shouldStop => timer.MillisecondsElapsedThisTurn > timePerMove;
-    Move bestRootMove;
+    Move bestRootMove, bestMove;
     int timePerMove;
 
     //TTable
@@ -67,12 +70,30 @@ public class MyBot : IChessBot {
                                             94, 281, 297, 512, 936, 20000}; // Endgame
 
 
-    #if DEBUG
-    int nodesWithoutQuiesence = 0, nodesWithQuiesence = 0, terminalNodesWithoutQuiesence = 0, terminalNodesWithQuiesence = 0;
+    #if PRINT
+    int nodesWithQuiesence = 0, nodes = 0, terminalNodesWithQuiesence = 0, terminalNodes = 0;
+
+    int[,] branchingFactorsByDepth = new int[50,2];
     #endif
 
 
     public Move Think(Board cBoard, Timer cTimer) {
+        #if PRINT
+        branchingFactorsByDepth = new int[50,2];
+
+        List<string> outputs = new()
+        {
+            string.Format(  "{0,8}\t{1,20}\t{2,10}\t{3,10}\t{4,40}\t{5,20}",
+                            "depth",
+                            "total / elapsed time",
+                            "eval",
+                            "best move",
+                            "nodesExcluding / total  (npsExcluding / nps)",
+                            "endNodesExcluding / total")
+        };
+#endif
+
+
         board = cBoard;
         timer = cTimer;
         timePerMove = timer.MillisecondsRemaining / 40;
@@ -81,13 +102,45 @@ public class MyBot : IChessBot {
         bestRootMove = board.GetLegalMoves()[0];
 
         //iterative deepening, while there is still time left
-        for (int depth = 1; !shouldStop && depth < 50; ) {
-            #if DEBUG
-            Console.WriteLine("d" + (depth-1) + " " + cTimer.MillisecondsElapsedThisTurn + "ms");
+        for (int depth = 1; ++depth < 50; ) {
+            #if PRINT
+            int startSearchTime = cTimer.MillisecondsElapsedThisTurn;
+            nodesWithQuiesence = nodes = terminalNodesWithQuiesence = terminalNodes = 0;
             #endif
 
-            if (Negamax(++depth, 0, MIN_VALUE, MAX_VALUE) > 50000) break;
+            if (shouldStop)
+                break;
+            else 
+                bestRootMove = bestMove;
+            //if (Negamax(++depth, 0, MIN_VALUE, MAX_VALUE) > 50000) break;
+
+            int value = Negamax(depth, 0, MIN_VALUE, MAX_VALUE);
+
+            #if PRINT
+            int elapsedTime = cTimer.MillisecondsElapsedThisTurn - startSearchTime;
+            int npsExcluding = (int)((nodes - nodesWithQuiesence) / (elapsedTime / 1000f));
+            int nps = (int)(nodes / (elapsedTime / 1000f));
+
+            outputs.Add(string.Format(  "{0,8}\t{1,20}\t{2,10}\t{3,10}\t{4,40}\t{5,20}", 
+                                        $"d{depth}",
+                                        $"{cTimer.MillisecondsElapsedThisTurn}ms ({elapsedTime}ms)",
+                                        $"{value}",
+                                        $"{bestRootMove}",
+                                        $"{nodes - nodesWithQuiesence}/{nodes} ({npsExcluding}/{nps})",
+                                        $"{terminalNodes - terminalNodesWithQuiesence}/{terminalNodes}"));
+            //outputs.Add($"d{depth}\t{cTimer.MillisecondsElapsedThisTurn}ms  ({elapsedTime})\t\t\teval={value}\t\tnodes= {nodes - nodesWithQuiesence}/{nodes} ({npsExcluding}/{nps})\t\t\tterminal= {terminalNodes - terminalNodesWithQuiesence}/{terminalNodes}");
+            //Console.WriteLine($"d{depth} : {cTimer.MillisecondsElapsedThisTurn}ms  ({elapsedTime}) : {value} eval : {nodes - nodesWithQuiesence}/{nodes} nodes ({npsExcluding}/{nps}) : {terminalNodes - terminalNodesWithQuiesence}/{terminalNodes} terminal");
+            #endif
+
+            if (value > 50000) break;
         }
+        
+        #if PRINT
+        foreach (string output in outputs) {
+            Console.WriteLine(output);
+        }
+        Console.WriteLine("--");
+        #endif
 
         return bestRootMove;
     }
@@ -95,6 +148,14 @@ public class MyBot : IChessBot {
 
     //negamax with alpha beta pruning
     public int Negamax(int depth, int ply, int alpha, int beta) {
+        #if PRINT
+        nodes++;
+        if (depth < 1)
+            nodesWithQuiesence++;
+        
+        if (depth == 0)
+            terminalNodes++;
+        #endif
 
 
         bool isInCheck = board.IsInCheck(), root = ply == 0;
@@ -131,12 +192,25 @@ public class MyBot : IChessBot {
         }
         Array.Sort(movesScore, moves);
 
+
+        #if PRINT
+        if (moves.Length == 0 && quiesence) terminalNodesWithQuiesence++;
+        branchingFactorsByDepth[ply,1]++;
+        #endif
+
+
+
         //no possible moves (which means checkmate/stalemate/draw)
         if (!quiesence && moves.Length == 0)
             return isInCheck ? MIN_VALUE + depth : 0;
 
         //find best move possible from all subtrees
         foreach (Move move in moves) {
+            #if PRINT
+            branchingFactorsByDepth[ply,0]++;
+            #endif
+
+            //verify that this does not affect search result (ie, unfinished searches corrupting results)
             if (shouldStop)
                 return MAX_VALUE;
 
@@ -150,7 +224,7 @@ public class MyBot : IChessBot {
                 highestMove = move;
 
                 if (root)
-                    bestRootMove = move;
+                    bestMove = move;
 
                 alpha = Math.Max(alpha, eval);
 
